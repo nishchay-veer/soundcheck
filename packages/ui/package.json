@@ -1,36 +1,38 @@
 {
-  "name": "@repo/ui",
+  "name": "@soundcheck/ui",
   "version": "0.0.0",
-  "sideEffects": [
-    "**/*.css"
-  ],
-  "files": [
-    "dist"
-  ],
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
   "exports": {
-    "./styles.css": "./dist/index.css",
-    "./*": "./dist/*.js"
+    "./lib/*": "./src/lib/*.ts",
+    "./components/*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts"
   },
-  "license": "MIT",
   "scripts": {
-    "build:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
-    "build:components": "tsc",
-    "check-types": "tsc --noEmit",
-    "dev:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
-    "dev:components": "tsc --watch",
-    "lint": "eslint src --max-warnings 0"
+    "lint": "eslint --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --project unit",
+    "test:integration": "vitest run --project integration --passWithNoTests"
+  },
+  "dependencies": {
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "lucide-react": "1.49.0",
+    "tailwind-merge": "3.7.0"
   },
   "peerDependencies": {
     "react": "19.3.0"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/tailwind-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@tailwindcss/cli": "4.3.3",
+    "@soundcheck/eslint-config": "workspace:*",
+    "@soundcheck/typescript-config": "workspace:*",
+    "@soundcheck/vitest-config": "workspace:*",
+    "@types/node": "24.19.0",
     "@types/react": "19.3.0",
     "eslint": "10.11.0",
-    "tailwindcss": "4.3.3",
-    "typescript": "7.0.2"
+    "react": "19.3.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.3"
   }
 }

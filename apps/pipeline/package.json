@@ -1,0 +1,33 @@
+{
+  "name": "@soundcheck/pipeline",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "soundcheck": "./dist/main.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "soundcheck": "tsx src/main.ts",
+    "lint": "eslint --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --project unit",
+    "test:integration": "vitest run --project integration --passWithNoTests"
+  },
+  "dependencies": {
+    "@soundcheck/core": "workspace:*",
+    "commander": "15.0.0"
+  },
+  "devDependencies": {
+    "@soundcheck/eslint-config": "workspace:*",
+    "@soundcheck/typescript-config": "workspace:*",
+    "@soundcheck/vitest-config": "workspace:*",
+    "@types/node": "24.19.0",
+    "eslint": "10.11.0",
+    "fast-check": "4.10.2",
+    "tsup": "8.5.1",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "5.0.3"
+  }
+}

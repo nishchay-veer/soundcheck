@@ -33,6 +33,8 @@ export const nextJsConfig = [
     rules: {
       ...pluginNext.configs.recommended.rules,
       ...pluginNext.configs["core-web-vitals"].rules,
+      // App Router only: this rule looks for a Pages Router `pages/` directory.
+      "@next/next/no-html-link-for-pages": "off",
     },
   },
   {

@@ -1,0 +1,15 @@
+**/node_modules
+**/.next
+**/.turbo
+**/dist
+**/coverage
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.env
+**/.env.*
+!**/.env.example
+.git
+docs

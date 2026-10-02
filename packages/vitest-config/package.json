@@ -1,0 +1,27 @@
+{
+  "name": "@soundcheck/vitest-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./no-network": "./src/no-network.ts"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --project unit",
+    "test:integration": "vitest run --project integration --passWithNoTests"
+  },
+  "devDependencies": {
+    "@soundcheck/eslint-config": "workspace:*",
+    "@soundcheck/typescript-config": "workspace:*",
+    "@types/node": "24.19.0",
+    "eslint": "10.11.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.3"
+  },
+  "peerDependencies": {
+    "vitest": "5.0.3"
+  }
+}

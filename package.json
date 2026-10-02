@@ -1,12 +1,12 @@
 {
-  "name": "with-tailwind",
+  "name": "soundcheck",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "turbo run build",
+    "check": "turbo run lint typecheck test",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "check-types": "turbo run check-types",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "build": "turbo run build",
+    "fmt": "prettier --write ."
   },
   "devDependencies": {
     "pnpm": "12.6.0",

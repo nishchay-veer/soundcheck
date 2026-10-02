@@ -1,4 +1,4 @@
-# `@repo/eslint-config`
+# `@soundcheck/eslint-config`
 
 Collection of internal ESLint flat configurations.
 

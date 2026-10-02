@@ -46,12 +46,12 @@ The rule that keeps two languages honest: TypeScript computes every feature, inc
 | Layer | Choice | Why |
 | --- | --- | --- |
 | Monorepo | Turborepo, pnpm workspaces; the Python package joins through a `package.json` whose scripts call `uv` | One `pnpm check` runs lint, typecheck and tests in both languages, with caching |
-| Web and API | Next.js 15 (App Router, standalone output) on Cloud Run; route handlers are the API | No second service to secure; secrets stay server-side; shared types |
+| Web and API | Next.js 16 (App Router, standalone output) on Cloud Run; route handlers are the API | No second service to secure; secrets stay server-side; shared types |
 | UI | Tailwind v4, shadcn/ui, SWR | Fast to build, accessible defaults |
 | Charts | D3 scales and shapes, hand-rendered SVG in React | The retention curve and beat strip must share one x scale |
 | Auth | Auth.js v5, Google provider, YouTube read scopes, offline access | One consent gives sign-in and a refresh token |
 | Contracts | zod v4 in `packages/core`; `z.toJSONSchema` for Gemini and Python | One definition for every boundary |
-| Batch | TypeScript CLI (Node 22) as Cloud Run Jobs, bundled with tsup; one image | Long runs, task sharding via `CLOUD_RUN_TASK_INDEX` |
+| Batch | TypeScript CLI (Node 24) as Cloud Run Jobs, bundled with tsup; one image | Long runs, task sharding via `CLOUD_RUN_TASK_INDEX` |
 | Modeling | Python 3.12 Cloud Run Job: numpy, scipy, matplotlib, jsonschema | Fit, evaluate, plot; nothing else |
 | Orchestration | Cloud Workflows; Eventarc for upload events | Declarative DAG with retries across both job images |
 | Warehouse | BigQuery (US multi-region) | Training tables, eval history, SQL analysis |
@@ -97,6 +97,7 @@ soundcheck/                    Turborepo + pnpm workspaces
       src/prompts/             versioned Gemini prompts and few-shot examples
     ui/                        shared React components (from the starter)
     eslint-config/  typescript-config/   (from the starter)
+    vitest-config/             shared Vitest preset; blocks network in unit tests
   services/
     modeling/                  Python (uv): fit and evaluate only; package.json wraps uv
   infra/                       gcloud scripts, BigQuery DDL, workflows YAML, firestore.rules
