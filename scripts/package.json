@@ -1,0 +1,23 @@
+{
+  "name": "@soundcheck/scripts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "vertex-smoke": "tsx --env-file-if-exists=../.env vertex-smoke.ts",
+    "lint": "eslint --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "2.25.0",
+    "@soundcheck/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@soundcheck/eslint-config": "workspace:*",
+    "@soundcheck/typescript-config": "workspace:*",
+    "@types/node": "24.19.0",
+    "eslint": "10.11.0",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  }
+}

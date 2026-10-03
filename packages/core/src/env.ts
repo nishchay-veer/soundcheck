@@ -89,6 +89,22 @@ export function getEnv(): ServerEnv {
   return serverEnv;
 }
 
+/**
+ * Parses only the named server variables, uncached. For scripts and probes that
+ * need a few values and should not fail on unrelated unset ones.
+ */
+export function pickServerEnv<K extends keyof ServerEnv>(
+  keys: readonly K[],
+  source: EnvSource = process.env,
+): Pick<ServerEnv, K> {
+  // The picked schema's output is exactly Pick<ServerEnv, K>; zod cannot infer it
+  // for a generic key list, so the schema is typed loosely and the result cast.
+  const schema: z.ZodType = z.object(
+    Object.fromEntries(keys.map((key) => [key, serverEnvSchema.shape[key]])),
+  );
+  return parseEnv("server", schema, source) as Pick<ServerEnv, K>;
+}
+
 export function getClientEnv(): ClientEnv {
   // Next.js inlines NEXT_PUBLIC_* into client bundles only for literal
   // `process.env.NAME` reads, so each one is listed explicitly.

@@ -7,6 +7,7 @@ import {
   parseClientEnv,
   parseJobEnv,
   parseServerEnv,
+  pickServerEnv,
   resetEnvCache,
   serverEnvSchema,
 } from "./env";
@@ -90,6 +91,24 @@ describe("server env", () => {
     expect(getEnv()).toBe(first);
     resetEnvCache();
     expect(getEnv().GCP_PROJECT_ID).toBe("changed");
+  });
+});
+
+describe("pickServerEnv", () => {
+  it("validates only the requested variables", () => {
+    const env = pickServerEnv(["GCP_PROJECT_ID", "GEMINI_LOCATION", "GEMINI_MODEL"], {
+      GCP_PROJECT_ID: "soundcheck-test",
+      GEMINI_MODEL: "gemini-model",
+    });
+    expect(env).toEqual({
+      GCP_PROJECT_ID: "soundcheck-test",
+      GEMINI_LOCATION: "global",
+      GEMINI_MODEL: "gemini-model",
+    });
+  });
+
+  it("still rejects a requested variable that is missing", () => {
+    expect(() => pickServerEnv(["GEMINI_MODEL"], {})).toThrow(/GEMINI_MODEL/);
   });
 });
 

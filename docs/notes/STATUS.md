@@ -4,6 +4,17 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Phase 01: Google Cloud foundation (Oct 4, 2026)
+
+- **Built:** in project `soundcheck-510519` (Free Trial billing):
+  - APIs, four least-privilege service accounts, three buckets, BigQuery dataset `soundcheck` with 12 tables;
+  - Firestore `(default)` with deny-all rules, KMS key `oauth-tokens`, Artifact Registry `soundcheck`;
+  - three secrets, an OAuth consent screen and web client, and a ₹4,200 a month budget.
+  - All of it comes from idempotent scripts in `infra/` (`up.sh`, `07-budget.sh`), plus `scripts/vertex-smoke.ts`.
+- **Models:** `GEMINI_MODEL=gemini-3.8-flash`, `GEMINI_FLASH_MODEL=gemini-3.5-flash-lite` (location `global`).
+- **Verified:** every script ran twice cleanly, `bq ls` lists the tables, the smoke test gets replies from both models, secrets have versions, the budget exists, and `pnpm check` passes.
+- **Deferred:** the Gemini quota increase. A Free Trial cannot request one; it needs an upgrade to Paid.
+
 ### Phase 00: Turborepo, tooling and CLAUDE.md (Oct 3, 2026)
 
 - **Built:** a pnpm and Turborepo workspace:

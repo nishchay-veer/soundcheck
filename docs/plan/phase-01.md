@@ -13,12 +13,12 @@
 
 ## Build
 
-1. `infra/00-enable-apis.sh` enables: `run`, `workflows`, `workflowexecutions`, `eventarc`, `pubsub`, `bigquery`, `storage`, `firestore`, `cloudkms`, `secretmanager`, `artifactregistry`, `cloudbuild`, `aiplatform`, `youtube`, `youtubeanalytics`, `youtubereporting`, `logging` (all `.googleapis.com`).
-2. `infra/01-service-accounts.sh` creates four service accounts with least privilege:
-   - `sa-web` (the Next.js app, which is also the API): `datastore.user`; `storage.objectAdmin` on the uploads bucket; `iam.serviceAccountTokenCreator` on itself (signed URLs); `cloudkms.cryptoKeyEncrypterDecrypter` on the token key; `workflows.invoker`; `secretmanager.secretAccessor`; `storage.objectViewer` on the raw bucket (model artifacts for simulation).
-   - `sa-pipeline` (both the TypeScript and the Python job images): `bigquery.dataEditor` on the dataset, `bigquery.jobUser`, `storage.objectAdmin` on raw, uploads and media buckets, `datastore.user`, `cloudkms.cryptoKeyDecrypter` on the token key, `aiplatform.user`, `secretmanager.secretAccessor`, `logging.logWriter`.
+1. `infra/00-enable-apis.sh` enables: `run`, `workflows`, `workflowexecutions`, `eventarc`, `pubsub`, `bigquery`, `storage`, `firestore`, `cloudkms`, `secretmanager`, `artifactregistry`, `cloudbuild`, `aiplatform`, `youtube`, `youtubeanalytics`, `youtubereporting`, `logging`, plus `iam` and `cloudresourcemanager` (service accounts, project IAM), `firebaserules` (releasing `firestore.rules`) and `billingbudgets` (the budget) (all `.googleapis.com`).
+2. `infra/01-service-accounts.sh` creates four service accounts with least privilege. It grants the project-level roles; each resource-scoped role (bucket, dataset, key, secret) is granted by the script that creates that resource, because the resource does not exist yet when 01 runs:
+   - `sa-web` (the Next.js app, which is also the API): `datastore.user`; `storage.objectAdmin` on the uploads bucket; `iam.serviceAccountTokenCreator` on itself (signed URLs); `cloudkms.cryptoKeyEncrypterDecrypter` on the token key; `workflows.invoker`; `secretmanager.secretAccessor` on the three app secrets; `storage.objectViewer` on the raw bucket (model artifacts for simulation).
+   - `sa-pipeline` (both the TypeScript and the Python job images): `bigquery.dataEditor` on the dataset, `bigquery.jobUser`, `storage.objectAdmin` on raw, uploads and media buckets, `datastore.user`, `cloudkms.cryptoKeyDecrypter` on the token key, `aiplatform.user`, `secretmanager.secretAccessor` on `oauth-client-id` and `oauth-client-secret`, `logging.logWriter`.
    - `sa-workflows`: `run.developer` (to execute jobs with overrides), `logging.logWriter`, `datastore.user` (progress writes).
-   - `sa-eventarc`: `eventarc.eventReceiver`, `workflows.invoker`. Grant `pubsub.publisher` to the Cloud Storage service agent.
+   - `sa-eventarc`: `eventarc.eventReceiver`, `workflows.invoker`. Grant `pubsub.publisher` to the Cloud Storage service agent (in `02-storage.sh`, after the buckets exist).
 3. `infra/02-storage.sh` creates three buckets in `us-central1`, uniform access, public access prevention enforced: `{project}-raw` (no lifecycle), `{project}-uploads` (delete after 30 days; CORS allowing `PUT` from the web origin and `http://localhost:3000`), `{project}-media`.
 4. `infra/03-bigquery.sh` creates dataset `soundcheck` in `US` and applies DDL files from `infra/bigquery/`. Tables now (later phases add their own):
    - `channels` (channel\_id, user\_id, title, subscriber\_count, video\_count, connected\_at)
@@ -30,12 +30,13 @@
 5. `infra/04-firestore.sh` creates the default Native database in `us-central1` and deploys `infra/firestore.rules` denying all client access (`allow read, write: if false;`). Only server SDKs touch Firestore.
 6. `infra/05-kms.sh` creates key ring `soundcheck` and symmetric key `oauth-tokens` with 90-day rotation.
 7. `infra/06-artifact-registry.sh` creates Docker repo `soundcheck` in `us-central1` (images: web, pipeline, modeling).
-8. `infra/07-budget.sh` creates a budget with alerts at 50%, 90% and 100%; the billing account ID and amount are script arguments.
+8. `infra/07-budget.sh` creates a budget with alerts at 50%, 90% and 100%; the billing account ID and amount are script arguments. Spend is measured before credits (`exclude-all-credits`), so alerts fire while free-trial credit pays the bill.
 9. `scripts/vertex-smoke.ts` (run with `tsx`): creates `new GoogleGenAI({ vertexai: true, project, location: GEMINI_LOCATION })`, sends a one-line prompt to `GEMINI_MODEL`, and prints the reply and token usage. The human checks the current Vertex AI model list and fills `GEMINI_MODEL` and `GEMINI_FLASH_MODEL` in `.env`.
 10. `infra/README.md` documents the manual steps that cannot be scripted:
     - OAuth consent screen: External, Testing, scopes `openid`, `email`, `profile`, `https://www.googleapis.com/auth/youtube.readonly`, `https://www.googleapis.com/auth/yt-analytics.readonly`; add every teammate and recruited creator as a test user.
     - OAuth web client with redirect URIs `http://localhost:3000/api/auth/callback/google` and the production URL; secrets stored in Secret Manager as `oauth-client-id`, `oauth-client-secret`, `auth-secret`.
-    - Request a Gemini quota increase on day 1.
+    - Request a Gemini quota increase on day 1. (Not possible on a Free Trial billing account; deferred until the account is upgraded to Paid.)
+11. `infra/08-secrets.sh` creates the three secrets, grants access, generates `auth-secret`, and loads the downloaded OAuth client JSON without printing values. `infra/up.sh` runs 00–06 and 08 in order; `infra/print-env.sh` prints the derived `.env` lines.
 
 ## Decisions and gotchas
 
@@ -52,7 +53,7 @@
 
 - [ ] Every script runs twice without error
 - [ ] `bq ls soundcheck` lists the tables
-- [ ] `scripts/vertex_smoke.py` prints a Gemini reply
+- [ ] `scripts/vertex-smoke.ts` prints a Gemini reply
 - [ ] OAuth client exists and secrets are in Secret Manager
 - [ ] Budget alert configured
 - [ ] `docs/notes/phase-01.md` written, including the model IDs chosen
