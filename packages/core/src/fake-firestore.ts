@@ -23,6 +23,13 @@ export class FakeFirestore {
     return result;
   }
 
+  /** Deletes the document and everything under it (subcollections included). */
+  async recursiveDelete(ref: FakeDocRef): Promise<void> {
+    for (const path of [...this.docs.keys()]) {
+      if (path === ref.path || path.startsWith(`${ref.path}/`)) this.docs.delete(path);
+    }
+  }
+
   asFirestore(): Firestore {
     return this as unknown as Firestore;
   }

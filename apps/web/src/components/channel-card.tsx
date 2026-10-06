@@ -1,6 +1,7 @@
 import type { ChannelSummary } from "@soundcheck/core/schemas";
 import Image from "next/image";
 import Link from "next/link";
+import { DeleteChannelButton } from "./delete-channel-button";
 
 const numbers = new Intl.NumberFormat("en");
 
@@ -59,6 +60,7 @@ export function ChannelCard({ channel }: { channel: ChannelSummary }) {
           </p>
         ) : null}
       </div>
+      <DeleteChannelButton channelId={channel.id} title={channel.title} />
     </article>
   );
 }

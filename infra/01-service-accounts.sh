@@ -24,9 +24,11 @@ for sa in sa-web sa-pipeline sa-workflows sa-eventarc; do
   fi
 done
 
-# sa-web: the Next.js app, which is also the API.
+# sa-web: the Next.js app, which is also the API. jobUser lets
+# DELETE /api/v1/channels/{id} run its BigQuery DELETE jobs.
 grant_project "$(sa_member sa-web)" roles/datastore.user
 grant_project "$(sa_member sa-web)" roles/workflows.invoker
+grant_project "$(sa_member sa-web)" roles/bigquery.jobUser
 # Signed upload URLs are signed by sa-web as itself.
 retry gcloud iam service-accounts add-iam-policy-binding "$(sa_email sa-web)" \
   --project="$PROJECT_ID" --member="$(sa_member sa-web)" \

@@ -39,9 +39,11 @@ JSON
 gcloud storage buckets update "gs://$UPLOADS_BUCKET" --cors-file="$cors_file" >/dev/null
 log "gs://$UPLOADS_BUCKET: CORS PUT from $origins"
 
-# sa-web uploads cuts and reads model artifacts for in-request simulation.
+# sa-web uploads cuts, reads model artifacts for in-request simulation, and
+# deletes a channel's objects in every bucket when the creator asks.
 grant_bucket "$UPLOADS_BUCKET" "$(sa_member sa-web)" roles/storage.objectAdmin
-grant_bucket "$RAW_BUCKET" "$(sa_member sa-web)" roles/storage.objectViewer
+grant_bucket "$RAW_BUCKET" "$(sa_member sa-web)" roles/storage.objectAdmin
+grant_bucket "$MEDIA_BUCKET" "$(sa_member sa-web)" roles/storage.objectAdmin
 # sa-pipeline reads and writes all three.
 grant_bucket "$RAW_BUCKET" "$(sa_member sa-pipeline)" roles/storage.objectAdmin
 grant_bucket "$UPLOADS_BUCKET" "$(sa_member sa-pipeline)" roles/storage.objectAdmin

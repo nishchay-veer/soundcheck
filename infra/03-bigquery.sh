@@ -20,6 +20,9 @@ for ddl in "$INFRA_DIR"/bigquery/*.sql; do
   log "applied: $(basename "$ddl")"
 done
 
-retry bq_ query --nouse_legacy_sql --quiet \
-  "GRANT \`roles/bigquery.dataEditor\` ON SCHEMA \`${PROJECT_ID}.${BQ_DATASET}\` TO \"$(sa_member sa-pipeline)\"" >/dev/null
-log "dataset ${BQ_DATASET}: roles/bigquery.dataEditor -> $(sa_member sa-pipeline)"
+# sa-pipeline writes training data; sa-web deletes a channel's rows on request.
+for sa in sa-pipeline sa-web; do
+  retry bq_ query --nouse_legacy_sql --quiet \
+    "GRANT \`roles/bigquery.dataEditor\` ON SCHEMA \`${PROJECT_ID}.${BQ_DATASET}\` TO \"$(sa_member "$sa")\"" >/dev/null
+  log "dataset ${BQ_DATASET}: roles/bigquery.dataEditor -> $(sa_member "$sa")"
+done

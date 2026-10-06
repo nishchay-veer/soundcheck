@@ -20,3 +20,13 @@ export const meResponseSchema = z.object({
   channels: z.array(channelSummarySchema),
 });
 export type MeResponse = z.infer<typeof meResponseSchema>;
+
+/** `DELETE /api/v1/channels/{id}` response: what was removed, for the user and the logs. */
+export const channelDeletionSchema = z.object({
+  channelId: z.string(),
+  /** False when Google already considered the token invalid. */
+  tokenRevoked: z.boolean(),
+  bigqueryRowsDeleted: z.record(z.string(), z.number().int().nonnegative()),
+  storageObjectsDeleted: z.record(z.string(), z.number().int().nonnegative()),
+});
+export type ChannelDeletion = z.infer<typeof channelDeletionSchema>;
