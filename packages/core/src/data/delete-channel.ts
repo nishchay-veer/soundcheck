@@ -47,18 +47,24 @@ async function deleteBigQueryRows(channelId: string): Promise<Record<string, num
     location: env.BQ_LOCATION,
   });
 
-  const deleted: Record<string, number> = {};
-  for (const { table_name: table } of tables as Array<{ table_name: string }>) {
-    // The table name comes from INFORMATION_SCHEMA; the channel ID is a parameter.
-    const [job] = await bigquery.createQueryJob({
-      query: `DELETE FROM \`${dataset}.${table}\` WHERE channel_id = @channelId`,
-      params: { channelId },
-      location: env.BQ_LOCATION,
-    });
-    await job.getQueryResults();
-    const [metadata] = await job.getMetadata();
-    deleted[table] = Number(metadata.statistics?.query?.numDmlAffectedRows ?? 0);
-  }
+  // DML jobs on different tables run concurrently; one after another took ~4 s each.
+  const limit = pLimit(8);
+  const counts = await Promise.all(
+    (tables as Array<{ table_name: string }>).map(({ table_name: table }) =>
+      limit(async () => {
+        // The table name comes from INFORMATION_SCHEMA; the channel ID is a parameter.
+        const [job] = await bigquery.createQueryJob({
+          query: `DELETE FROM \`${dataset}.${table}\` WHERE channel_id = @channelId`,
+          params: { channelId },
+          location: env.BQ_LOCATION,
+        });
+        await job.getQueryResults();
+        const [metadata] = await job.getMetadata();
+        return [table, Number(metadata.statistics?.query?.numDmlAffectedRows ?? 0)] as const;
+      }),
+    ),
+  );
+  const deleted: Record<string, number> = Object.fromEntries(counts);
   return deleted;
 }
 

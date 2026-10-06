@@ -18,7 +18,7 @@ describe("parseMyChannel", () => {
     expect(parseMyChannel(fixture)).toEqual({
       id: "UCaBcDeFgHiJkLmNoPqRsTuV",
       title: "Fixture Channel",
-      thumbnailUrl: "https://yt3.ggpht.com/fixture=s800",
+      thumbnailUrl: "https://yt3.ggpht.com/fixture",
       subscriberCount: 8450,
       videoCount: 64,
       uploadsPlaylistId: "UUaBcDeFgHiJkLmNoPqRsTuV",
@@ -55,10 +55,23 @@ describe("parsePlaylistItems", () => {
     ),
   );
 
-  it("reads video IDs, titles and publish dates", () => {
-    expect(parsePlaylistItems(uploads)).toEqual([
-      { videoId: "fixtureVid1", title: "Fixture video one", publishedAt: "2026-09-28T14:00:00Z" },
-      { videoId: "fixtureVid2", title: "Private video", publishedAt: null },
+  it("reads video IDs, titles and publish dates from a recorded response", () => {
+    expect(parsePlaylistItems(uploads)).toEqual(
+      [1, 2, 3, 4].map((n) => ({
+        videoId: `fixtureVid${n}`,
+        title: `Fixture video ${n}`,
+        publishedAt: "2026-09-28T14:00:00Z",
+      })),
+    );
+  });
+
+  it("reports a private video's missing publish date as null", () => {
+    const privateItem = {
+      snippet: { title: "Private video" },
+      contentDetails: { videoId: "fixtureVid9" },
+    };
+    expect(parsePlaylistItems({ items: [privateItem] })).toEqual([
+      { videoId: "fixtureVid9", title: "Private video", publishedAt: null },
     ]);
   });
 

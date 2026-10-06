@@ -94,7 +94,7 @@ describe("connectChannel", () => {
     expect(await channelDoc()).toMatchObject({
       userId: "111111111111111111111",
       title: "Fixture Channel",
-      thumbnailUrl: "https://yt3.ggpht.com/fixture=s800",
+      thumbnailUrl: "https://yt3.ggpht.com/fixture",
       subscriberCount: 8450,
       videoCount: 64,
       uploadsPlaylistId: "UUaBcDeFgHiJkLmNoPqRsTuV",

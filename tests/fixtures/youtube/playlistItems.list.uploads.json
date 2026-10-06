@@ -1,36 +1,214 @@
 {
   "kind": "youtube#playlistItemListResponse",
-  "etag": "fixture-etag-playlist",
-  "nextPageToken": "EAAaBlBUOkNBVQ",
-  "pageInfo": { "totalResults": 64, "resultsPerPage": 2 },
+  "etag": "fixture-etag",
   "items": [
     {
       "kind": "youtube#playlistItem",
-      "etag": "fixture-etag-item-1",
+      "etag": "fixture-etag",
       "id": "VVVhQmNEZUZnSGlKa0xtTm9QcVJzVHVWLmZpeHR1cmVWaWQx",
       "snippet": {
-        "publishedAt": "2026-09-28T14:00:05Z",
+        "publishedAt": "2026-09-28T14:00:00Z",
         "channelId": "UCaBcDeFgHiJkLmNoPqRsTuV",
-        "title": "Fixture video one",
+        "title": "Fixture video 1",
+        "description": "",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/fixtureVid1/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/fixtureVid1/default.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/fixtureVid1/default.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/fixtureVid1/default.jpg",
+            "width": 640,
+            "height": 480
+          },
+          "maxres": {
+            "url": "https://i.ytimg.com/vi/fixtureVid1/default.jpg",
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "channelTitle": "Fixture Channel",
         "playlistId": "UUaBcDeFgHiJkLmNoPqRsTuV",
         "position": 0,
-        "resourceId": { "kind": "youtube#video", "videoId": "fixtureVid1" }
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "fixtureVid1"
+        },
+        "videoOwnerChannelTitle": "Fixture Channel",
+        "videoOwnerChannelId": "UCaBcDeFgHiJkLmNoPqRsTuV"
       },
-      "contentDetails": { "videoId": "fixtureVid1", "videoPublishedAt": "2026-09-28T14:00:00Z" }
+      "contentDetails": {
+        "videoId": "fixtureVid1",
+        "videoPublishedAt": "2026-09-28T14:00:00Z"
+      }
     },
     {
       "kind": "youtube#playlistItem",
-      "etag": "fixture-etag-item-2",
+      "etag": "fixture-etag",
       "id": "VVVhQmNEZUZnSGlKa0xtTm9QcVJzVHVWLmZpeHR1cmVWaWQy",
       "snippet": {
-        "publishedAt": "2026-09-14T09:30:02Z",
+        "publishedAt": "2026-09-28T14:00:00Z",
         "channelId": "UCaBcDeFgHiJkLmNoPqRsTuV",
-        "title": "Private video",
+        "title": "Fixture video 2",
+        "description": "",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/fixtureVid2/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/fixtureVid2/default.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/fixtureVid2/default.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/fixtureVid2/default.jpg",
+            "width": 640,
+            "height": 480
+          },
+          "maxres": {
+            "url": "https://i.ytimg.com/vi/fixtureVid2/default.jpg",
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "channelTitle": "Fixture Channel",
         "playlistId": "UUaBcDeFgHiJkLmNoPqRsTuV",
         "position": 1,
-        "resourceId": { "kind": "youtube#video", "videoId": "fixtureVid2" }
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "fixtureVid2"
+        },
+        "videoOwnerChannelTitle": "Fixture Channel",
+        "videoOwnerChannelId": "UCaBcDeFgHiJkLmNoPqRsTuV"
       },
-      "contentDetails": { "videoId": "fixtureVid2" }
+      "contentDetails": {
+        "videoId": "fixtureVid2",
+        "videoPublishedAt": "2026-09-28T14:00:00Z"
+      }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "fixture-etag",
+      "id": "VVVhQmNEZUZnSGlKa0xtTm9QcVJzVHVWLmZpeHR1cmVWaWQz",
+      "snippet": {
+        "publishedAt": "2026-09-28T14:00:00Z",
+        "channelId": "UCaBcDeFgHiJkLmNoPqRsTuV",
+        "title": "Fixture video 3",
+        "description": "",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/fixtureVid3/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/fixtureVid3/default.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/fixtureVid3/default.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/fixtureVid3/default.jpg",
+            "width": 640,
+            "height": 480
+          },
+          "maxres": {
+            "url": "https://i.ytimg.com/vi/fixtureVid3/default.jpg",
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "channelTitle": "Fixture Channel",
+        "playlistId": "UUaBcDeFgHiJkLmNoPqRsTuV",
+        "position": 2,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "fixtureVid3"
+        },
+        "videoOwnerChannelTitle": "Fixture Channel",
+        "videoOwnerChannelId": "UCaBcDeFgHiJkLmNoPqRsTuV"
+      },
+      "contentDetails": {
+        "videoId": "fixtureVid3",
+        "videoPublishedAt": "2026-09-28T14:00:00Z"
+      }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "fixture-etag",
+      "id": "VVVhQmNEZUZnSGlKa0xtTm9QcVJzVHVWLmZpeHR1cmVWaWQ0",
+      "snippet": {
+        "publishedAt": "2026-09-28T14:00:00Z",
+        "channelId": "UCaBcDeFgHiJkLmNoPqRsTuV",
+        "title": "Fixture video 4",
+        "description": "",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/fixtureVid4/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/fixtureVid4/default.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/fixtureVid4/default.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/fixtureVid4/default.jpg",
+            "width": 640,
+            "height": 480
+          },
+          "maxres": {
+            "url": "https://i.ytimg.com/vi/fixtureVid4/default.jpg",
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "channelTitle": "Fixture Channel",
+        "playlistId": "UUaBcDeFgHiJkLmNoPqRsTuV",
+        "position": 3,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "fixtureVid4"
+        },
+        "videoOwnerChannelTitle": "Fixture Channel",
+        "videoOwnerChannelId": "UCaBcDeFgHiJkLmNoPqRsTuV"
+      },
+      "contentDetails": {
+        "videoId": "fixtureVid4",
+        "videoPublishedAt": "2026-09-28T14:00:00Z"
+      }
     }
-  ]
+  ],
+  "pageInfo": {
+    "totalResults": 4,
+    "resultsPerPage": 5
+  }
 }
