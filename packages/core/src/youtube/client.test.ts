@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { parseMyChannel } from "./client";
+import { parseMyChannel, parsePlaylistItems } from "./client";
 
 const fixture = JSON.parse(
   readFileSync(
@@ -41,5 +41,28 @@ describe("parseMyChannel", () => {
   it("rejects a response missing the uploads playlist", () => {
     const [channel] = fixture.items;
     expect(() => parseMyChannel({ items: [{ ...channel, contentDetails: {} }] })).toThrow();
+  });
+});
+
+describe("parsePlaylistItems", () => {
+  const uploads: unknown = JSON.parse(
+    readFileSync(
+      new URL(
+        "../../../../tests/fixtures/youtube/playlistItems.list.uploads.json",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+
+  it("reads video IDs, titles and publish dates", () => {
+    expect(parsePlaylistItems(uploads)).toEqual([
+      { videoId: "fixtureVid1", title: "Fixture video one", publishedAt: "2026-09-28T14:00:00Z" },
+      { videoId: "fixtureVid2", title: "Private video", publishedAt: null },
+    ]);
+  });
+
+  it("returns an empty list for an empty playlist", () => {
+    expect(parsePlaylistItems({ kind: "youtube#playlistItemListResponse" })).toEqual([]);
   });
 });

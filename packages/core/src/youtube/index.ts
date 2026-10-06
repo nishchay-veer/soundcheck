@@ -1,2 +1,3 @@
-// YouTube API clients and pure response parsers.
+// YouTube API clients, credentials and pure response parsers.
+export * from "./auth";
 export * from "./client";

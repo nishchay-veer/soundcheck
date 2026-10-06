@@ -1,9 +1,9 @@
 import type { Logger } from "pino";
 import { encryptRefreshToken } from "../crypto/tokens";
-import { ChannelOwnedError, MissingScopesError, NoChannelError } from "../errors";
+import { ChannelOwnedError, MissingScopesError, NoChannelError, NotFoundError } from "../errors";
 import { getFirestore } from "../gcp";
 import { childLogger, logger as rootLogger } from "../logger";
-import { COLLECTIONS, channelDocSchema, userDocSchema } from "../schemas";
+import { COLLECTIONS, channelDocSchema, userDocSchema, type Channel } from "../schemas";
 import { accessTokenAuth, listMyChannels, parseMyChannel } from "../youtube/client";
 
 /** Both are required; users can untick either one on the consent screen. */
@@ -130,4 +130,14 @@ export async function startChannelBuild(
   childLogger({ channel_id: channelId, stage: "build" }, log).info(
     "channel build not started: Workflows are wired in Phase 10",
   );
+}
+
+/**
+ * Loads a channel with no ownership check, for pipeline jobs and other server
+ * code acting for the channel itself. Request paths use requireChannel().
+ */
+export async function loadChannel(channelId: string): Promise<Channel> {
+  const snapshot = await getFirestore().collection(COLLECTIONS.channels).doc(channelId).get();
+  if (!snapshot.exists) throw new NotFoundError("channel");
+  return { id: channelId, ...channelDocSchema.parse(snapshot.data()) };
 }

@@ -1,0 +1,36 @@
+{
+  "kind": "youtube#playlistItemListResponse",
+  "etag": "fixture-etag-playlist",
+  "nextPageToken": "EAAaBlBUOkNBVQ",
+  "pageInfo": { "totalResults": 64, "resultsPerPage": 2 },
+  "items": [
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "fixture-etag-item-1",
+      "id": "VVVhQmNEZUZnSGlKa0xtTm9QcVJzVHVWLmZpeHR1cmVWaWQx",
+      "snippet": {
+        "publishedAt": "2026-09-28T14:00:05Z",
+        "channelId": "UCaBcDeFgHiJkLmNoPqRsTuV",
+        "title": "Fixture video one",
+        "playlistId": "UUaBcDeFgHiJkLmNoPqRsTuV",
+        "position": 0,
+        "resourceId": { "kind": "youtube#video", "videoId": "fixtureVid1" }
+      },
+      "contentDetails": { "videoId": "fixtureVid1", "videoPublishedAt": "2026-09-28T14:00:00Z" }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "fixture-etag-item-2",
+      "id": "VVVhQmNEZUZnSGlKa0xtTm9QcVJzVHVWLmZpeHR1cmVWaWQy",
+      "snippet": {
+        "publishedAt": "2026-09-14T09:30:02Z",
+        "channelId": "UCaBcDeFgHiJkLmNoPqRsTuV",
+        "title": "Private video",
+        "playlistId": "UUaBcDeFgHiJkLmNoPqRsTuV",
+        "position": 1,
+        "resourceId": { "kind": "youtube#video", "videoId": "fixtureVid2" }
+      },
+      "contentDetails": { "videoId": "fixtureVid2" }
+    }
+  ]
+}

@@ -34,3 +34,18 @@ export const youtubeChannelListSchema = z.object({
   items: z.array(youtubeChannelSchema).optional(),
 });
 export type YoutubeChannelList = z.infer<typeof youtubeChannelListSchema>;
+
+export const youtubePlaylistItemSchema = z.object({
+  snippet: z.object({ title: z.string() }),
+  contentDetails: z.object({
+    videoId: z.string(),
+    /** Absent for private or deleted videos. */
+    videoPublishedAt: z.iso.datetime({ offset: true }).optional(),
+  }),
+});
+
+/** `playlistItems.list` response. */
+export const youtubePlaylistItemListSchema = z.object({
+  items: z.array(youtubePlaylistItemSchema).optional(),
+  nextPageToken: z.string().optional(),
+});

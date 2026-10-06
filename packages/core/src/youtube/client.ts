@@ -1,7 +1,7 @@
 import { youtube, type youtube_v3 } from "@googleapis/youtube";
 import { OAuth2Client } from "google-auth-library";
 import { withRetry } from "../retry";
-import { youtubeChannelListSchema } from "../schemas";
+import { youtubeChannelListSchema, youtubePlaylistItemListSchema } from "../schemas";
 
 export function youtubeClient(auth: OAuth2Client): youtube_v3.Youtube {
   return youtube({ version: "v3", auth });
@@ -53,4 +53,19 @@ export function parseMyChannel(body: unknown): ChannelInfo | null {
     videoCount: Number(channel.statistics.videoCount),
     uploadsPlaylistId: channel.contentDetails.relatedPlaylists.uploads,
   };
+}
+
+export interface PlaylistVideo {
+  videoId: string;
+  title: string;
+  publishedAt: string | null;
+}
+
+/** Pure parser for a `playlistItems.list` response. */
+export function parsePlaylistItems(body: unknown): PlaylistVideo[] {
+  return (youtubePlaylistItemListSchema.parse(body).items ?? []).map((item) => ({
+    videoId: item.contentDetails.videoId,
+    title: item.snippet.title,
+    publishedAt: item.contentDetails.videoPublishedAt ?? null,
+  }));
 }
