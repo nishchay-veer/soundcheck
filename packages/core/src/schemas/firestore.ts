@@ -4,6 +4,8 @@ import { z } from "zod";
 export const COLLECTIONS = {
   users: "users",
   channels: "channels",
+  /** Under `channels/{channelId}`: one marker per finished pipeline step. */
+  steps: "steps",
 } as const;
 
 /**

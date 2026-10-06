@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Creates the soundcheck dataset in US, applies every DDL file in bigquery/,
-# and grants sa-pipeline dataEditor on the dataset. Safe to re-run: every
-# DDL statement is CREATE TABLE IF NOT EXISTS.
+# then every migration in bigquery/migrations/ in name order, and grants
+# dataEditor on the dataset. Safe to re-run: tables are CREATE TABLE IF NOT
+# EXISTS and migrations are written to be idempotent (ADD COLUMN IF NOT EXISTS).
 # shellcheck source=lib.sh
 source "$(dirname "$0")/lib.sh"
 
@@ -14,10 +15,11 @@ else
   log "created: dataset ${BQ_DATASET} (${BQ_LOCATION})"
 fi
 
-for ddl in "$INFRA_DIR"/bigquery/*.sql; do
-  sql="$(sed -e "s/{{project}}/${PROJECT_ID}/g" -e "s/{{dataset}}/${BQ_DATASET}/g" "$ddl")"
+for ddl in "$INFRA_DIR"/bigquery/*.sql "$INFRA_DIR"/bigquery/migrations/*.sql; do
+  # Full-line comments are dropped: bq reads a query starting with "--" as a flag.
+  sql="$(sed -e '/^[[:space:]]*--/d' -e "s/{{project}}/${PROJECT_ID}/g" -e "s/{{dataset}}/${BQ_DATASET}/g" "$ddl")"
   bq_ query --nouse_legacy_sql --quiet "$sql" >/dev/null
-  log "applied: $(basename "$ddl")"
+  log "applied: ${ddl#"$INFRA_DIR"/bigquery/}"
 done
 
 # sa-pipeline writes training data; sa-web deletes a channel's rows on request.

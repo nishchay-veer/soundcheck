@@ -9,6 +9,7 @@
     "./data": "./src/data/index.ts",
     "./env": "./src/env.ts",
     "./features": "./src/features/index.ts",
+    "./jobs": "./src/jobs/index.ts",
     "./model": "./src/model/index.ts",
     "./schemas": "./src/schemas/index.ts",
     "./youtube": "./src/youtube/index.ts"

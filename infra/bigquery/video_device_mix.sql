@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `{{project}}.{{dataset}}.video_device_mix` (
   raw_type STRING NOT NULL,
   bucket STRING NOT NULL,
   views INT64,
+  engaged_views INT64,
   share FLOAT64,
   as_of DATE NOT NULL
 )

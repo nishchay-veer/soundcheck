@@ -1,0 +1,42 @@
+import { getFirestore } from "../gcp";
+import { COLLECTIONS, channelIdSchema, stepMarkerSchema, type StepMarker } from "../schemas";
+
+/** What makes two runs of a step the same work (CLAUDE.md rule 7). */
+export interface StepKey {
+  /** The data date the step covers, `YYYY-MM-DD`. */
+  asOf: string;
+  /** The code version that produced it, from `versions.ts`. */
+  version: string;
+}
+
+function stepRef(channelId: string, step: string) {
+  channelIdSchema.parse(channelId);
+  if (!/^[\w-]+$/.test(step)) throw new RangeError(`Invalid step name: ${step}`);
+  return getFirestore()
+    .collection(COLLECTIONS.channels)
+    .doc(channelId)
+    .collection(COLLECTIONS.steps)
+    .doc(step);
+}
+
+/** True when `step` already finished for this channel with the same data date and version. */
+export async function isStepDone(channelId: string, step: string, key: StepKey): Promise<boolean> {
+  const snapshot = await stepRef(channelId, step).get();
+  const marker = stepMarkerSchema.safeParse(snapshot.data());
+  return marker.success && marker.data.asOf === key.asOf && marker.data.version === key.version;
+}
+
+/**
+ * Records that `step` finished, at `channels/{channelId}/steps/{step}`, with
+ * the row count written to each table. Under the channel document, so a
+ * channel deletion removes it.
+ */
+export async function markStepDone(
+  channelId: string,
+  step: string,
+  { asOf, version, rows }: StepKey & { rows: Record<string, number> },
+): Promise<StepMarker> {
+  const marker = stepMarkerSchema.parse({ asOf, version, rows, finishedAt: new Date() });
+  await stepRef(channelId, step).set(marker);
+  return marker;
+}

@@ -19,6 +19,20 @@ export type ChannelStatus = z.infer<typeof channelStatusSchema>;
 /** Progress of the unattended channel build (wired to Workflows in Phase 10). */
 export const buildStateSchema = z.enum(["not_started", "queued", "running", "succeeded", "failed"]);
 
+/** `build.progress`: how far the current pipeline stage has got, written at most every 5 s. */
+export const buildProgressSchema = z
+  .object({
+    stage: z.string().min(1),
+    done: z.number().int().nonnegative(),
+    total: z.number().int().nonnegative(),
+    updatedAt: firestoreDate,
+  })
+  .refine((progress) => progress.done <= progress.total, {
+    message: "done must not exceed total",
+    path: ["done"],
+  });
+export type BuildProgress = z.infer<typeof buildProgressSchema>;
+
 /**
  * `channels/{channelId}`. The refresh token is stored only as KMS ciphertext
  * (base64), encrypted with the owner's `userId` as additional authenticated data.
@@ -35,9 +49,22 @@ export const channelDocSchema = z.object({
   tokenCiphertext: z.string().min(1),
   tokenScope: z.string(),
   connectedAt: firestoreDate,
-  build: z.object({ state: buildStateSchema }),
+  build: z.object({ state: buildStateSchema, progress: buildProgressSchema.optional() }),
 });
 export type ChannelDoc = z.infer<typeof channelDocSchema>;
 
 /** A channel document together with its ID. */
 export type Channel = ChannelDoc & { id: string };
+
+/**
+ * `channels/{channelId}/steps/{step}`: the last finished run of a pipeline
+ * step. A re-run with the same `asOf` and `version` skips the step (rule 7).
+ */
+export const stepMarkerSchema = z.object({
+  asOf: z.iso.date(),
+  version: z.string().min(1),
+  /** Rows written per table. */
+  rows: z.record(z.string(), z.number().int().nonnegative()),
+  finishedAt: firestoreDate,
+});
+export type StepMarker = z.infer<typeof stepMarkerSchema>;

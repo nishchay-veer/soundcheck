@@ -74,10 +74,25 @@ export class FakeDocRef {
     this.db.docs.set(this.path, { ...base, ...structuredClone(data) });
   }
 
+  /** Like Firestore, a dotted key (`"build.progress"`) sets one nested field. */
   async update(data: Data): Promise<void> {
     const existing = this.db.docs.get(this.path);
     if (existing === undefined) throw new Error(`5 NOT_FOUND: No document to update: ${this.path}`);
-    this.db.docs.set(this.path, { ...existing, ...structuredClone(data) });
+    const next = structuredClone(existing);
+    for (const [key, value] of Object.entries(data)) {
+      const parts = key.split(".");
+      const field = parts.pop() as string;
+      let target = next;
+      for (const part of parts) {
+        const child = target[part];
+        target = target[part] =
+          typeof child === "object" && child !== null && !(child instanceof Date)
+            ? (child as Data)
+            : {};
+      }
+      target[field] = structuredClone(value);
+    }
+    this.db.docs.set(this.path, next);
   }
 
   async delete(): Promise<void> {

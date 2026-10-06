@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS `{{project}}.{{dataset}}.video_stats` (
   video_id STRING NOT NULL,
   subscribed_status STRING NOT NULL,
   views INT64,
+  engaged_views INT64,
   estimated_minutes_watched FLOAT64,
   average_view_duration_s FLOAT64,
   average_view_percentage FLOAT64,
