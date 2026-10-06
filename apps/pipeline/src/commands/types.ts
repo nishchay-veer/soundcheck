@@ -1,11 +1,17 @@
+import type { Command } from "commander";
+
 export interface PipelineCommand {
   name: string;
   description: string;
-  run: () => void | Promise<void>;
+  /** Adds the command's options, subcommands and action. */
+  configure: (command: Command) => void;
 }
 
-export function notImplemented(name: string): () => void {
-  return () => {
-    process.stdout.write(`${name}: not implemented\n`);
+/** For commands a later phase builds: prints "<name>: not implemented". */
+export function notImplemented(name: string): (command: Command) => void {
+  return (command) => {
+    command.action(() => {
+      process.stdout.write(`${name}: not implemented\n`);
+    });
   };
 }

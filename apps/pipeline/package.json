@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "soundcheck": "tsx src/main.ts",
+    "soundcheck": "tsx --env-file-if-exists=../../.env src/main.ts",
     "lint": "eslint --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --project unit",

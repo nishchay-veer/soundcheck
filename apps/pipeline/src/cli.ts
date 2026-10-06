@@ -6,10 +6,7 @@ export function createProgram(): Command {
     .description("Soundcheck batch pipeline, run as Cloud Run Jobs")
     .showHelpAfterError();
   for (const command of commands) {
-    program
-      .command(command.name)
-      .description(command.description)
-      .action(() => command.run());
+    command.configure(program.command(command.name).description(command.description));
   }
   return program;
 }

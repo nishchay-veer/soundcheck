@@ -1,0 +1,301 @@
+{
+  "kind": "youtube#videoListResponse",
+  "etag": "fixture-etag",
+  "items": [
+    {
+      "kind": "youtube#video",
+      "etag": "fixture-etag",
+      "id": "fixtureVid1",
+      "snippet": {
+        "publishedAt": "2026-09-28T14:00:00Z",
+        "channelId": "UCaBcDeFgHiJkLmNoPqRsTuV",
+        "title": "Fixture video 1",
+        "description": "",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/fixtureVid1/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/fixtureVid1/default.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/fixtureVid1/default.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/fixtureVid1/default.jpg",
+            "width": 640,
+            "height": 480
+          },
+          "maxres": {
+            "url": "https://i.ytimg.com/vi/fixtureVid1/default.jpg",
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "channelTitle": "Fixture Channel",
+        "tags": [
+          "fixture tag"
+        ],
+        "categoryId": "22",
+        "liveBroadcastContent": "none",
+        "defaultLanguage": "en",
+        "localized": {
+          "title": "Fixture video 1",
+          "description": ""
+        }
+      },
+      "contentDetails": {
+        "duration": "PT1M28S",
+        "dimension": "2d",
+        "definition": "hd",
+        "caption": "false",
+        "licensedContent": false,
+        "contentRating": {},
+        "projection": "rectangular",
+        "hasCustomThumbnail": true
+      },
+      "status": {
+        "uploadStatus": "processed",
+        "privacyStatus": "public",
+        "license": "youtube",
+        "embeddable": true,
+        "publicStatsViewable": true,
+        "madeForKids": false,
+        "selfDeclaredMadeForKids": false
+      },
+      "statistics": {
+        "viewCount": "1234567",
+        "likeCount": "120",
+        "dislikeCount": "0",
+        "favoriteCount": "0",
+        "commentCount": "8"
+      }
+    },
+    {
+      "kind": "youtube#video",
+      "etag": "fixture-etag",
+      "id": "fixtureVid2",
+      "snippet": {
+        "publishedAt": "2026-09-28T14:00:00Z",
+        "channelId": "UCaBcDeFgHiJkLmNoPqRsTuV",
+        "title": "Fixture video 2",
+        "description": "",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/fixtureVid2/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/fixtureVid2/default.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/fixtureVid2/default.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/fixtureVid2/default.jpg",
+            "width": 640,
+            "height": 480
+          },
+          "maxres": {
+            "url": "https://i.ytimg.com/vi/fixtureVid2/default.jpg",
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "channelTitle": "Fixture Channel",
+        "categoryId": "22",
+        "liveBroadcastContent": "none",
+        "defaultLanguage": "en",
+        "localized": {
+          "title": "Fixture video 2",
+          "description": ""
+        }
+      },
+      "contentDetails": {
+        "duration": "PT31S",
+        "dimension": "2d",
+        "definition": "hd",
+        "caption": "false",
+        "licensedContent": false,
+        "contentRating": {},
+        "projection": "rectangular",
+        "hasCustomThumbnail": false
+      },
+      "status": {
+        "uploadStatus": "processed",
+        "privacyStatus": "public",
+        "license": "youtube",
+        "embeddable": true,
+        "publicStatsViewable": true,
+        "madeForKids": false,
+        "selfDeclaredMadeForKids": false
+      },
+      "statistics": {
+        "viewCount": "1234567",
+        "likeCount": "120",
+        "dislikeCount": "0",
+        "favoriteCount": "0",
+        "commentCount": "8"
+      }
+    },
+    {
+      "kind": "youtube#video",
+      "etag": "fixture-etag",
+      "id": "fixtureVid3",
+      "snippet": {
+        "publishedAt": "2026-09-28T14:00:00Z",
+        "channelId": "UCaBcDeFgHiJkLmNoPqRsTuV",
+        "title": "Fixture video 3",
+        "description": "",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/fixtureVid3/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/fixtureVid3/default.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/fixtureVid3/default.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/fixtureVid3/default.jpg",
+            "width": 640,
+            "height": 480
+          },
+          "maxres": {
+            "url": "https://i.ytimg.com/vi/fixtureVid3/default.jpg",
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "channelTitle": "Fixture Channel",
+        "categoryId": "22",
+        "liveBroadcastContent": "none",
+        "defaultLanguage": "en",
+        "localized": {
+          "title": "Fixture video 3",
+          "description": ""
+        }
+      },
+      "contentDetails": {
+        "duration": "PT3M42S",
+        "dimension": "2d",
+        "definition": "hd",
+        "caption": "false",
+        "licensedContent": false,
+        "contentRating": {},
+        "projection": "rectangular",
+        "hasCustomThumbnail": true
+      },
+      "status": {
+        "uploadStatus": "processed",
+        "privacyStatus": "public",
+        "license": "youtube",
+        "embeddable": true,
+        "publicStatsViewable": true,
+        "madeForKids": false,
+        "selfDeclaredMadeForKids": false
+      },
+      "statistics": {
+        "viewCount": "1234567",
+        "likeCount": "120",
+        "dislikeCount": "0",
+        "favoriteCount": "0",
+        "commentCount": "8"
+      }
+    },
+    {
+      "kind": "youtube#video",
+      "etag": "fixture-etag",
+      "id": "fixtureVid4",
+      "snippet": {
+        "publishedAt": "2026-09-28T14:00:00Z",
+        "channelId": "UCaBcDeFgHiJkLmNoPqRsTuV",
+        "title": "Fixture video 4",
+        "description": "",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/fixtureVid4/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/fixtureVid4/default.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/fixtureVid4/default.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/fixtureVid4/default.jpg",
+            "width": 640,
+            "height": 480
+          },
+          "maxres": {
+            "url": "https://i.ytimg.com/vi/fixtureVid4/default.jpg",
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "channelTitle": "Fixture Channel",
+        "categoryId": "22",
+        "liveBroadcastContent": "none",
+        "defaultLanguage": "en",
+        "localized": {
+          "title": "Fixture video 4",
+          "description": ""
+        }
+      },
+      "contentDetails": {
+        "duration": "PT4M22S",
+        "dimension": "2d",
+        "definition": "hd",
+        "caption": "false",
+        "licensedContent": false,
+        "contentRating": {},
+        "projection": "rectangular",
+        "hasCustomThumbnail": true
+      },
+      "status": {
+        "uploadStatus": "processed",
+        "privacyStatus": "public",
+        "license": "youtube",
+        "embeddable": true,
+        "publicStatsViewable": true,
+        "madeForKids": false,
+        "selfDeclaredMadeForKids": false
+      },
+      "statistics": {
+        "viewCount": "1234567",
+        "likeCount": "120",
+        "dislikeCount": "1",
+        "favoriteCount": "0",
+        "commentCount": "8"
+      }
+    }
+  ],
+  "pageInfo": {
+    "totalResults": 4,
+    "resultsPerPage": 4
+  }
+}

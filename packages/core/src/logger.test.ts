@@ -1,6 +1,6 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { REDACTED, childLogger, redact } from "./logger";
+import { REDACTED, childLogger, createLogger, redact } from "./logger";
 import { memoryLogger } from "./test-utils";
 
 describe("logger", () => {
@@ -95,6 +95,22 @@ describe("logger", () => {
       run_id: "r1",
       api_token: REDACTED,
       message: "bound",
+    });
+  });
+
+  it("does not repeat a key the parent already binds", () => {
+    // Read the raw JSON: parsing it would hide a duplicate key.
+    const raw: string[] = [];
+    const root = createLogger({ destination: { write: (line: string) => raw.push(line) } });
+    const parent = childLogger({ channel_id: "UC123", run_id: "r1" }, root);
+    childLogger({ channel_id: "UC123", run_id: "r1", table: "videos" }, parent).info("x");
+
+    expect(raw[0]?.match(/"channel_id"/g)).toHaveLength(1);
+    expect(raw[0]?.match(/"run_id"/g)).toHaveLength(1);
+    expect(JSON.parse(raw[0] ?? "")).toMatchObject({
+      channel_id: "UC123",
+      run_id: "r1",
+      table: "videos",
     });
   });
 

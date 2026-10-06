@@ -1,5 +1,5 @@
 /**
- * Records YouTube API responses for a connected channel into
+ * Records YouTube Data API and Analytics responses for a connected channel into
  * tests/fixtures/youtube, anonymized: every field and its type stay exactly as
  * Google sent them, while IDs, titles, descriptions, URLs, etags, dates and
  * counts are replaced with fixture values. Uses the pipeline's credentials path.
@@ -10,7 +10,17 @@ import { writeFileSync } from "node:fs";
 import { withRetry } from "@soundcheck/core";
 import { loadChannel } from "@soundcheck/core/data";
 import { channelIdSchema } from "@soundcheck/core/schemas";
-import { credentialsForChannel, youtubeClient } from "@soundcheck/core/youtube";
+import {
+  analyticsEndDate,
+  contentTypeQuery,
+  credentialsForChannel,
+  fetchVideos,
+  parseVideos,
+  queryReport,
+  videoBatches,
+  videosRequest,
+  youtubeClient,
+} from "@soundcheck/core/youtube";
 
 const channelId = process.argv[2] ?? "";
 if (!channelIdSchema.safeParse(channelId).success) {
@@ -32,7 +42,8 @@ function anonymize(value: unknown, key = "", context: { video?: string } = {}): 
   if (value && typeof value === "object") {
     const record = value as Record<string, unknown>;
     const resource = record.resourceId as { videoId?: string } | undefined;
-    const real = resource?.videoId ?? (record.videoId as string | undefined);
+    const ownId = record.kind === "youtube#video" ? (record.id as string) : undefined;
+    const real = resource?.videoId ?? (record.videoId as string | undefined) ?? ownId;
     const next = real ? { video: fixtureVideoId(real) } : context;
     return Object.fromEntries(Object.entries(record).map(([k, v]) => [k, anonymize(v, k, next)]));
   }
@@ -58,6 +69,19 @@ function anonymize(value: unknown, key = "", context: { video?: string } = {}): 
       return "2026-09-28T14:00:00Z";
     case "viewCount":
       return "1234567";
+    case "likeCount":
+      return "120";
+    case "commentCount":
+      return "8";
+    case "tags":
+      return "fixture tag";
+    case "actualStartTime":
+    case "actualEndTime":
+    case "scheduledStartTime":
+    case "scheduledEndTime":
+      return "2026-09-28T14:00:00Z";
+    case "activeLiveChatId":
+      return "fixture-live-chat";
     case "subscriberCount":
       return "8450";
     case "videoCount":
@@ -89,7 +113,8 @@ function rewriteIds(value: string): string {
 }
 
 const channel = await loadChannel(channelId);
-const youtube = youtubeClient(await credentialsForChannel(channelId));
+const auth = await credentialsForChannel(channelId);
+const youtube = youtubeClient(auth);
 const channels = await withRetry(
   () => youtube.channels.list({ part: ["snippet", "statistics", "contentDetails"], mine: true }),
   { operation: "youtube.channels.list" },
@@ -114,5 +139,14 @@ const write = (name: string, body: unknown) => {
 for (const item of uploads.data.items ?? []) {
   if (item.contentDetails?.videoId) fixtureVideoId(item.contentDetails.videoId);
 }
+const uploadIds = (uploads.data.items ?? []).flatMap((item) => item.contentDetails?.videoId ?? []);
+const videos =
+  uploadIds.length > 0 ? await fetchVideos(auth, videosRequest(uploadIds)) : { items: [] };
+// Analytics queries need the real publish dates, so they run before anonymizing.
+const [batch] = videoBatches(parseVideos(videos), analyticsEndDate());
+const contentTypes = batch ? await queryReport(auth, contentTypeQuery(batch)) : undefined;
+
 write("playlistItems.list.uploads.json", uploads.data);
 write("channels.list.mine.json", channels.data);
+write("videos.list.uploads.json", videos);
+if (contentTypes) write("reports.query.content-type.json", contentTypes);

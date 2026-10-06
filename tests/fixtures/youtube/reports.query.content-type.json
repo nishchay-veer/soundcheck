@@ -1,0 +1,42 @@
+{
+  "kind": "youtubeAnalytics#resultTable",
+  "columnHeaders": [
+    {
+      "name": "video",
+      "columnType": "DIMENSION",
+      "dataType": "STRING"
+    },
+    {
+      "name": "creatorContentType",
+      "columnType": "DIMENSION",
+      "dataType": "STRING"
+    },
+    {
+      "name": "views",
+      "columnType": "METRIC",
+      "dataType": "INTEGER"
+    }
+  ],
+  "rows": [
+    [
+      "fixtureVid3",
+      "videoOnDemand",
+      239
+    ],
+    [
+      "fixtureVid4",
+      "videoOnDemand",
+      314
+    ],
+    [
+      "fixtureVid1",
+      "videoOnDemand",
+      342
+    ],
+    [
+      "fixtureVid2",
+      "shorts",
+      386
+    ]
+  ]
+}

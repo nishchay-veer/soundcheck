@@ -2,3 +2,6 @@
 export * from "./analytics";
 export * from "./auth";
 export * from "./client";
+export * from "./duration";
+export * from "./reports";
+export * from "./videos";

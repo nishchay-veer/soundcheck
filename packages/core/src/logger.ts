@@ -7,6 +7,8 @@ import {
   type Logger,
 } from "pino";
 
+export type { Logger } from "pino";
+
 /** pino level → Cloud Logging severity. */
 const SEVERITY: Record<string, string> = {
   trace: "DEBUG",
@@ -86,8 +88,14 @@ export interface LogContext {
 /**
  * A logger that adds `context` to every line. Use this rather than `.child()`:
  * pino skips the bindings formatter for child loggers, so the context is
- * redacted here.
+ * redacted here. pino repeats a key bound twice in the JSON line, so keys the
+ * parent already binds to the same value are left out; bind a different value
+ * under a new key rather than rebinding one.
  */
 export function childLogger(context: LogContext, parent: Logger = logger): Logger {
-  return parent.child(redact(context) as LogContext);
+  const bound = parent.bindings();
+  const fresh = Object.entries(redact(context) as LogContext).filter(
+    ([key, value]) => bound[key] !== value,
+  );
+  return parent.child(Object.fromEntries(fresh));
 }

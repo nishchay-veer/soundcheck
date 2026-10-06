@@ -47,10 +47,7 @@ export async function replaceChannelRows(input: ReplaceRowsInput): Promise<numbe
   }
 
   const env = pickServerEnv(["GCP_PROJECT_ID", "BQ_DATASET", "BQ_LOCATION", "GCS_RAW_BUCKET"]);
-  const log = childLogger(
-    { channel_id: channelId, stage: "load", run_id: runId, table },
-    input.log ?? rootLogger,
-  );
+  const log = childLogger({ channel_id: channelId, run_id: runId, table }, input.log ?? rootLogger);
   const bigquery = getBigQuery();
   const dataset = bigquery.dataset(env.BQ_DATASET);
   const target = `${env.GCP_PROJECT_ID}.${env.BQ_DATASET}.${table}`;

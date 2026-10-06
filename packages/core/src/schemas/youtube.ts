@@ -50,6 +50,40 @@ export const youtubePlaylistItemListSchema = z.object({
   nextPageToken: z.string().optional(),
 });
 
+const videoThumbnailsSchema = z.object({
+  default: thumbnailSchema.optional(),
+  medium: thumbnailSchema.optional(),
+  high: thumbnailSchema.optional(),
+  standard: thumbnailSchema.optional(),
+  maxres: thumbnailSchema.optional(),
+});
+
+/** One `videos.list` item with `part=snippet,contentDetails,statistics,status,liveStreamingDetails`. */
+export const youtubeVideoSchema = z.object({
+  id: z.string().min(1),
+  snippet: z.object({
+    publishedAt: z.iso.datetime({ offset: true }),
+    title: z.string(),
+    description: z.string().optional(),
+    thumbnails: videoThumbnailsSchema.optional(),
+    tags: z.array(z.string()).optional(),
+    categoryId: z.string().optional(),
+    defaultLanguage: z.string().optional(),
+    defaultAudioLanguage: z.string().optional(),
+  }),
+  contentDetails: z.object({ duration: z.string() }),
+  /** Absent counts are hidden by the owner; the owner normally sees them all. */
+  statistics: z.object({ viewCount: z.string().optional() }).optional(),
+  status: z.object({ privacyStatus: z.string() }).optional(),
+  /** Present for live streams and premieres, past or upcoming. */
+  liveStreamingDetails: z.object({}).optional(),
+});
+
+/** `videos.list` response. Deleted videos are simply missing from `items`. */
+export const youtubeVideoListSchema = z.object({
+  items: z.array(youtubeVideoSchema).optional(),
+});
+
 /**
  * YouTube Analytics `reports.query` result table. Columns list the requested
  * dimensions, then the metrics, in request order; `rows` is omitted when the
