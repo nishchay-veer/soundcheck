@@ -49,3 +49,20 @@ export const youtubePlaylistItemListSchema = z.object({
   items: z.array(youtubePlaylistItemSchema).optional(),
   nextPageToken: z.string().optional(),
 });
+
+/**
+ * YouTube Analytics `reports.query` result table. Columns list the requested
+ * dimensions, then the metrics, in request order; `rows` is omitted when the
+ * query matches no data.
+ */
+export const analyticsReportSchema = z.object({
+  columnHeaders: z.array(
+    z.object({
+      name: z.string().min(1),
+      columnType: z.enum(["DIMENSION", "METRIC"]),
+      dataType: z.string(),
+    }),
+  ),
+  rows: z.array(z.array(z.union([z.string(), z.number(), z.null()]))).nullish(),
+});
+export type AnalyticsReport = z.infer<typeof analyticsReportSchema>;

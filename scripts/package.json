@@ -7,6 +7,7 @@
     "vertex-smoke": "tsx --env-file-if-exists=../.env vertex-smoke.ts",
     "list-uploads": "tsx --env-file-if-exists=../.env list-uploads.ts",
     "record-fixtures": "tsx --env-file-if-exists=../.env record-fixtures.ts",
+    "probe-analytics": "tsx --env-file-if-exists=../.env probe-analytics.ts",
     "lint": "eslint --max-warnings 0",
     "typecheck": "tsc --noEmit"
   },

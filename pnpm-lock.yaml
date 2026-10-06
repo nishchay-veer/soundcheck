@@ -306,6 +306,9 @@ importers:
       '@googleapis/youtube':
         specifier: 40.0.0
         version: 40.0.0(supports-color@7.2.0)
+      '@googleapis/youtubeanalytics':
+        specifier: 11.0.1
+        version: 11.0.1(supports-color@7.2.0)
       google-auth-library:
         specifier: 11.1.0
         version: 11.1.0(supports-color@7.2.0)
@@ -982,6 +985,10 @@ packages:
 
   '@googleapis/youtube@40.0.0':
     resolution: {integrity: sha512-t6arIbY75ZxbryTCMkKiV2jCcRzHaUk/dS1RjR6HAewkbI3HobnlaSWqaxiQKRCxqswXq02aeBS8/I+dW10qvw==}
+    engines: {node: '>=22.0.0'}
+
+  '@googleapis/youtubeanalytics@11.0.1':
+    resolution: {integrity: sha512-ggliBmD0rnHQSb6jSeOYHqFWkLUa6Rim0HD9ITePTbkA5IspDidQBioJJADyiWMoCvFHBMpzg52EaUTCOPOFIQ==}
     engines: {node: '>=22.0.0'}
 
   '@grpc/grpc-js@1.14.5':
@@ -4141,6 +4148,12 @@ snapshots:
       - utf-8-validate
 
   '@googleapis/youtube@40.0.0(supports-color@7.2.0)':
+    dependencies:
+      googleapis-common: 9.1.0(supports-color@7.2.0)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@googleapis/youtubeanalytics@11.0.1(supports-color@7.2.0)':
     dependencies:
       googleapis-common: 9.1.0(supports-color@7.2.0)
     transitivePeerDependencies:
