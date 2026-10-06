@@ -1,2 +1,2 @@
-// Screen data functions: one Firestore document per screen. Built in a later phase.
-export {};
+// Server-side data functions. Every one takes the acting user's ID explicitly.
+export * from "./authz";

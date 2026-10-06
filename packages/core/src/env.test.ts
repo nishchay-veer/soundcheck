@@ -58,6 +58,16 @@ describe("server env", () => {
     expect(env.DEMO_CHANNEL_ID).toBeUndefined();
   });
 
+  it("does not require variables for phases that are not built yet", () => {
+    const later = ["IMAGEN_MODEL", "WORKFLOW_CHANNEL_BUILD", "WORKFLOW_SOUNDCHECK"];
+    const env = parseServerEnv(
+      Object.fromEntries(Object.entries(requiredVars).filter(([name]) => !later.includes(name))),
+    );
+    expect(env.IMAGEN_MODEL).toBeUndefined();
+    expect(env.WORKFLOW_CHANNEL_BUILD).toBeUndefined();
+    expect(env.WORKFLOW_SOUNDCHECK).toBeUndefined();
+  });
+
   it("treats an empty assignment as unset", () => {
     const env = parseServerEnv({ ...requiredVars, GCP_REGION: "", DEMO_CHANNEL_ID: "" });
     expect(env.GCP_REGION).toBe("us-central1");

@@ -35,9 +35,11 @@ export const serverEnvSchema = z.object({
   GEMINI_LOCATION: required.default("global"),
   GEMINI_MODEL: required,
   GEMINI_FLASH_MODEL: required,
-  IMAGEN_MODEL: required,
-  WORKFLOW_CHANNEL_BUILD: required,
-  WORKFLOW_SOUNDCHECK: required,
+  // Optional until the phases that use them: Imagen is a stretch goal and the
+  // workflows are wired in Phase 10. The code that needs them checks presence.
+  IMAGEN_MODEL: required.optional(),
+  WORKFLOW_CHANNEL_BUILD: required.optional(),
+  WORKFLOW_SOUNDCHECK: required.optional(),
   MIN_VIEWS: count.default(500),
   MIN_TRAIN_VIDEOS: count.default(30),
   DEMO_CHANNEL_ID: required.optional(),

@@ -1,0 +1,47 @@
+/**
+ * Errors with a meaning callers act on: sign-in maps them to explanation pages,
+ * route handlers map them to status codes.
+ */
+
+/** The user unticked one or both YouTube permissions on the consent screen. */
+export class MissingScopesError extends Error {
+  constructor(readonly missing: readonly string[]) {
+    super(`Missing required scopes: ${missing.join(", ")}`);
+    this.name = "MissingScopesError";
+  }
+}
+
+/** The Google account has no YouTube channel. */
+export class NoChannelError extends Error {
+  constructor() {
+    super("This Google account has no YouTube channel");
+    this.name = "NoChannelError";
+  }
+}
+
+/** The channel is already connected by a different user. */
+export class ChannelOwnedError extends Error {
+  constructor(readonly channelId: string) {
+    super(`Channel ${channelId} is connected to another account`);
+    this.name = "ChannelOwnedError";
+  }
+}
+
+/**
+ * The resource does not exist or belongs to someone else. Both cases look the
+ * same to the caller (404) so IDs cannot be probed.
+ */
+export class NotFoundError extends Error {
+  constructor(readonly resource: string) {
+    super(`${resource} not found`);
+    this.name = "NotFoundError";
+  }
+}
+
+/** Google rejected the channel's refresh token; the creator must reconnect. */
+export class ReauthRequiredError extends Error {
+  constructor(readonly channelId: string) {
+    super(`Channel ${channelId} needs to be reconnected`);
+    this.name = "ReauthRequiredError";
+  }
+}
