@@ -3,3 +3,4 @@ export * from "./channels";
 export * from "./firestore";
 export * from "./health";
 export * from "./users";
+export * from "./youtube";

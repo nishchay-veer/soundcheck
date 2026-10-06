@@ -4,12 +4,13 @@ import { KeyManagementServiceClient } from "@google-cloud/kms";
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 import { Storage } from "@google-cloud/storage";
 import { ExecutionsClient } from "@google-cloud/workflows";
-import { getEnv } from "./env";
+import { pickServerEnv } from "./env";
 
 /**
  * Lazy singletons for the Google Cloud clients. Nothing is constructed (and no
- * env is read) until a getter is first called. Tests swap in fakes with
- * `setClientOverride`.
+ * env is read) until a getter is first called. Each factory validates only the
+ * variables it uses, so pipeline jobs do not need the web app's auth secrets.
+ * Tests swap in fakes with `setClientOverride`.
  */
 export interface GcpClients {
   bigquery: BigQuery;
@@ -21,19 +22,21 @@ export interface GcpClients {
 }
 export type GcpClientName = keyof GcpClients;
 
+const projectId = (): string => pickServerEnv(["GCP_PROJECT_ID"]).GCP_PROJECT_ID;
+
 const factories: { [K in GcpClientName]: () => GcpClients[K] } = {
   bigquery: () => {
-    const env = getEnv();
+    const env = pickServerEnv(["GCP_PROJECT_ID", "BQ_LOCATION"]);
     return new BigQuery({ projectId: env.GCP_PROJECT_ID, location: env.BQ_LOCATION });
   },
   firestore: () => {
-    const env = getEnv();
+    const env = pickServerEnv(["GCP_PROJECT_ID", "FIRESTORE_DATABASE"]);
     return new Firestore({ projectId: env.GCP_PROJECT_ID, databaseId: env.FIRESTORE_DATABASE });
   },
-  storage: () => new Storage({ projectId: getEnv().GCP_PROJECT_ID }),
-  kms: () => new KeyManagementServiceClient({ projectId: getEnv().GCP_PROJECT_ID }),
-  workflowExecutions: () => new ExecutionsClient({ projectId: getEnv().GCP_PROJECT_ID }),
-  secretManager: () => new SecretManagerServiceClient({ projectId: getEnv().GCP_PROJECT_ID }),
+  storage: () => new Storage({ projectId: projectId() }),
+  kms: () => new KeyManagementServiceClient({ projectId: projectId() }),
+  workflowExecutions: () => new ExecutionsClient({ projectId: projectId() }),
+  secretManager: () => new SecretManagerServiceClient({ projectId: projectId() }),
 };
 
 const instances: Partial<GcpClients> = {};

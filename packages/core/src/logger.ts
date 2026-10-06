@@ -3,7 +3,7 @@ import {
   stdSerializers,
   stdTimeFunctions,
   type DestinationStream,
-  type Level,
+  type LevelWithSilent,
   type Logger,
 } from "pino";
 
@@ -49,7 +49,7 @@ export function redact(value: unknown, seen: WeakSet<object> = new WeakSet()): u
 }
 
 export interface LoggerOptions {
-  level?: Level;
+  level?: LevelWithSilent;
   /** Defaults to stdout. Tests pass an in-memory stream. */
   destination?: DestinationStream;
 }

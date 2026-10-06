@@ -24,24 +24,8 @@ describe("gcp clients", () => {
     expect(() => getFirestore()).toThrow(/Invalid server environment/);
   });
 
-  it("constructs each client once, on first use", () => {
+  it("constructs each client once, on first use, needing only the project ID", () => {
     vi.stubEnv("GCP_PROJECT_ID", "soundcheck-test");
-    for (const name of [
-      "GCS_RAW_BUCKET",
-      "GCS_UPLOADS_BUCKET",
-      "GCS_MEDIA_BUCKET",
-      "KMS_KEY_NAME",
-      "AUTH_GOOGLE_ID",
-      "AUTH_GOOGLE_SECRET",
-      "AUTH_SECRET",
-      "GEMINI_MODEL",
-      "GEMINI_FLASH_MODEL",
-      "IMAGEN_MODEL",
-      "WORKFLOW_CHANNEL_BUILD",
-      "WORKFLOW_SOUNDCHECK",
-    ]) {
-      vi.stubEnv(name, "x");
-    }
 
     const storage = getStorage();
     expect(storage).toBeInstanceOf(Storage);

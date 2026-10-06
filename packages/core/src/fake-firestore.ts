@@ -15,6 +15,14 @@ export class FakeFirestore {
     return new FakeCollection(this, path);
   }
 
+  /** Runs `fn`, then applies its queued writes, as a committed transaction would. */
+  async runTransaction<T>(fn: (tx: FakeTransaction) => Promise<T>): Promise<T> {
+    const tx = new FakeTransaction();
+    const result = await fn(tx);
+    for (const write of tx.writes) await write();
+    return result;
+  }
+
   asFirestore(): Firestore {
     return this as unknown as Firestore;
   }
@@ -67,5 +75,18 @@ export class FakeDocRef {
 
   async delete(): Promise<void> {
     this.db.docs.delete(this.path);
+  }
+}
+
+export class FakeTransaction {
+  readonly writes: Array<() => Promise<void>> = [];
+
+  get(ref: FakeDocRef) {
+    return ref.get();
+  }
+
+  set(ref: FakeDocRef, data: Data, options?: { merge?: boolean }): this {
+    this.writes.push(() => ref.set(data, options));
+    return this;
   }
 }

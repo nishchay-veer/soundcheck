@@ -6,11 +6,12 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
+    "./data": "./src/data/index.ts",
     "./env": "./src/env.ts",
-    "./schemas": "./src/schemas/index.ts",
     "./features": "./src/features/index.ts",
     "./model": "./src/model/index.ts",
-    "./data": "./src/data/index.ts"
+    "./schemas": "./src/schemas/index.ts",
+    "./youtube": "./src/youtube/index.ts"
   },
   "scripts": {
     "lint": "eslint --max-warnings 0",
@@ -25,6 +26,8 @@
     "@google-cloud/secret-manager": "7.1.1",
     "@google-cloud/storage": "8.2.0",
     "@google-cloud/workflows": "6.1.1",
+    "@googleapis/youtube": "40.0.0",
+    "google-auth-library": "11.1.0",
     "p-limit": "7.3.3",
     "p-retry": "8.0.1",
     "pino": "10.3.1",

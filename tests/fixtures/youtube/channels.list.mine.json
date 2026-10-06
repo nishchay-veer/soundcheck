@@ -1,0 +1,37 @@
+{
+  "kind": "youtube#channelListResponse",
+  "etag": "fixture-etag-list",
+  "pageInfo": { "totalResults": 1, "resultsPerPage": 5 },
+  "items": [
+    {
+      "kind": "youtube#channel",
+      "etag": "fixture-etag-channel",
+      "id": "UCaBcDeFgHiJkLmNoPqRsTuV",
+      "snippet": {
+        "title": "Fixture Channel",
+        "description": "A channel that only exists in tests.",
+        "customUrl": "@fixturechannel",
+        "publishedAt": "2019-04-02T10:00:00Z",
+        "thumbnails": {
+          "default": { "url": "https://yt3.ggpht.com/fixture=s88", "width": 88, "height": 88 },
+          "medium": { "url": "https://yt3.ggpht.com/fixture=s240", "width": 240, "height": 240 },
+          "high": { "url": "https://yt3.ggpht.com/fixture=s800", "width": 800, "height": 800 }
+        },
+        "localized": {
+          "title": "Fixture Channel",
+          "description": "A channel that only exists in tests."
+        },
+        "country": "IN"
+      },
+      "contentDetails": {
+        "relatedPlaylists": { "likes": "", "uploads": "UUaBcDeFgHiJkLmNoPqRsTuV" }
+      },
+      "statistics": {
+        "viewCount": "1234567",
+        "subscriberCount": "8450",
+        "hiddenSubscriberCount": false,
+        "videoCount": "64"
+      }
+    }
+  ]
+}
