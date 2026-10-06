@@ -63,7 +63,7 @@
 13. Any UI work follows `docs/plan/design-system.md`.
 14. Ask before adding a dependency the phase does not list.
 15. Each phase ends with `pnpm check` green, its "Done when" list verified, `docs/notes/phase-NN.md` written, and a short entry added to `docs/notes/STATUS.md`.
-16. **Git:** never stage, commit, push, merge, rebase, stash or switch branches. Leave every change in the working tree; the human reviews and commits.
+16. **Git:** work in small parts. After each part, show it for review and commit only when the human says "commit": stage just that part's files, one-line message, no AI attribution. Never push, merge, rebase, stash or switch branches.
 
 Also create `docs/notes/STATUS.md` with a heading and an empty entry list, and add this phase's entry to it.
 
