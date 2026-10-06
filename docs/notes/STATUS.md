@@ -4,6 +4,30 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Phase 03: Catalogue and audience mix (in progress, Oct 6, 2026)
+
+- **Done, parts 1–4 of 7:**
+  - the Analytics probe;
+  - job building blocks in `@soundcheck/core/jobs`: raw archive, BigQuery loads that replace a channel's rows, the throttled build-progress writer, and step markers;
+  - `soundcheck ingest catalogue` and `ingest stats`.
+- **Verified live** on `UC-BHlgFbFh3V76yth-XCmlw`:
+  - 4 videos, 3 of them eligible;
+  - 6 stats rows, a subscribed and an unsubscribed row for each eligible video;
+  - no duplicates after a forced re-run;
+  - `pnpm check` passes (20 tasks).
+- **Differs from spec:**
+  - the content type comes from a multi-video query, because the top-videos shape returns 400, and its values arrive in camelCase;
+  - the end date is today minus 3 days;
+  - eligibility accepts Shorts and live streams from 60 s to 3 h;
+  - `MIN_VIEWS=200` is set in the local `.env` only;
+  - `engaged_views` columns were added (migration applied).
+- **Next:**
+  - part 5, `ingest mix`;
+  - part 6, reach report jobs;
+  - part 7, live verification, the plan-doc update and the final notes.
+
+  See "Resume here" in `docs/notes/phase-03.md`.
+
 ### Phase 02: Sign-in and channel connect (Oct 6, 2026)
 
 - **Built:**
