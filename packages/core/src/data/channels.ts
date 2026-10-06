@@ -3,14 +3,14 @@ import { encryptRefreshToken } from "../crypto/tokens";
 import { ChannelOwnedError, MissingScopesError, NoChannelError, NotFoundError } from "../errors";
 import { getFirestore } from "../gcp";
 import { childLogger, logger as rootLogger } from "../logger";
-import { COLLECTIONS, channelDocSchema, userDocSchema, type Channel } from "../schemas";
+import {
+  COLLECTIONS,
+  YOUTUBE_SCOPES,
+  channelDocSchema,
+  userDocSchema,
+  type Channel,
+} from "../schemas";
 import { accessTokenAuth, listMyChannels, parseMyChannel } from "../youtube/client";
-
-/** Both are required; users can untick either one on the consent screen. */
-export const YOUTUBE_SCOPES = [
-  "https://www.googleapis.com/auth/youtube.readonly",
-  "https://www.googleapis.com/auth/yt-analytics.readonly",
-] as const;
 
 export interface ConnectChannelInput {
   /** The Google account's `sub`; becomes the user ID. */

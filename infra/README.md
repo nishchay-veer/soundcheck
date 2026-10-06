@@ -15,6 +15,7 @@ Idempotent `gcloud`/`bq` scripts that build Soundcheck's Google Cloud environmen
 | `08-secrets.sh`           | Secrets `oauth-client-id`, `oauth-client-secret`, `auth-secret`; access for `sa-web` and `sa-pipeline`; generates `auth-secret`; loads the OAuth client JSON                                                                |
 | `up.sh`                   | Runs 00–06 and 08 in order                                                                                                                                                                                                  |
 | `print-env.sh`            | Prints the `.env` lines that follow from the infra                                                                                                                                                                          |
+| `local-auth-env.sh`       | Fills `AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` (from Secret Manager), a local `AUTH_SECRET` and `AUTH_URL` in `.env` for local sign-in; never prints values                                                                    |
 
 Resource-scoped roles are granted by the script that creates the resource, so the order matters on a fresh project: run `up.sh`, or the scripts in number order.
 
@@ -36,6 +37,7 @@ Resource-scoped roles are granted by the script that creates the resource, so th
 infra/up.sh
 infra/07-budget.sh <BILLING_ACCOUNT_ID> <AMOUNT>   # e.g. 50, or 4000INR
 infra/print-env.sh                                 # paste into the repo-root .env
+infra/local-auth-env.sh                            # local sign-in values, written into .env
 ```
 
 ## Manual steps

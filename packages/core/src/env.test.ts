@@ -20,7 +20,7 @@ const requiredVars = {
   KMS_KEY_NAME: "projects/p/locations/us-central1/keyRings/r/cryptoKeys/k",
   AUTH_GOOGLE_ID: "client-id",
   AUTH_GOOGLE_SECRET: "client-secret",
-  AUTH_SECRET: "auth-secret",
+  AUTH_SECRET: "auth-secret-value-at-least-32-characters",
   GEMINI_MODEL: "gemini-model",
   GEMINI_FLASH_MODEL: "gemini-flash-model",
   IMAGEN_MODEL: "imagen-model",
@@ -75,6 +75,10 @@ describe("server env", () => {
     expect(() => parseServerEnv({ ...requiredVars, GEMINI_MODEL: "" })).toThrow(/GEMINI_MODEL/);
   });
 
+  it("rejects a placeholder AUTH_SECRET", () => {
+    expect(() => parseServerEnv({ ...requiredVars, AUTH_SECRET: "x" })).toThrow(/at least 32/);
+  });
+
   it("coerces numbers and booleans", () => {
     const env = parseServerEnv({
       ...requiredVars,
@@ -91,7 +95,7 @@ describe("server env", () => {
     expect(attempt).toThrow(EnvError);
     expect(attempt).toThrow(/GCP_PROJECT_ID/);
     expect(attempt).toThrow(/MIN_VIEWS/);
-    expect(attempt).not.toThrow(/client-secret|auth-secret/);
+    expect(attempt).not.toThrow(/client-secret|auth-secret-value/);
   });
 
   it("parses process.env once and caches the result", () => {

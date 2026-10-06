@@ -6,10 +6,10 @@ import { FakeFirestore } from "../fake-firestore";
 import { FakeKms } from "../fake-kms";
 import { resetClients, setClientOverride } from "../gcp";
 import { createLogger } from "../logger";
-import { channelDocSchema, userDocSchema } from "../schemas";
+import { YOUTUBE_SCOPES, channelDocSchema, userDocSchema } from "../schemas";
 import { memoryLogger } from "../test-utils";
 import { listMyChannels } from "../youtube/client";
-import { YOUTUBE_SCOPES, connectChannel, type ConnectChannelInput } from "./channels";
+import { connectChannel, type ConnectChannelInput } from "./channels";
 
 vi.mock("../youtube/client", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../youtube/client")>()),

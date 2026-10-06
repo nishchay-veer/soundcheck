@@ -30,7 +30,8 @@ export const serverEnvSchema = z.object({
   KMS_KEY_NAME: required,
   AUTH_GOOGLE_ID: required,
   AUTH_GOOGLE_SECRET: required,
-  AUTH_SECRET: required,
+  // Auth.js encrypts the session cookie with this; `openssl rand -base64 32`.
+  AUTH_SECRET: required.min(32, "AUTH_SECRET must be at least 32 characters"),
   AUTH_URL: z.url().optional(),
   GEMINI_LOCATION: required.default("global"),
   GEMINI_MODEL: required,

@@ -1,6 +1,15 @@
 import { z } from "zod";
 import { firestoreDate } from "./firestore";
 
+/** Both YouTube scopes are required; users can untick either on the consent screen. */
+export const YOUTUBE_SCOPES = [
+  "https://www.googleapis.com/auth/youtube.readonly",
+  "https://www.googleapis.com/auth/yt-analytics.readonly",
+] as const;
+
+/** Everything sign-in requests. Never `youtube.force-ssl` or monetary scopes. */
+export const SIGN_IN_SCOPES = ["openid", "email", "profile", ...YOUTUBE_SCOPES] as const;
+
 /** A YouTube channel ID: "UC" followed by 22 URL-safe characters. */
 export const channelIdSchema = z.string().regex(/^UC[\w-]{22}$/);
 
