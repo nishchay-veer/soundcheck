@@ -45,3 +45,29 @@ export const videoRowSchema = z
     path: ["exclusion_reason"],
   });
 export type VideoRow = z.infer<typeof videoRowSchema>;
+
+export const subscribedStatusSchema = z.enum(["SUBSCRIBED", "UNSUBSCRIBED"]);
+export type SubscribedStatus = z.infer<typeof subscribedStatusSchema>;
+
+const count = z.number().int().nonnegative();
+const date = z.iso.date();
+
+/**
+ * `video_stats`: lifetime totals per video and subscribed status, from
+ * publication to `as_of`. Labels and weights only, never features (rule 8). A
+ * slice with no Analytics data has zero views and null averages.
+ */
+export const videoStatsRowSchema = z.object({
+  channel_id: channelIdSchema,
+  video_id: z.string().min(1),
+  subscribed_status: subscribedStatusSchema,
+  views: count,
+  /** Views past the first frame: the meaning `views` had before Aug 27, 2026. */
+  engaged_views: count,
+  estimated_minutes_watched: z.number().nonnegative(),
+  average_view_duration_s: z.number().nonnegative().nullable(),
+  /** Can exceed 100 when viewers rewatch, as Shorts loop. */
+  average_view_percentage: z.number().nonnegative().nullable(),
+  as_of: date,
+});
+export type VideoStatsRow = z.infer<typeof videoStatsRowSchema>;

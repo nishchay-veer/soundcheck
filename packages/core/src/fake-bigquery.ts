@@ -20,6 +20,10 @@ const DELETE = /^DELETE FROM `[^`]+\.([^.`]+)` WHERE channel_id = @channelId;?$/
 const INSERT =
   /^INSERT INTO `[^`]+\.([^.`]+)` \(([^)]+)\) SELECT \2 FROM `[^`]+\.([^.`]+)` WHERE channel_id = @channelId;$/;
 
+/** Sorts like BigQuery would: TIMESTAMP values arrive as `{ value }` objects. */
+const sortKey = (value: unknown): string =>
+  String((value as { value?: unknown } | null)?.value ?? value);
+
 export class FakeBigQuery {
   readonly queries: Array<{ query: string; params?: Record<string, unknown>; location?: string }> =
     [];
@@ -41,15 +45,31 @@ export class FakeBigQuery {
     } = {},
   ) {}
 
-  async query(options: { query: string; location?: string }) {
+  async query(options: { query: string; params?: Record<string, unknown>; location?: string }) {
     this.queries.push(options);
-    if (!options.query.includes("INFORMATION_SCHEMA.COLUMNS"))
-      throw new Error(`Unexpected query: ${options.query}`);
-    return [
-      Object.keys(this.tables)
-        .sort()
-        .map((table_name) => ({ table_name })),
-    ] as const;
+    if (options.query.includes("INFORMATION_SCHEMA.COLUMNS")) {
+      return [
+        Object.keys(this.tables)
+          .sort()
+          .map((table_name) => ({ table_name })),
+      ] as const;
+    }
+    // `SELECT a, b FROM \`…table\` WHERE channel_id = @channelId [AND flag] [ORDER BY column]`
+    const select =
+      /^SELECT (.+) FROM `[^`]+\.([^.`]+)` WHERE channel_id = @channelId(?: AND (\w+))?(?: ORDER BY (\w+))?$/.exec(
+        options.query,
+      );
+    if (!select?.[1] || !select[2]) throw new Error(`Unexpected query: ${options.query}`);
+    const [, columns, table, flag, order] = select;
+    const rows = (this.tables[table] ?? [])
+      .filter(
+        (row) => row.channel_id === options.params?.channelId && (!flag || row[flag] === true),
+      )
+      .sort((a, b) => (order ? sortKey(a[order]).localeCompare(sortKey(b[order])) : 0))
+      .map((row) =>
+        Object.fromEntries(columns.split(", ").map((column) => [column, row[column] ?? null])),
+      );
+    return [rows] as const;
   }
 
   async createQueryJob(options: {

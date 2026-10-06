@@ -19,11 +19,17 @@ function stepRef(channelId: string, step: string) {
     .doc(step);
 }
 
-/** True when `step` already finished for this channel with the same data date and version. */
-export async function isStepDone(channelId: string, step: string, key: StepKey): Promise<boolean> {
+/** The last finished run of `step` for this channel, or null if it never finished. */
+export async function readStepMarker(channelId: string, step: string): Promise<StepMarker | null> {
   const snapshot = await stepRef(channelId, step).get();
   const marker = stepMarkerSchema.safeParse(snapshot.data());
-  return marker.success && marker.data.asOf === key.asOf && marker.data.version === key.version;
+  return marker.success ? marker.data : null;
+}
+
+/** True when `step` already finished for this channel with the same data date and version. */
+export async function isStepDone(channelId: string, step: string, key: StepKey): Promise<boolean> {
+  const marker = await readStepMarker(channelId, step);
+  return marker !== null && marker.asOf === key.asOf && marker.version === key.version;
 }
 
 /**

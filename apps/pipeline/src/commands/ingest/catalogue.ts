@@ -1,5 +1,10 @@
 import { pickServerEnv } from "@soundcheck/core";
-import { replaceChannelRows } from "@soundcheck/core/jobs";
+import {
+  eligibleVideos,
+  readStepMarker,
+  replaceChannelRows,
+  type EligibleVideo,
+} from "@soundcheck/core/jobs";
 import { videoRowSchema, type VideoRow } from "@soundcheck/core/schemas";
 import {
   DATA_API_PAGE_SIZE,
@@ -14,9 +19,27 @@ import {
   type VideoMetadata,
 } from "@soundcheck/core/youtube";
 import { exclusionReason } from "./eligibility";
-import { archiveKey, startIngest, type IngestOptions } from "./run";
+import { archiveKey, startIngest, type IngestOptions, type IngestRun } from "./run";
 
 export const CATALOGUE_STEP = "ingest-catalogue";
+
+/**
+ * The eligible videos the catalogue step wrote, for the steps after it.
+ * Refuses to run before the catalogue has; warns when its data date differs.
+ */
+export async function catalogueVideos(run: IngestRun): Promise<EligibleVideo[]> {
+  const catalogue = await readStepMarker(run.channel.id, CATALOGUE_STEP);
+  if (!catalogue) {
+    throw new Error(`No catalogue for ${run.channel.id}: run "ingest catalogue" first`);
+  }
+  if (catalogue.asOf !== run.asOf) {
+    run.log.warn(
+      { catalogue_as_of: catalogue.asOf, as_of: run.asOf },
+      "the catalogue is from another data date; eligibility may be out of date",
+    );
+  }
+  return eligibleVideos(run.channel.id);
+}
 
 export function toVideoRow(
   channelId: string,

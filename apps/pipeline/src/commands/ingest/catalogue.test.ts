@@ -1,83 +1,33 @@
-import { readFileSync } from "node:fs";
-import { createLogger, resetClients, resetEnvCache, setClientOverride } from "@soundcheck/core";
-import type { ChannelDoc } from "@soundcheck/core/schemas";
-import { FakeBigQuery, FakeFirestore, FakeStorage, memoryLogger } from "@soundcheck/core/testing";
+import {
+  memoryLogger,
+  type FakeBigQuery,
+  type FakeFirestore,
+  type FakeStorage,
+} from "@soundcheck/core/testing";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CATALOGUE_STEP, ingestCatalogue } from "./catalogue";
-import type { YoutubeApi } from "./run";
-
-const CHANNEL = "UCaBcDeFgHiJkLmNoPqRsTuV";
-const NOW = new Date("2026-10-06T12:00:00Z");
-const quiet = createLogger({ level: "silent" });
-const VIDEO_COLUMNS = [
-  "channel_id",
-  "video_id",
-  "title",
-  "description",
-  "published_at",
-  "duration_s",
-  "content_type",
-  "is_live",
-  "category_id",
-  "tags",
-  "thumbnail_url",
-  "default_language",
-  "eligible",
-  "exclusion_reason",
-  "ingested_at",
-];
-
-const fixture = (name: string): Record<string, unknown> =>
-  JSON.parse(
-    readFileSync(new URL(`../../../../../tests/fixtures/youtube/${name}`, import.meta.url), "utf8"),
-  ) as Record<string, unknown>;
+import {
+  CHANNEL,
+  NOW,
+  fixture,
+  ingestTestbed,
+  quiet,
+  resetTestbed,
+  type FakeYoutubeApi,
+} from "./testbed";
 
 describe("ingestCatalogue", () => {
   let db: FakeFirestore;
   let bigquery: FakeBigQuery;
   let storage: FakeStorage;
-  let api: { [K in keyof YoutubeApi]: ReturnType<typeof vi.fn<YoutubeApi[K]>> };
-  const connect = vi.fn(async () => api as YoutubeApi);
+  let api: FakeYoutubeApi;
+  let connect: Awaited<ReturnType<typeof ingestTestbed>>["connect"];
 
   beforeEach(async () => {
-    vi.stubEnv("GCP_PROJECT_ID", "soundcheck-test");
-    vi.stubEnv("BQ_DATASET", "soundcheck");
-    vi.stubEnv("GCS_RAW_BUCKET", "test-raw");
-    db = new FakeFirestore();
-    storage = new FakeStorage();
-    bigquery = new FakeBigQuery({ videos: [] }, { columns: { videos: VIDEO_COLUMNS }, storage });
-    setClientOverride("firestore", db.asFirestore());
-    setClientOverride("bigquery", bigquery.asBigQuery());
-    setClientOverride("storage", storage.asStorage());
-
-    const channel: ChannelDoc = {
-      userId: "111111111111111111111",
-      title: "Fixture Channel",
-      thumbnailUrl: null,
-      subscriberCount: 8450,
-      videoCount: 4,
-      uploadsPlaylistId: "UUaBcDeFgHiJkLmNoPqRsTuV",
-      status: "connected",
-      tokenCiphertext: "eA==",
-      tokenScope: "openid",
-      connectedAt: new Date("2026-10-01T10:00:00Z"),
-      build: { state: "running" },
-    };
-    await db.collection("channels").doc(CHANNEL).set(channel);
-
-    api = {
-      uploadsPage: vi.fn(async () => fixture("playlistItems.list.uploads.json")),
-      videos: vi.fn(async () => fixture("videos.list.uploads.json")),
-      report: vi.fn(async () => fixture("reports.query.content-type.json")),
-    };
-    connect.mockClear();
+    ({ db, bigquery, storage, api, connect } = await ingestTestbed());
   });
 
-  afterEach(() => {
-    resetClients();
-    vi.unstubAllEnvs();
-    resetEnvCache();
-  });
+  afterEach(resetTestbed);
 
   const ingest = (options: { force?: boolean } = {}) =>
     ingestCatalogue({ channelId: CHANNEL, now: NOW, log: quiet, connect, ...options });

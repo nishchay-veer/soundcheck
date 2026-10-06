@@ -2,6 +2,7 @@ import { channelIdSchema } from "@soundcheck/core/schemas";
 import { InvalidArgumentError, type Command } from "commander";
 import type { PipelineCommand } from "../types";
 import { ingestCatalogue } from "./catalogue";
+import { ingestStats } from "./stats";
 
 function channelId(value: string): string {
   if (!channelIdSchema.safeParse(value).success) {
@@ -33,5 +34,12 @@ export const ingest: PipelineCommand = {
         await ingestCatalogue({ channelId: channel, force });
       },
     );
+    step(
+      command,
+      "stats",
+      "Views and watch time per eligible video, for subscribers and non-subscribers",
+    ).action(async ({ channel, force }: StepFlags) => {
+      await ingestStats({ channelId: channel, force });
+    });
   },
 };

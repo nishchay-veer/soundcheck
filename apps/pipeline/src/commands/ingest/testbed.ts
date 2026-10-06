@@ -1,0 +1,119 @@
+/**
+ * Shared setup for ingest command tests: in-memory Firestore, BigQuery and
+ * Storage holding one connected channel, and a YouTube API that replays the
+ * recorded fixtures. Test-only; never imported by the commands.
+ */
+import { readFileSync } from "node:fs";
+import { createLogger, resetClients, resetEnvCache, setClientOverride } from "@soundcheck/core";
+import type { ChannelDoc } from "@soundcheck/core/schemas";
+import { FakeBigQuery, FakeFirestore, FakeStorage } from "@soundcheck/core/testing";
+import type { AnalyticsQuery } from "@soundcheck/core/youtube";
+import { vi, type Mock } from "vitest";
+import type { YoutubeApi } from "./run";
+
+export const CHANNEL = "UCaBcDeFgHiJkLmNoPqRsTuV";
+export const NOW = new Date("2026-10-06T12:00:00Z");
+/** `analyticsEndDate(NOW)`. */
+export const AS_OF = "2026-10-03";
+export const quiet = createLogger({ level: "silent" });
+
+/** Column lists from `infra/bigquery/*.sql`, served by the BigQuery fake. */
+export const COLUMNS: Record<string, string[]> = {
+  videos: [
+    "channel_id",
+    "video_id",
+    "title",
+    "description",
+    "published_at",
+    "duration_s",
+    "content_type",
+    "is_live",
+    "category_id",
+    "tags",
+    "thumbnail_url",
+    "default_language",
+    "eligible",
+    "exclusion_reason",
+    "ingested_at",
+  ],
+  video_stats: [
+    "channel_id",
+    "video_id",
+    "subscribed_status",
+    "views",
+    "engaged_views",
+    "estimated_minutes_watched",
+    "average_view_duration_s",
+    "average_view_percentage",
+    "as_of",
+  ],
+};
+
+export const fixture = (name: string): Record<string, unknown> =>
+  JSON.parse(
+    readFileSync(new URL(`../../../../../tests/fixtures/youtube/${name}`, import.meta.url), "utf8"),
+  ) as Record<string, unknown>;
+
+/** The recorded Analytics response for a query, chosen by its dimensions. */
+function reportFixture(query: AnalyticsQuery): Record<string, unknown> {
+  switch (query.dimensions) {
+    case "video,creatorContentType":
+      return fixture("reports.query.content-type.json");
+    case "video,subscribedStatus":
+      return fixture("reports.query.stats.json");
+    default:
+      throw new Error(`No fixture for dimensions=${query.dimensions}`);
+  }
+}
+
+export type FakeYoutubeApi = { [K in keyof YoutubeApi]: Mock<YoutubeApi[K]> };
+
+export async function ingestTestbed() {
+  vi.stubEnv("GCP_PROJECT_ID", "soundcheck-test");
+  vi.stubEnv("BQ_DATASET", "soundcheck");
+  vi.stubEnv("GCS_RAW_BUCKET", "test-raw");
+  vi.stubEnv("MIN_VIEWS", "500");
+  const db = new FakeFirestore();
+  const storage = new FakeStorage();
+  const bigquery = new FakeBigQuery(
+    Object.fromEntries(Object.keys(COLUMNS).map((table) => [table, []])),
+    { columns: COLUMNS, storage },
+  );
+  setClientOverride("firestore", db.asFirestore());
+  setClientOverride("bigquery", bigquery.asBigQuery());
+  setClientOverride("storage", storage.asStorage());
+
+  const channel: ChannelDoc = {
+    userId: "111111111111111111111",
+    title: "Fixture Channel",
+    thumbnailUrl: null,
+    subscriberCount: 8450,
+    videoCount: 4,
+    uploadsPlaylistId: "UUaBcDeFgHiJkLmNoPqRsTuV",
+    status: "connected",
+    tokenCiphertext: "eA==",
+    tokenScope: "openid",
+    connectedAt: new Date("2026-10-01T10:00:00Z"),
+    build: { state: "running" },
+  };
+  await db.collection("channels").doc(CHANNEL).set(channel);
+
+  const api: FakeYoutubeApi = {
+    uploadsPage: vi.fn(async () => fixture("playlistItems.list.uploads.json")),
+    videos: vi.fn(async () => fixture("videos.list.uploads.json")),
+    report: vi.fn(async (query: AnalyticsQuery) => reportFixture(query)),
+  };
+  const connect = vi.fn(async () => api as YoutubeApi);
+  /** The raw response archived at `{source}/{key}`, parsed; undefined if none. */
+  const archived = (path: string): unknown => {
+    const text = storage.read(`gs://test-raw/${CHANNEL}/${path}/20261006.json`);
+    return text === undefined ? undefined : JSON.parse(text);
+  };
+  return { db, storage, bigquery, api, connect, archived };
+}
+
+export function resetTestbed(): void {
+  resetClients();
+  vi.unstubAllEnvs();
+  resetEnvCache();
+}

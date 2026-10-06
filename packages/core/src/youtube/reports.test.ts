@@ -6,6 +6,8 @@ import {
   daysInRange,
   normalizeContentType,
   parseContentTypes,
+  parseStats,
+  statsQuery,
   videoBatches,
 } from "./reports";
 
@@ -144,5 +146,117 @@ describe("parseContentTypes", () => {
         columnHeaders: [{ name: "video", columnType: "DIMENSION", dataType: "STRING" }],
       }).size,
     ).toBe(0);
+  });
+});
+
+describe("statsQuery", () => {
+  it("asks for lifetime totals per video and subscribed status", () => {
+    expect(
+      statsQuery({ videoIds: ["a", "b"], startDate: "2022-05-08", endDate: "2026-10-03" }),
+    ).toEqual({
+      startDate: "2022-05-08",
+      endDate: "2026-10-03",
+      dimensions: "video,subscribedStatus",
+      metrics:
+        "views,engagedViews,estimatedMinutesWatched,averageViewDuration,averageViewPercentage",
+      filters: "video==a,b",
+    });
+  });
+});
+
+describe("parseStats", () => {
+  const CHANNEL = "UCaBcDeFgHiJkLmNoPqRsTuV";
+  const context = (videoIds: string[]) => ({ channelId: CHANNEL, asOf: "2026-10-03", videoIds });
+  const headers = [
+    "video",
+    "subscribedStatus",
+    "views",
+    "engagedViews",
+    "estimatedMinutesWatched",
+    "averageViewDuration",
+    "averageViewPercentage",
+  ].map((name, index) => ({
+    name,
+    columnType: index < 2 ? "DIMENSION" : "METRIC",
+    dataType: index < 2 ? "STRING" : "INTEGER",
+  }));
+
+  it("reads a recorded stats report: one row per video and status", () => {
+    const rows = parseStats(
+      fixture("reports.query.stats.json"),
+      context(["fixtureVid1", "fixtureVid2", "fixtureVid3", "fixtureVid4"]),
+    );
+    expect(rows).toHaveLength(8);
+    expect(rows.slice(0, 2)).toEqual([
+      {
+        channel_id: CHANNEL,
+        video_id: "fixtureVid1",
+        subscribed_status: "SUBSCRIBED",
+        views: 42,
+        engaged_views: 42,
+        estimated_minutes_watched: 42,
+        average_view_duration_s: 60,
+        average_view_percentage: 68.28,
+        as_of: "2026-10-03",
+      },
+      {
+        channel_id: CHANNEL,
+        video_id: "fixtureVid1",
+        subscribed_status: "UNSUBSCRIBED",
+        views: 300,
+        engaged_views: 299,
+        estimated_minutes_watched: 299,
+        average_view_duration_s: 60,
+        average_view_percentage: 68.37,
+        as_of: "2026-10-03",
+      },
+    ]);
+    // A looping Short is watched past 100%.
+    expect(rows.find((row) => row.video_id === "fixtureVid2")?.average_view_percentage).toBe(
+      113.86,
+    );
+  });
+
+  it("fills slices Analytics leaves out with zero views and no averages", () => {
+    const body = { columnHeaders: headers, rows: [["a", "UNSUBSCRIBED", 12, 12, 3, 15, 40.5]] };
+    const rows = parseStats(body, context(["a", "quiet"]));
+    expect(rows.map((row) => [row.video_id, row.subscribed_status, row.views])).toEqual([
+      ["a", "SUBSCRIBED", 0],
+      ["a", "UNSUBSCRIBED", 12],
+      ["quiet", "SUBSCRIBED", 0],
+      ["quiet", "UNSUBSCRIBED", 0],
+    ]);
+    expect(rows[0]).toMatchObject({
+      engaged_views: 0,
+      estimated_minutes_watched: 0,
+      average_view_duration_s: null,
+      average_view_percentage: null,
+    });
+    expect(parseStats({ columnHeaders: headers }, context(["quiet"]))).toHaveLength(2);
+  });
+
+  it("drops averages for a slice reported with zero views", () => {
+    const body = { columnHeaders: headers, rows: [["a", "SUBSCRIBED", 0, 0, 0, 0, 0]] };
+    expect(parseStats(body, context(["a"]))[0]).toMatchObject({
+      views: 0,
+      average_view_duration_s: null,
+      average_view_percentage: null,
+    });
+  });
+
+  it("rejects rows for videos it did not ask about, or a slice twice", () => {
+    const row = ["a", "SUBSCRIBED", 1, 1, 1, 1, 1];
+    expect(() => parseStats({ columnHeaders: headers, rows: [row] }, context(["b"]))).toThrow(
+      /unrequested video a/,
+    );
+    expect(() => parseStats({ columnHeaders: headers, rows: [row, row] }, context(["a"]))).toThrow(
+      /2 rows for a SUBSCRIBED/,
+    );
+    expect(() =>
+      parseStats(
+        { columnHeaders: headers, rows: [["a", "MEMBERS", 1, 1, 1, 1, 1]] },
+        context(["a"]),
+      ),
+    ).toThrow();
   });
 });

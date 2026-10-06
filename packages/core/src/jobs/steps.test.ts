@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { resetEnvCache } from "../env";
 import { FakeFirestore } from "../fake-firestore";
 import { resetClients, setClientOverride } from "../gcp";
-import { isStepDone, markStepDone } from "./steps";
+import { isStepDone, markStepDone, readStepMarker } from "./steps";
 
 const CHANNEL = "UCaBcDeFgHiJkLmNoPqRsTuV";
 const KEY = { asOf: "2026-10-03", version: "ingest-v1" };
@@ -40,6 +40,15 @@ describe("step markers", () => {
     expect(await isStepDone(CHANNEL, "ingest-stats", { ...KEY, asOf: "2026-10-04" })).toBe(false);
     expect(await isStepDone(CHANNEL, "ingest-stats", { ...KEY, version: "ingest-v2" })).toBe(false);
     expect(await isStepDone(CHANNEL, "ingest-mix", KEY)).toBe(false);
+  });
+
+  it("reads the last finished run, or null", async () => {
+    expect(await readStepMarker(CHANNEL, "ingest-stats")).toBeNull();
+    await markStepDone(CHANNEL, "ingest-stats", { ...KEY, rows: { video_stats: 2 } });
+    expect(await readStepMarker(CHANNEL, "ingest-stats")).toMatchObject({
+      ...KEY,
+      rows: { video_stats: 2 },
+    });
   });
 
   it("treats a malformed marker as not done", async () => {

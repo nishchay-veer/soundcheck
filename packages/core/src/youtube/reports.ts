@@ -1,4 +1,10 @@
-import { pacificDate, reportRows, type AnalyticsQuery } from "./analytics";
+import {
+  subscribedStatusSchema,
+  videoStatsRowSchema,
+  type SubscribedStatus,
+  type VideoStatsRow,
+} from "../schemas";
+import { pacificDate, reportRows, type AnalyticsQuery, type ReportRow } from "./analytics";
 
 /**
  * The YouTube Analytics queries ingest runs, and pure parsers for their
@@ -16,6 +22,11 @@ export interface VideoBatch {
   startDate: string;
   endDate: string;
 }
+
+const STATUSES: readonly SubscribedStatus[] = subscribedStatusSchema.options;
+
+/** The batch's videos as a `video==` filter. */
+const videoFilter = (batch: VideoBatch) => `video==${batch.videoIds.join(",")}`;
 
 /** Inclusive number of days from `startDate` to `endDate`. */
 export function daysInRange(startDate: string, endDate: string): number {
@@ -55,7 +66,7 @@ export function contentTypeQuery(batch: VideoBatch): AnalyticsQuery {
     endDate: batch.endDate,
     dimensions: "video,creatorContentType",
     metrics: "views",
-    filters: `video==${batch.videoIds.join(",")}`,
+    filters: videoFilter(batch),
   };
 }
 
@@ -82,4 +93,68 @@ export function parseContentTypes(body: unknown): Map<string, string> {
     if (!current || views > current.views) best.set(video, { type, views });
   }
   return new Map([...best].map(([video, { type }]) => [video, type]));
+}
+
+/** Rows keyed by `video|status`, refusing rows for videos the batch did not ask for. */
+function rowsByVideoAndStatus(
+  body: unknown,
+  videoIds: readonly string[],
+): Map<string, ReportRow[]> {
+  const requested = new Set(videoIds);
+  const grouped = new Map<string, ReportRow[]>();
+  for (const row of reportRows(body)) {
+    const video = String(row.video);
+    if (!requested.has(video))
+      throw new Error(`Analytics returned a row for unrequested video ${video}`);
+    const status = subscribedStatusSchema.parse(row.subscribedStatus);
+    const key = `${video}|${status}`;
+    grouped.set(key, [...(grouped.get(key) ?? []), row]);
+  }
+  return grouped;
+}
+
+export const STATS_METRICS =
+  "views,engagedViews,estimatedMinutesWatched,averageViewDuration,averageViewPercentage";
+
+/** Lifetime totals per video and subscribed status: `dimensions=video,subscribedStatus`. */
+export function statsQuery(batch: VideoBatch): AnalyticsQuery {
+  return {
+    startDate: batch.startDate,
+    endDate: batch.endDate,
+    dimensions: "video,subscribedStatus",
+    metrics: STATS_METRICS,
+    filters: videoFilter(batch),
+  };
+}
+
+/**
+ * Pure parser: exactly one `video_stats` row per requested video and
+ * subscribed status. Analytics leaves out slices without data; those become
+ * zero views with null averages, never an error.
+ */
+export function parseStats(
+  body: unknown,
+  { channelId, asOf, videoIds }: { channelId: string; asOf: string; videoIds: readonly string[] },
+): VideoStatsRow[] {
+  const grouped = rowsByVideoAndStatus(body, videoIds);
+  return videoIds.flatMap((videoId) =>
+    STATUSES.map((status) => {
+      const rows = grouped.get(`${videoId}|${status}`) ?? [];
+      if (rows.length > 1)
+        throw new Error(`Analytics returned ${rows.length} rows for ${videoId} ${status}`);
+      const [row] = rows;
+      const views = Number(row?.views ?? 0);
+      return videoStatsRowSchema.parse({
+        channel_id: channelId,
+        video_id: videoId,
+        subscribed_status: status,
+        views,
+        engaged_views: Number(row?.engagedViews ?? 0),
+        estimated_minutes_watched: Number(row?.estimatedMinutesWatched ?? 0),
+        average_view_duration_s: row && views > 0 ? Number(row.averageViewDuration) : null,
+        average_view_percentage: row && views > 0 ? Number(row.averageViewPercentage) : null,
+        as_of: asOf,
+      });
+    }),
+  );
 }

@@ -17,6 +17,7 @@ import {
   fetchVideos,
   parseVideos,
   queryReport,
+  statsQuery,
   videoBatches,
   videosRequest,
   youtubeClient,
@@ -145,8 +146,10 @@ const videos =
 // Analytics queries need the real publish dates, so they run before anonymizing.
 const [batch] = videoBatches(parseVideos(videos), analyticsEndDate());
 const contentTypes = batch ? await queryReport(auth, contentTypeQuery(batch)) : undefined;
+const stats = batch ? await queryReport(auth, statsQuery(batch)) : undefined;
 
 write("playlistItems.list.uploads.json", uploads.data);
 write("channels.list.mine.json", channels.data);
 write("videos.list.uploads.json", videos);
 if (contentTypes) write("reports.query.content-type.json", contentTypes);
+if (stats) write("reports.query.stats.json", stats);

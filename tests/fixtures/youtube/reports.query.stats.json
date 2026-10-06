@@ -1,0 +1,114 @@
+{
+  "kind": "youtubeAnalytics#resultTable",
+  "columnHeaders": [
+    {
+      "name": "video",
+      "columnType": "DIMENSION",
+      "dataType": "STRING"
+    },
+    {
+      "name": "subscribedStatus",
+      "columnType": "DIMENSION",
+      "dataType": "STRING"
+    },
+    {
+      "name": "views",
+      "columnType": "METRIC",
+      "dataType": "INTEGER"
+    },
+    {
+      "name": "engagedViews",
+      "columnType": "METRIC",
+      "dataType": "INTEGER"
+    },
+    {
+      "name": "estimatedMinutesWatched",
+      "columnType": "METRIC",
+      "dataType": "INTEGER"
+    },
+    {
+      "name": "averageViewDuration",
+      "columnType": "METRIC",
+      "dataType": "INTEGER"
+    },
+    {
+      "name": "averageViewPercentage",
+      "columnType": "METRIC",
+      "dataType": "FLOAT"
+    }
+  ],
+  "rows": [
+    [
+      "fixtureVid1",
+      "UNSUBSCRIBED",
+      300,
+      299,
+      299,
+      60,
+      68.37
+    ],
+    [
+      "fixtureVid1",
+      "SUBSCRIBED",
+      42,
+      42,
+      42,
+      60,
+      68.28
+    ],
+    [
+      "fixtureVid3",
+      "UNSUBSCRIBED",
+      194,
+      194,
+      321,
+      99,
+      44.8
+    ],
+    [
+      "fixtureVid2",
+      "UNSUBSCRIBED",
+      311,
+      308,
+      159,
+      31,
+      100.12999999999998
+    ],
+    [
+      "fixtureVid2",
+      "SUBSCRIBED",
+      75,
+      74,
+      43,
+      35,
+      113.86
+    ],
+    [
+      "fixtureVid3",
+      "SUBSCRIBED",
+      45,
+      45,
+      56,
+      75,
+      34
+    ],
+    [
+      "fixtureVid4",
+      "UNSUBSCRIBED",
+      212,
+      212,
+      312,
+      88,
+      33.73
+    ],
+    [
+      "fixtureVid4",
+      "SUBSCRIBED",
+      102,
+      102,
+      193,
+      114,
+      43.53
+    ]
+  ]
+}
