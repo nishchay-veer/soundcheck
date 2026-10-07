@@ -14,10 +14,13 @@ import {
   analyticsEndDate,
   contentTypeQuery,
   credentialsForChannel,
+  deviceQuery,
   fetchVideos,
   parseVideos,
   queryReport,
   statsQuery,
+  trafficBatchSize,
+  trafficQuery,
   videoBatches,
   videosRequest,
   youtubeClient,
@@ -147,9 +150,14 @@ const videos =
 const [batch] = videoBatches(parseVideos(videos), analyticsEndDate());
 const contentTypes = batch ? await queryReport(auth, contentTypeQuery(batch)) : undefined;
 const stats = batch ? await queryReport(auth, statsQuery(batch)) : undefined;
+const [trafficBatch] = videoBatches(parseVideos(videos), analyticsEndDate(), trafficBatchSize);
+const traffic = trafficBatch ? await queryReport(auth, trafficQuery(trafficBatch)) : undefined;
+const devices = batch ? await queryReport(auth, deviceQuery(batch)) : undefined;
 
 write("playlistItems.list.uploads.json", uploads.data);
 write("channels.list.mine.json", channels.data);
 write("videos.list.uploads.json", videos);
 if (contentTypes) write("reports.query.content-type.json", contentTypes);
 if (stats) write("reports.query.stats.json", stats);
+if (traffic) write("reports.query.traffic.json", traffic);
+if (devices) write("reports.query.device.json", devices);

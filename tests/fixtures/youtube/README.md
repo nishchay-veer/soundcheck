@@ -13,5 +13,7 @@ Note that Analytics returns `creatorContentType` in camelCase (`videoOnDemand`, 
 | `videos.list.uploads.json`        | `videos.list(part=snippet,contentDetails,statistics,status,liveStreamingDetails, id=<the uploads>)`                                                                                        |
 | `reports.query.content-type.json` | `reports.query(dimensions=video,creatorContentType, metrics=views, filters=video==<the uploads>)` from the oldest upload's publish date to three days ago                                  |
 | `reports.query.stats.json`        | `reports.query(dimensions=video,subscribedStatus, metrics=views,engagedViews,estimatedMinutesWatched,averageViewDuration,averageViewPercentage, filters=video==<the uploads>)`, same range |
+| `reports.query.traffic.json`      | `reports.query(dimensions=video,insightTrafficSourceType,subscribedStatus, metrics=views,engagedViews,estimatedMinutesWatched, filters=video==<the uploads>)`, same range                  |
+| `reports.query.device.json`       | `reports.query(dimensions=video,deviceType,subscribedStatus, metrics=views,engagedViews,estimatedMinutesWatched, filters=video==<the uploads>)`, same range                                |
 
 Edge cases the recording does not contain (hidden subscriber counts, private videos, accounts without a channel) are built inline in the tests.

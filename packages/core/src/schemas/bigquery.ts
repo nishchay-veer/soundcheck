@@ -71,3 +71,32 @@ export const videoStatsRowSchema = z.object({
   as_of: date,
 });
 export type VideoStatsRow = z.infer<typeof videoStatsRowSchema>;
+
+export const trafficBucketSchema = z.enum(["search", "suggested", "browse", "external", "other"]);
+export type TrafficBucket = z.infer<typeof trafficBucketSchema>;
+export const deviceBucketSchema = z.enum(["mobile", "tv", "desktop", "other"]);
+export type DeviceBucket = z.infer<typeof deviceBucketSchema>;
+
+/**
+ * A mix row: one raw traffic source or device type for a video and subscribed
+ * status, the bucket it maps to, and its share of that slice's views. Shares
+ * of a video and status sum to 1; a slice with no views has no rows.
+ */
+const mixRowShape = {
+  channel_id: channelIdSchema,
+  video_id: z.string().min(1),
+  subscribed_status: subscribedStatusSchema,
+  raw_type: z.string().min(1),
+  views: z.number().int().positive(),
+  engaged_views: count,
+  share: z.number().positive().max(1),
+  as_of: date,
+};
+
+/** `video_traffic_mix`. */
+export const trafficMixRowSchema = z.object({ ...mixRowShape, bucket: trafficBucketSchema });
+export type TrafficMixRow = z.infer<typeof trafficMixRowSchema>;
+
+/** `video_device_mix`. */
+export const deviceMixRowSchema = z.object({ ...mixRowShape, bucket: deviceBucketSchema });
+export type DeviceMixRow = z.infer<typeof deviceMixRowSchema>;

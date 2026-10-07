@@ -47,6 +47,28 @@ export const COLUMNS: Record<string, string[]> = {
     "average_view_percentage",
     "as_of",
   ],
+  video_traffic_mix: [
+    "channel_id",
+    "video_id",
+    "subscribed_status",
+    "raw_type",
+    "bucket",
+    "views",
+    "engaged_views",
+    "share",
+    "as_of",
+  ],
+  video_device_mix: [
+    "channel_id",
+    "video_id",
+    "subscribed_status",
+    "raw_type",
+    "bucket",
+    "views",
+    "engaged_views",
+    "share",
+    "as_of",
+  ],
 };
 
 export const fixture = (name: string): Record<string, unknown> =>
@@ -61,6 +83,10 @@ function reportFixture(query: AnalyticsQuery): Record<string, unknown> {
       return fixture("reports.query.content-type.json");
     case "video,subscribedStatus":
       return fixture("reports.query.stats.json");
+    case "video,insightTrafficSourceType,subscribedStatus":
+      return fixture("reports.query.traffic.json");
+    case "video,deviceType,subscribedStatus":
+      return fixture("reports.query.device.json");
     default:
       throw new Error(`No fixture for dimensions=${query.dimensions}`);
   }

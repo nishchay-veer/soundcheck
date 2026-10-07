@@ -1,0 +1,245 @@
+{
+  "kind": "youtubeAnalytics#resultTable",
+  "columnHeaders": [
+    {
+      "name": "video",
+      "columnType": "DIMENSION",
+      "dataType": "STRING"
+    },
+    {
+      "name": "deviceType",
+      "columnType": "DIMENSION",
+      "dataType": "STRING"
+    },
+    {
+      "name": "subscribedStatus",
+      "columnType": "DIMENSION",
+      "dataType": "STRING"
+    },
+    {
+      "name": "views",
+      "columnType": "METRIC",
+      "dataType": "INTEGER"
+    },
+    {
+      "name": "engagedViews",
+      "columnType": "METRIC",
+      "dataType": "INTEGER"
+    },
+    {
+      "name": "estimatedMinutesWatched",
+      "columnType": "METRIC",
+      "dataType": "INTEGER"
+    }
+  ],
+  "rows": [
+    [
+      "fixtureVid3",
+      "DESKTOP",
+      "UNSUBSCRIBED",
+      16,
+      16,
+      20
+    ],
+    [
+      "fixtureVid3",
+      "DESKTOP",
+      "SUBSCRIBED",
+      7,
+      7,
+      16
+    ],
+    [
+      "fixtureVid3",
+      "MOBILE",
+      "UNSUBSCRIBED",
+      174,
+      174,
+      298
+    ],
+    [
+      "fixtureVid3",
+      "MOBILE",
+      "SUBSCRIBED",
+      38,
+      38,
+      40
+    ],
+    [
+      "fixtureVid3",
+      "TABLET",
+      "UNSUBSCRIBED",
+      4,
+      4,
+      3
+    ],
+    [
+      "fixtureVid4",
+      "DESKTOP",
+      "UNSUBSCRIBED",
+      15,
+      15,
+      33
+    ],
+    [
+      "fixtureVid4",
+      "DESKTOP",
+      "SUBSCRIBED",
+      8,
+      8,
+      17
+    ],
+    [
+      "fixtureVid4",
+      "TV",
+      "SUBSCRIBED",
+      4,
+      4,
+      13
+    ],
+    [
+      "fixtureVid4",
+      "MOBILE",
+      "UNSUBSCRIBED",
+      193,
+      193,
+      276
+    ],
+    [
+      "fixtureVid4",
+      "MOBILE",
+      "SUBSCRIBED",
+      89,
+      89,
+      158
+    ],
+    [
+      "fixtureVid4",
+      "TABLET",
+      "UNSUBSCRIBED",
+      4,
+      4,
+      2
+    ],
+    [
+      "fixtureVid4",
+      "TABLET",
+      "SUBSCRIBED",
+      1,
+      1,
+      4
+    ],
+    [
+      "fixtureVid1",
+      "DESKTOP",
+      "UNSUBSCRIBED",
+      108,
+      107,
+      111
+    ],
+    [
+      "fixtureVid1",
+      "DESKTOP",
+      "SUBSCRIBED",
+      13,
+      13,
+      11
+    ],
+    [
+      "fixtureVid1",
+      "TV",
+      "UNSUBSCRIBED",
+      2,
+      2,
+      0
+    ],
+    [
+      "fixtureVid1",
+      "TV",
+      "SUBSCRIBED",
+      1,
+      1,
+      1
+    ],
+    [
+      "fixtureVid1",
+      "MOBILE",
+      "UNSUBSCRIBED",
+      189,
+      189,
+      187
+    ],
+    [
+      "fixtureVid1",
+      "MOBILE",
+      "SUBSCRIBED",
+      28,
+      28,
+      29
+    ],
+    [
+      "fixtureVid1",
+      "TABLET",
+      "UNSUBSCRIBED",
+      1,
+      1,
+      0
+    ],
+    [
+      "fixtureVid2",
+      "DESKTOP",
+      "UNSUBSCRIBED",
+      13,
+      13,
+      7
+    ],
+    [
+      "fixtureVid2",
+      "DESKTOP",
+      "SUBSCRIBED",
+      21,
+      21,
+      8
+    ],
+    [
+      "fixtureVid2",
+      "TV",
+      "UNSUBSCRIBED",
+      1,
+      1,
+      0
+    ],
+    [
+      "fixtureVid2",
+      "TV",
+      "SUBSCRIBED",
+      1,
+      1,
+      0
+    ],
+    [
+      "fixtureVid2",
+      "MOBILE",
+      "UNSUBSCRIBED",
+      295,
+      292,
+      151
+    ],
+    [
+      "fixtureVid2",
+      "MOBILE",
+      "SUBSCRIBED",
+      53,
+      52,
+      34
+    ],
+    [
+      "fixtureVid2",
+      "TABLET",
+      "UNSUBSCRIBED",
+      2,
+      2,
+      0
+    ]
+  ]
+}

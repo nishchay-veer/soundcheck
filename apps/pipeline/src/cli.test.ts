@@ -45,7 +45,11 @@ describe("soundcheck CLI", () => {
 
   it("has ingest subcommands", () => {
     const ingest = createProgram().commands.find((command) => command.name() === "ingest");
-    expect(ingest?.commands.map((command) => command.name())).toEqual(["catalogue", "stats"]);
+    expect(ingest?.commands.map((command) => command.name())).toEqual([
+      "catalogue",
+      "stats",
+      "mix",
+    ]);
   });
 
   it("requires --channel", async () => {

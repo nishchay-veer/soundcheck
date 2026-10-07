@@ -1,7 +1,13 @@
 import {
+  deviceMixRowSchema,
   subscribedStatusSchema,
+  trafficMixRowSchema,
   videoStatsRowSchema,
+  type DeviceBucket,
+  type DeviceMixRow,
   type SubscribedStatus,
+  type TrafficBucket,
+  type TrafficMixRow,
   type VideoStatsRow,
 } from "../schemas";
 import { pacificDate, reportRows, type AnalyticsQuery, type ReportRow } from "./analytics";
@@ -156,5 +162,111 @@ export function parseStats(
         as_of: asOf,
       });
     }),
+  );
+}
+
+/** Requested for both mix reports; `estimatedMinutesWatched` is kept in the raw archive only. */
+export const MIX_METRICS = "views,engagedViews,estimatedMinutesWatched";
+
+/** The traffic source report errors when videos × days in range exceeds this. */
+export const TRAFFIC_VIDEO_DAYS_LIMIT = 50_000;
+
+/** Videos per traffic query for a range of `days`: `floor(50000 / days)`, between 1 and 25. */
+export function trafficBatchSize(days: number): number {
+  return Math.max(1, Math.min(VIDEOS_PER_QUERY, Math.floor(TRAFFIC_VIDEO_DAYS_LIMIT / days)));
+}
+
+/** `insightTrafficSourceType` values per bucket; anything else is `other`. */
+const TRAFFIC_BUCKETS: Record<string, TrafficBucket> = {
+  YT_SEARCH: "search",
+  RELATED_VIDEO: "suggested",
+  END_SCREEN: "suggested",
+  SUBSCRIBER: "browse",
+  NOTIFICATION: "browse",
+  YT_CHANNEL: "browse",
+  PLAYLIST: "browse",
+  EXT_URL: "external",
+  NO_LINK_EMBEDDED: "external",
+  NO_LINK_OTHER: "external",
+};
+
+/** `deviceType` values per bucket; anything else is `other`. */
+const DEVICE_BUCKETS: Record<string, DeviceBucket> = {
+  MOBILE: "mobile",
+  TABLET: "mobile",
+  TV: "tv",
+  GAME_CONSOLE: "tv",
+  DESKTOP: "desktop",
+};
+
+export const trafficBucket = (rawType: string): TrafficBucket =>
+  TRAFFIC_BUCKETS[rawType] ?? "other";
+export const deviceBucket = (rawType: string): DeviceBucket => DEVICE_BUCKETS[rawType] ?? "other";
+
+function mixQuery(batch: VideoBatch, dimension: string): AnalyticsQuery {
+  return {
+    startDate: batch.startDate,
+    endDate: batch.endDate,
+    dimensions: `video,${dimension},subscribedStatus`,
+    metrics: MIX_METRICS,
+    filters: videoFilter(batch),
+  };
+}
+
+/** Traffic sources per video and subscribed status. Batch with `trafficBatchSize`. */
+export const trafficQuery = (batch: VideoBatch): AnalyticsQuery =>
+  mixQuery(batch, "insightTrafficSourceType");
+
+/** Device types per video and subscribed status. */
+export const deviceQuery = (batch: VideoBatch): AnalyticsQuery => mixQuery(batch, "deviceType");
+
+interface MixContext {
+  channelId: string;
+  asOf: string;
+  videoIds: readonly string[];
+}
+
+/** Shared by both mix parsers: one row per raw type with views, its share of the slice. */
+function parseMix(body: unknown, dimension: string, { channelId, asOf, videoIds }: MixContext) {
+  const rows = [];
+  for (const [key, group] of rowsByVideoAndStatus(body, videoIds)) {
+    const [videoId, status] = key.split("|") as [string, SubscribedStatus];
+    const types = group.map((row) => String(row[dimension]));
+    const duplicate = types.find((type, index) => types.indexOf(type) !== index);
+    if (duplicate)
+      throw new Error(`Analytics returned ${duplicate} twice for ${videoId} ${status}`);
+    const total = group.reduce((sum, row) => sum + Number(row.views ?? 0), 0);
+    for (const row of group) {
+      const views = Number(row.views ?? 0);
+      if (views === 0) continue;
+      rows.push({
+        channel_id: channelId,
+        video_id: videoId,
+        subscribed_status: status,
+        raw_type: String(row[dimension]),
+        views,
+        engaged_views: Number(row.engagedViews ?? 0),
+        share: views / total,
+        as_of: asOf,
+      });
+    }
+  }
+  return rows;
+}
+
+/**
+ * Pure parser for the traffic source report. Slices with no views produce no
+ * rows (absence is zero, never an error); zero-view sources are dropped.
+ */
+export function parseTrafficMix(body: unknown, context: MixContext): TrafficMixRow[] {
+  return parseMix(body, "insightTrafficSourceType", context).map((row) =>
+    trafficMixRowSchema.parse({ ...row, bucket: trafficBucket(row.raw_type) }),
+  );
+}
+
+/** Pure parser for the device type report, like `parseTrafficMix`. */
+export function parseDeviceMix(body: unknown, context: MixContext): DeviceMixRow[] {
+  return parseMix(body, "deviceType", context).map((row) =>
+    deviceMixRowSchema.parse({ ...row, bucket: deviceBucket(row.raw_type) }),
   );
 }
