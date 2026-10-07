@@ -4,3 +4,4 @@ export * from "./bigquery-load";
 export * from "./catalogue";
 export * from "./progress";
 export * from "./steps";
+export * from "./tables";

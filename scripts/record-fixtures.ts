@@ -15,6 +15,9 @@ import {
   contentTypeQuery,
   credentialsForChannel,
   deviceQuery,
+  pacificDate,
+  retentionQuery,
+  SEGMENT_METRICS,
   fetchVideos,
   parseVideos,
   queryReport,
@@ -154,6 +157,37 @@ const [trafficBatch] = videoBatches(parseVideos(videos), analyticsEndDate(), tra
 const traffic = trafficBatch ? await queryReport(auth, trafficQuery(trafficBatch)) : undefined;
 const devices = batch ? await queryReport(auth, deviceQuery(batch)) : undefined;
 
+// Retention: every audience for the most-viewed long-form video, plus a Short.
+const parsed = parseVideos(videos).sort((a, b) => b.viewCount - a.viewCount);
+const curve = async (
+  video: (typeof parsed)[number],
+  audience: "all" | "subscribed" | "unsubscribed" | "organic",
+  metrics?: string,
+) =>
+  queryReport(
+    auth,
+    retentionQuery(
+      {
+        videoId: video.id,
+        audience,
+        startDate: pacificDate(new Date(video.publishedAt)),
+        endDate: analyticsEndDate(),
+      },
+      metrics,
+    ),
+    { maxAttempts: 2 },
+  );
+const regular = parsed.find((video) => video.durationS >= 120);
+const short = parsed.find((video) => video.durationS <= 60);
+const retention: Record<string, unknown> = {};
+if (regular) {
+  for (const audience of ["all", "subscribed", "unsubscribed", "organic"] as const) {
+    retention[audience] = await curve(regular, audience);
+  }
+  retention.segments = await curve(regular, "all", SEGMENT_METRICS);
+}
+if (short) retention.short = await curve(short, "all");
+
 write("playlistItems.list.uploads.json", uploads.data);
 write("channels.list.mine.json", channels.data);
 write("videos.list.uploads.json", videos);
@@ -161,3 +195,11 @@ if (contentTypes) write("reports.query.content-type.json", contentTypes);
 if (stats) write("reports.query.stats.json", stats);
 if (traffic) write("reports.query.traffic.json", traffic);
 if (devices) write("reports.query.device.json", devices);
+for (const [name, body] of Object.entries(retention)) {
+  write(
+    name === "segments"
+      ? "reports.query.retention-segments.json"
+      : `reports.query.retention.${name}.json`,
+    body,
+  );
+}

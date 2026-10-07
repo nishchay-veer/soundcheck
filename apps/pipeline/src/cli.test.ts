@@ -49,6 +49,7 @@ describe("soundcheck CLI", () => {
       "catalogue",
       "stats",
       "mix",
+      "retention",
     ]);
   });
 

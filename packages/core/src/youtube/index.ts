@@ -5,4 +5,5 @@ export * from "./client";
 export * from "./duration";
 export * from "./reporting";
 export * from "./reports";
+export * from "./retention";
 export * from "./videos";

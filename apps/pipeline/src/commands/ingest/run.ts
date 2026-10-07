@@ -18,6 +18,7 @@ import {
   listReportingJobs,
   queryReport,
   type AnalyticsQuery,
+  type QueryOptions,
 } from "@soundcheck/core/youtube";
 
 type UploadsPageRequest = Parameters<typeof fetchUploadsPage>[1];
@@ -27,7 +28,7 @@ type VideosRequest = Parameters<typeof fetchVideos>[1];
 export interface YoutubeApi {
   uploadsPage(request: UploadsPageRequest): Promise<unknown>;
   videos(request: VideosRequest): Promise<unknown>;
-  report(query: AnalyticsQuery): Promise<unknown>;
+  report(query: AnalyticsQuery, options?: Pick<QueryOptions, "maxAttempts">): Promise<unknown>;
   reportingJobs(pageToken?: string): Promise<unknown>;
   createReportingJob(reportTypeId: string): Promise<unknown>;
 }
@@ -38,7 +39,7 @@ export async function connectYoutube(channelId: string, log: Logger): Promise<Yo
   return {
     uploadsPage: (request) => fetchUploadsPage(auth, request, log),
     videos: (request) => fetchVideos(auth, request, log),
-    report: (query) => queryReport(auth, query, { log }),
+    report: (query, options) => queryReport(auth, query, { log, ...options }),
     reportingJobs: (pageToken) => listReportingJobs(auth, pageToken, log),
     createReportingJob: (reportTypeId) => createReportingJob(auth, reportTypeId, log),
   };
@@ -96,9 +97,15 @@ export class IngestRun {
     return this.archive("youtube-videos", key, request, await this.api.videos(request));
   }
 
-  async report(source: string, key: string, query: AnalyticsQuery): Promise<unknown> {
+  async report(
+    source: string,
+    key: string,
+    query: AnalyticsQuery,
+    options?: Pick<QueryOptions, "maxAttempts">,
+  ): Promise<unknown> {
     this.calls.analyticsQueries += 1;
-    return this.archive(source, key, query, await this.api.report(query));
+    const body = await (options ? this.api.report(query, options) : this.api.report(query));
+    return this.archive(source, key, query, body);
   }
 
   async reportingJobs(key: string, pageToken?: string): Promise<unknown> {

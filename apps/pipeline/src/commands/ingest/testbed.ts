@@ -58,6 +58,32 @@ export const COLUMNS: Record<string, string[]> = {
     "share",
     "as_of",
   ],
+  retention_curves: [
+    "channel_id",
+    "video_id",
+    "audience",
+    "bin",
+    "elapsed_ratio",
+    "audience_watch_ratio",
+    "relative_retention",
+    "started_watching",
+    "stopped_watching",
+    "total_segment_impressions",
+    "s_mono",
+    "hazard",
+    "as_of",
+  ],
+  retention_coverage: [
+    "channel_id",
+    "video_id",
+    "audience",
+    "status",
+    "points",
+    "rewatch_bumps",
+    "rewatch_mass",
+    "as_of",
+    "details",
+  ],
   video_device_mix: [
     "channel_id",
     "video_id",
@@ -87,6 +113,20 @@ function reportFixture(query: AnalyticsQuery): Record<string, unknown> {
       return fixture("reports.query.traffic.json");
     case "video,deviceType,subscribedStatus":
       return fixture("reports.query.device.json");
+    case "elapsedVideoTimeRatio":
+      if (query.metrics.includes("startedWatching")) {
+        return fixture("reports.query.retention-segments.json");
+      }
+      if (query.filters?.includes("subscribedStatus==SUBSCRIBED")) {
+        return fixture("reports.query.retention.subscribed.json");
+      }
+      if (query.filters?.includes("subscribedStatus==UNSUBSCRIBED")) {
+        return fixture("reports.query.retention.unsubscribed.json");
+      }
+      if (query.filters?.includes("audienceType==ORGANIC")) {
+        return fixture("reports.query.retention.organic.json");
+      }
+      return fixture("reports.query.retention.all.json");
     default:
       throw new Error(`No fixture for dimensions=${query.dimensions}`);
   }

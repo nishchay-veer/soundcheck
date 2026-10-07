@@ -100,3 +100,60 @@ export type TrafficMixRow = z.infer<typeof trafficMixRowSchema>;
 /** `video_device_mix`. */
 export const deviceMixRowSchema = z.object({ ...mixRowShape, bucket: deviceBucketSchema });
 export type DeviceMixRow = z.infer<typeof deviceMixRowSchema>;
+
+/** Audiences with a measured retention curve; user-facing text calls these audiences too. */
+export const audienceSchema = z.enum(["all", "subscribed", "unsubscribed", "organic"]);
+export type Audience = z.infer<typeof audienceSchema>;
+
+/**
+ * `retention_curves`: one row per video, audience and bin of the 100-point
+ * timeline (bin 1 is elapsed ratio 0.01). Raw API values plus the derived
+ * monotone survival and hazard (labels for Phase 08, never features).
+ * `started_watching` and `stopped_watching` are null when YouTube does not
+ * return them.
+ */
+export const retentionCurveRowSchema = z.object({
+  channel_id: channelIdSchema,
+  video_id: z.string().min(1),
+  audience: audienceSchema,
+  bin: z.number().int().min(1).max(100),
+  elapsed_ratio: z.number().positive().max(1),
+  audience_watch_ratio: z.number().nonnegative(),
+  relative_retention: z.number().nonnegative().nullable(),
+  started_watching: count.nullable(),
+  stopped_watching: count.nullable(),
+  total_segment_impressions: z.number().nonnegative().nullable(),
+  s_mono: z.number().min(0).max(1),
+  hazard: z.number().min(0).max(0.999),
+  as_of: date,
+});
+export type RetentionCurveRow = z.infer<typeof retentionCurveRowSchema>;
+
+/**
+ * - `complete`: all 100 points arrived.
+ * - `partial`: some arrived; stored as is, never filled in.
+ * - `insufficient_data`: an empty response, because too few views.
+ * - `skipped`: not requested, e.g. `organic` when ads bring 2% of views or less.
+ */
+export const coverageStatusSchema = z.enum(["complete", "partial", "insufficient_data", "skipped"]);
+export type CoverageStatus = z.infer<typeof coverageStatusSchema>;
+
+/**
+ * `retention_coverage`: whether each video and audience has a measured curve.
+ * `details` says why not, and whether the segment counts (`startedWatching`,
+ * `stoppedWatching`) were available.
+ */
+export const retentionCoverageRowSchema = z.object({
+  channel_id: channelIdSchema,
+  video_id: z.string().min(1),
+  audience: audienceSchema,
+  status: coverageStatusSchema,
+  points: z.number().int().min(0).max(100),
+  /** Points that rise more than 0.02 over the previous one; null without a curve. */
+  rewatch_bumps: count.nullable(),
+  /** Sum of the watch ratio above monotone survival. An outcome, never a feature. */
+  rewatch_mass: z.number().nonnegative().nullable(),
+  as_of: date,
+  details: z.record(z.string(), z.unknown()).nullable(),
+});
+export type RetentionCoverageRow = z.infer<typeof retentionCoverageRowSchema>;

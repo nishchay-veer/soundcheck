@@ -1,0 +1,21 @@
+{
+  "kind": "youtubeAnalytics#resultTable",
+  "columnHeaders": [
+    {
+      "name": "elapsedVideoTimeRatio",
+      "columnType": "DIMENSION",
+      "dataType": "FLOAT"
+    },
+    {
+      "name": "startedWatching",
+      "columnType": "METRIC",
+      "dataType": "INTEGER"
+    },
+    {
+      "name": "stoppedWatching",
+      "columnType": "METRIC",
+      "dataType": "INTEGER"
+    }
+  ],
+  "rows": []
+}

@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "@soundcheck/core": "workspace:*",
-    "commander": "15.0.0"
+    "commander": "15.0.0",
+    "p-limit": "7.3.3"
   },
   "devDependencies": {
     "@soundcheck/eslint-config": "workspace:*",
