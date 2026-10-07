@@ -4,6 +4,30 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Phase 04: Retention curves (Oct 7, 2026)
+
+- **Built:**
+  - `soundcheck ingest retention --channel UC… [--force]`: per eligible video, curves for all, subscribed, unsubscribed, and organic when ads bring more than 2% of views;
+  - each curve has 100 points with `s_mono` (capped at 1) and hazards, plus `retention_coverage` rows and a printed coverage report;
+  - `@soundcheck/core/stats` (survival maths), retention queries and parsers, and `readChannelRows`;
+  - migration `002-retention-coverage.sql` (applied).
+- **Verified live** on `UC-BHlgFbFh3V76yth-XCmlw`:
+  - 3 videos with complete subscribed and unsubscribed curves; 900 curve rows and 12 coverage rows, 0 duplicates after a forced re-run;
+  - hazards rebuild `s_mono` within 3.3e-16 (property test: 1e-9);
+  - 18 Analytics calls, logged;
+  - `pnpm check` passes (20 tasks).
+- **Not met:** the data gate (at least 2 channels with 40+ complete videos). There is 1 channel with 3, so recruiting is blocked on OAuth test users and a deployed app.
+- **Differs from spec:**
+  - `startedWatching` and `stoppedWatching` empty the curve query, so they are asked for in a separate optional call; YouTube never returned them on the test channel, so they are null;
+  - the end date is today minus 3 days (Pacific);
+  - organic uses the `ADVERTISING` traffic share;
+  - there is a `skipped` coverage status.
+- **Next phases must keep:**
+  - labels only from `complete` curves;
+  - `rewatch_*` as outcomes, never features;
+  - Shorts' early hazards are 0, so model or filter by `content_type`;
+  - ingest order catalogue → stats → mix → retention.
+
 ### Phase 03: Catalogue and audience mix (Oct 7, 2026)
 
 - **Built:**
