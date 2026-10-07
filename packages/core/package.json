@@ -30,6 +30,7 @@
     "@google-cloud/workflows": "6.1.1",
     "@googleapis/youtube": "40.0.0",
     "@googleapis/youtubeanalytics": "11.0.1",
+    "@googleapis/youtubereporting": "11.0.1",
     "google-auth-library": "11.1.0",
     "p-limit": "7.3.3",
     "p-retry": "8.0.1",

@@ -86,8 +86,70 @@ describe("ingestCatalogue", () => {
     expect(archived("analytics-content-type/batch-001")).toEqual(
       fixture("reports.query.content-type.json"),
     );
-    // Staging files are gone; only the three raw responses remain.
-    expect(storage.buckets["test-raw"]?.size).toBe(3);
+    // Staging files are gone; only raw responses remain.
+    expect(
+      [...(storage.buckets["test-raw"] ?? [])]
+        .map((name) => name.split("/").slice(1, 3).join("/"))
+        .sort(),
+    ).toEqual([
+      "analytics-content-type/batch-001",
+      "reporting-jobs/create-channel_reach_basic_a1",
+      "reporting-jobs/create-channel_reach_combined_a1",
+      "reporting-jobs/page-001",
+      "youtube-playlist-items/page-001",
+      "youtube-videos/batch-001",
+    ]);
+  });
+
+  describe("reach report jobs", () => {
+    it("creates both reach jobs when the channel has none", async () => {
+      const { lines, logger } = memoryLogger();
+      await ingestCatalogue({ channelId: CHANNEL, now: NOW, log: logger, connect });
+      expect(api.createReportingJob.mock.calls.map(([type]) => type)).toEqual([
+        "channel_reach_basic_a1",
+        "channel_reach_combined_a1",
+      ]);
+      expect(lines.at(-1)).toMatchObject({
+        reach_jobs: {
+          channel_reach_basic_a1: "job-channel_reach_basic_a1",
+          channel_reach_combined_a1: "job-channel_reach_combined_a1",
+        },
+        reporting_calls: 3,
+      });
+    });
+
+    it("reuses existing jobs and creates only the missing one", async () => {
+      api.reportingJobs.mockResolvedValueOnce({
+        jobs: [
+          { id: "existing", reportTypeId: "channel_reach_basic_a1" },
+          { id: "other", reportTypeId: "channel_basic_a3" },
+        ],
+      });
+      await ingest();
+      expect(api.createReportingJob.mock.calls.map(([type]) => type)).toEqual([
+        "channel_reach_combined_a1",
+      ]);
+    });
+
+    it("logs a Reporting API failure and still finishes the catalogue", async () => {
+      const { lines, logger } = memoryLogger();
+      api.reportingJobs.mockRejectedValueOnce(
+        Object.assign(new Error("Request had insufficient authentication scopes."), {
+          response: { status: 403 },
+        }),
+      );
+      await expect(
+        ingestCatalogue({ channelId: CHANNEL, now: NOW, log: logger, connect }),
+      ).resolves.toHaveLength(4);
+      expect(lines.find((line) => line.severity === "WARNING")?.message).toMatch(
+        /could not start the reach report jobs/,
+      );
+      expect(lines.at(-1)).toMatchObject({
+        message: "ingest-catalogue finished",
+        reach_jobs: null,
+      });
+      expect(db.docs.get(`channels/${CHANNEL}/steps/${CATALOGUE_STEP}`)).toBeDefined();
+    });
   });
 
   it("archives a response even when it fails to parse", async () => {

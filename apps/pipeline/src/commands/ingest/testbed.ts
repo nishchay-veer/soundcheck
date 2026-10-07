@@ -128,6 +128,13 @@ export async function ingestTestbed() {
     uploadsPage: vi.fn(async () => fixture("playlistItems.list.uploads.json")),
     videos: vi.fn(async () => fixture("videos.list.uploads.json")),
     report: vi.fn(async (query: AnalyticsQuery) => reportFixture(query)),
+    reportingJobs: vi.fn(async () => ({})),
+    createReportingJob: vi.fn(async (reportTypeId: string) => ({
+      id: `job-${reportTypeId}`,
+      reportTypeId,
+      name: `soundcheck ${reportTypeId}`,
+      createTime: NOW.toISOString(),
+    })),
   };
   const connect = vi.fn(async () => api as YoutubeApi);
   /** The raw response archived at `{source}/{key}`, parsed; undefined if none. */

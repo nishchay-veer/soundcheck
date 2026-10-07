@@ -100,3 +100,17 @@ export const analyticsReportSchema = z.object({
   rows: z.array(z.array(z.union([z.string(), z.number(), z.null()]))).nullish(),
 });
 export type AnalyticsReport = z.infer<typeof analyticsReportSchema>;
+
+/** A YouTube Reporting API job: YouTube generates its report type daily from creation on. */
+export const reportingJobSchema = z.object({
+  id: z.string().min(1),
+  reportTypeId: z.string().min(1),
+  name: z.string().optional(),
+  createTime: z.iso.datetime({ offset: true }).optional(),
+});
+
+/** `jobs.list` response. `jobs` is omitted when the channel has none. */
+export const reportingJobListSchema = z.object({
+  jobs: z.array(reportingJobSchema).optional(),
+  nextPageToken: z.string().optional(),
+});

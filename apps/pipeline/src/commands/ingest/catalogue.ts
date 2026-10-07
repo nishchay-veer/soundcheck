@@ -8,9 +8,12 @@ import {
 import { videoRowSchema, type VideoRow } from "@soundcheck/core/schemas";
 import {
   DATA_API_PAGE_SIZE,
+  REACH_REPORT_TYPES,
   VIDEOS_PER_QUERY,
   contentTypeQuery,
   parseContentTypes,
+  parseReportingJob,
+  parseReportingJobs,
   parseUploadsPage,
   parseVideos,
   uploadsPageRequest,
@@ -39,6 +42,45 @@ export async function catalogueVideos(run: IngestRun): Promise<EligibleVideo[]> 
     );
   }
   return eligibleVideos(run.channel.id);
+}
+
+/**
+ * Makes sure the channel has a Reporting API job for each reach report,
+ * creating the missing ones. Reach reports only accrue from a job's creation,
+ * so this runs on every catalogue. Best effort: a failure is logged, the
+ * catalogue still succeeds, and the next catalogue run tries again.
+ * Returns the job ID per report type, or null on failure.
+ */
+export async function ensureReachJobs(run: IngestRun): Promise<Record<string, string> | null> {
+  try {
+    const existing = new Map<string, string>();
+    let pageToken: string | undefined;
+    for (let page = 0; page === 0 || pageToken; page += 1) {
+      const body = await run.reportingJobs(archiveKey("page", page), pageToken);
+      const parsed = parseReportingJobs(body);
+      for (const job of parsed.jobs) existing.set(job.reportTypeId, job.id);
+      pageToken = parsed.nextPageToken ?? undefined;
+    }
+    const jobs: Record<string, string> = {};
+    const created: string[] = [];
+    for (const reportTypeId of REACH_REPORT_TYPES) {
+      const id = existing.get(reportTypeId);
+      if (id) {
+        jobs[reportTypeId] = id;
+      } else {
+        jobs[reportTypeId] = parseReportingJob(await run.createReportingJob(reportTypeId)).id;
+        created.push(reportTypeId);
+      }
+    }
+    run.log.info({ reach_jobs: jobs, created }, "reach report jobs ready");
+    return jobs;
+  } catch (error) {
+    run.log.warn(
+      { err: error },
+      "could not start the reach report jobs; the next catalogue run tries again",
+    );
+    return null;
+  }
 }
 
 export function toVideoRow(
@@ -132,6 +174,7 @@ export async function ingestCatalogue(options: IngestOptions): Promise<VideoRow[
     runId: run.runId,
     log: run.log,
   });
+  const reachJobs = await ensureReachJobs(run);
 
   const excluded: Record<string, number> = {};
   for (const row of rows) {
@@ -146,6 +189,7 @@ export async function ingestCatalogue(options: IngestOptions): Promise<VideoRow[
       excluded,
       missing: videoIds.length - videos.length,
       min_views: minViews,
+      reach_jobs: reachJobs,
     },
   );
   return rows;

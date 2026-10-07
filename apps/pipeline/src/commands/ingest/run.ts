@@ -11,9 +11,11 @@ import {
 import type { Channel } from "@soundcheck/core/schemas";
 import {
   analyticsEndDate,
+  createReportingJob,
   credentialsForChannel,
   fetchUploadsPage,
   fetchVideos,
+  listReportingJobs,
   queryReport,
   type AnalyticsQuery,
 } from "@soundcheck/core/youtube";
@@ -26,6 +28,8 @@ export interface YoutubeApi {
   uploadsPage(request: UploadsPageRequest): Promise<unknown>;
   videos(request: VideosRequest): Promise<unknown>;
   report(query: AnalyticsQuery): Promise<unknown>;
+  reportingJobs(pageToken?: string): Promise<unknown>;
+  createReportingJob(reportTypeId: string): Promise<unknown>;
 }
 
 /** The real API, with the channel's stored credentials. */
@@ -35,6 +39,8 @@ export async function connectYoutube(channelId: string, log: Logger): Promise<Yo
     uploadsPage: (request) => fetchUploadsPage(auth, request, log),
     videos: (request) => fetchVideos(auth, request, log),
     report: (query) => queryReport(auth, query, log),
+    reportingJobs: (pageToken) => listReportingJobs(auth, pageToken, log),
+    createReportingJob: (reportTypeId) => createReportingJob(auth, reportTypeId, log),
   };
 }
 
@@ -58,7 +64,7 @@ export const archiveKey = (kind: "page" | "batch", index: number): string =>
  */
 export class IngestRun {
   readonly runId = randomUUID().replaceAll("-", "");
-  readonly calls = { dataApiUnits: 0, analyticsQueries: 0 };
+  readonly calls = { dataApiUnits: 0, analyticsQueries: 0, reportingCalls: 0 };
   readonly log: Logger;
   readonly progress: ProgressWriter;
 
@@ -95,6 +101,18 @@ export class IngestRun {
     return this.archive(source, key, query, await this.api.report(query));
   }
 
+  async reportingJobs(key: string, pageToken?: string): Promise<unknown> {
+    this.calls.reportingCalls += 1;
+    const body = await this.api.reportingJobs(pageToken);
+    return this.archive("reporting-jobs", key, { pageToken }, body);
+  }
+
+  async createReportingJob(reportTypeId: string): Promise<unknown> {
+    this.calls.reportingCalls += 1;
+    const body = await this.api.createReportingJob(reportTypeId);
+    return this.archive("reporting-jobs", `create-${reportTypeId}`, { reportTypeId }, body);
+  }
+
   private async archive(source: string, key: string, request: unknown, body: unknown) {
     await archiveRaw({
       channelId: this.channel.id,
@@ -122,6 +140,7 @@ export class IngestRun {
         as_of: this.asOf,
         data_api_units: this.calls.dataApiUnits,
         analytics_queries: this.calls.analyticsQueries,
+        reporting_calls: this.calls.reportingCalls,
         duration_ms: Date.now() - this.startedAt.getTime(),
       },
       `${this.step} finished`,
