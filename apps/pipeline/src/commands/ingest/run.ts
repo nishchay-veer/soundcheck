@@ -38,7 +38,7 @@ export async function connectYoutube(channelId: string, log: Logger): Promise<Yo
   return {
     uploadsPage: (request) => fetchUploadsPage(auth, request, log),
     videos: (request) => fetchVideos(auth, request, log),
-    report: (query) => queryReport(auth, query, log),
+    report: (query) => queryReport(auth, query, { log }),
     reportingJobs: (pageToken) => listReportingJobs(auth, pageToken, log),
     createReportingJob: (reportTypeId) => createReportingJob(auth, reportTypeId, log),
   };

@@ -22,15 +22,21 @@ export interface AnalyticsQuery {
   startIndex?: number;
 }
 
+export interface QueryOptions {
+  log?: Logger;
+  /** Fewer attempts for optional queries that may fail persistently; capped at `MAX_ATTEMPTS`. */
+  maxAttempts?: number;
+}
+
 /** Runs one Analytics query and returns the raw response body, to archive before parsing. */
 export async function queryReport(
   auth: OAuth2Client,
   query: AnalyticsQuery,
-  log?: Logger,
+  { log, maxAttempts }: QueryOptions = {},
 ): Promise<unknown> {
   const response = await withRetry(
     () => analyticsClient(auth).reports.query({ ids: "channel==MINE", ...query }),
-    { operation: "youtube.analytics.reports.query", logger: log },
+    { operation: "youtube.analytics.reports.query", logger: log, maxAttempts },
   );
   return response.data;
 }
