@@ -4,29 +4,32 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
-### Phase 03: Catalogue and audience mix (in progress, Oct 6, 2026)
+### Phase 03: Catalogue and audience mix (Oct 7, 2026)
 
-- **Done, parts 1–4 of 7:**
-  - the Analytics probe;
-  - job building blocks in `@soundcheck/core/jobs`: raw archive, BigQuery loads that replace a channel's rows, the throttled build-progress writer, and step markers;
-  - `soundcheck ingest catalogue` and `ingest stats`.
-- **Verified live** on `UC-BHlgFbFh3V76yth-XCmlw`:
-  - 4 videos, 3 of them eligible;
-  - 6 stats rows, a subscribed and an unsubscribed row for each eligible video;
-  - no duplicates after a forced re-run;
+- **Built:**
+  - `soundcheck ingest catalogue|stats|mix --channel UC… [--force]`, which land `videos`, `video_stats`, `video_traffic_mix` and `video_device_mix`;
+  - the catalogue also starts the two reach report jobs for Phase 16;
+  - `@soundcheck/core/jobs`: raw archive, BigQuery loads that replace a channel's rows, throttled build progress, step markers and `eligibleVideos`;
+  - `scripts/probe-analytics.ts`, and anonymized Data API and Analytics fixtures.
+- **Verified live** on `UC-BHlgFbFh3V76yth-XCmlw` after forced re-runs:
+  - 4 videos, 3 eligible;
+  - 6 stats rows, with 0 eligible videos missing either audience;
+  - 43 traffic and 19 device rows, with shares summing to 1 in every slice;
+  - 0 duplicates and 0 staging leftovers;
+  - the pipeline image runs;
   - `pnpm check` passes (20 tasks).
 - **Differs from spec:**
   - the content type comes from a multi-video query, because the top-videos shape returns 400, and its values arrive in camelCase;
-  - the end date is today minus 3 days;
+  - the end date is today minus 3 days, in Pacific time;
   - eligibility accepts Shorts and live streams from 60 s to 3 h;
-  - `MIN_VIEWS=200` is set in the local `.env` only;
-  - `engaged_views` columns were added (migration applied).
-- **Next:**
-  - part 5, `ingest mix`;
-  - part 6, reach report jobs;
-  - part 7, live verification, the plan-doc update and the final notes.
+  - `engaged_views` is stored too;
+  - re-runs replace the channel's rows and skip finished steps.
+- **Next phases must keep:**
+  - eligibility via `eligibleVideos` and the catalogue marker;
+  - the ingest command pattern (archive before parse, `replaceChannelRows`, step markers);
+  - one task per channel.
 
-  See "Resume here" in `docs/notes/phase-03.md`.
+  `MIN_VIEWS=200` is a local testing override; restore it to 500 before onboarding real creators.
 
 ### Phase 02: Sign-in and channel connect (Oct 6, 2026)
 
