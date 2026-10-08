@@ -4,6 +4,7 @@ import { KeyManagementServiceClient } from "@google-cloud/kms";
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 import { Storage } from "@google-cloud/storage";
 import { ExecutionsClient } from "@google-cloud/workflows";
+import { GoogleGenAI } from "@google/genai";
 import { pickServerEnv } from "./env";
 
 /**
@@ -19,6 +20,8 @@ export interface GcpClients {
   kms: KeyManagementServiceClient;
   workflowExecutions: ExecutionsClient;
   secretManager: SecretManagerServiceClient;
+  /** Gemini on Vertex AI, authenticated with Application Default Credentials. */
+  genai: GoogleGenAI;
 }
 export type GcpClientName = keyof GcpClients;
 
@@ -37,6 +40,14 @@ const factories: { [K in GcpClientName]: () => GcpClients[K] } = {
   kms: () => new KeyManagementServiceClient({ projectId: projectId() }),
   workflowExecutions: () => new ExecutionsClient({ projectId: projectId() }),
   secretManager: () => new SecretManagerServiceClient({ projectId: projectId() }),
+  genai: () => {
+    const env = pickServerEnv(["GCP_PROJECT_ID", "GEMINI_LOCATION"]);
+    return new GoogleGenAI({
+      vertexai: true,
+      project: env.GCP_PROJECT_ID,
+      location: env.GEMINI_LOCATION,
+    });
+  },
 };
 
 const instances: Partial<GcpClients> = {};
@@ -58,6 +69,7 @@ export const getStorage = (): Storage => client("storage");
 export const getKms = (): KeyManagementServiceClient => client("kms");
 export const getWorkflowExecutions = (): ExecutionsClient => client("workflowExecutions");
 export const getSecretManager = (): SecretManagerServiceClient => client("secretManager");
+export const getGenAI = (): GoogleGenAI => client("genai");
 
 /** Tests only: replace a client with a fake, or pass `undefined` to remove the override. */
 export function setClientOverride<K extends GcpClientName>(

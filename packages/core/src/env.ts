@@ -36,6 +36,12 @@ export const serverEnvSchema = z.object({
   GEMINI_LOCATION: required.default("global"),
   GEMINI_MODEL: required,
   GEMINI_FLASH_MODEL: required,
+  // Static sends every frame; agentic lets the model choose what to watch.
+  // The Phase 05 probe found static cheaper and steadier for full beat coverage.
+  GEMINI_VIDEO_MODE: z.enum(["static", "agentic"]).default("static"),
+  // US$ per million tokens for GEMINI_MODEL, for cost estimates only.
+  GEMINI_PRICE_INPUT_PER_M: z.coerce.number().nonnegative().optional(),
+  GEMINI_PRICE_OUTPUT_PER_M: z.coerce.number().nonnegative().optional(),
   // Optional until the phases that use them: Imagen is a stretch goal and the
   // workflows are wired in Phase 10. The code that needs them checks presence.
   IMAGEN_MODEL: required.optional(),

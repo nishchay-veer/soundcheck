@@ -157,3 +157,71 @@ export const retentionCoverageRowSchema = z.object({
   details: z.record(z.string(), z.unknown()).nullable(),
 });
 export type RetentionCoverageRow = z.infer<typeof retentionCoverageRowSchema>;
+
+/**
+ * How one video's extraction ended:
+ * - `extracted`: Gemini answered and the beats passed validation;
+ * - `cached`: a validated extraction for the same key already existed;
+ * - `invalid`: the answer failed validation twice (the retry included the errors);
+ * - `private_unavailable`: a private video, which Gemini cannot read from YouTube;
+ * - `failed`: the Gemini call itself failed.
+ */
+export const extractionStatusSchema = z.enum([
+  "extracted",
+  "cached",
+  "invalid",
+  "private_unavailable",
+  "failed",
+]);
+export type ExtractionStatus = z.infer<typeof extractionStatusSchema>;
+
+/** `beats`: one row per beat. The typed per-beat features are in `details`. */
+export const beatRowSchema = z.object({
+  channel_id: channelIdSchema,
+  video_id: z.string().min(1),
+  extraction_version: z.string().min(1),
+  beat_index: z.number().int().nonnegative(),
+  start_s: z.number().nonnegative(),
+  end_s: z.number().positive(),
+  beat_type: z.string().min(1),
+  extracted_at: timestamp,
+  details: z.record(z.string(), z.unknown()),
+});
+export type BeatRow = z.infer<typeof beatRowSchema>;
+
+/** `beat_videos`: one row per video and extraction, with the video-level answers. */
+export const beatVideoRowSchema = z.object({
+  channel_id: channelIdSchema,
+  video_id: z.string().min(1),
+  extraction_version: z.string().min(1),
+  cache_key: z.string().regex(/^[0-9a-f]{64}$/),
+  gemini_model: z.string().min(1),
+  video_mode: z.string().min(1),
+  format: z.string().min(1),
+  video_summary: z.string(),
+  title_promise: z.string(),
+  target_level: z.number().int().min(1).max(5),
+  payoff_time_s: z.number().nonnegative().nullable(),
+  beat_count: z.number().int().positive(),
+  coverage: z.number().min(0).max(1),
+  duration_s: z.number().positive(),
+  extracted_at: timestamp,
+});
+export type BeatVideoRow = z.infer<typeof beatVideoRowSchema>;
+
+/**
+ * `extraction_runs`: one row per video per `extract beats` run, cache hits
+ * included, with token counts, latency, cost and each Gemini call in `details`.
+ */
+export const extractionRunRowSchema = z.object({
+  run_id: z.string().min(1),
+  channel_id: channelIdSchema,
+  video_id: z.string().min(1),
+  extraction_version: z.string().min(1),
+  gemini_model: z.string().nullable(),
+  status: extractionStatusSchema,
+  started_at: timestamp,
+  finished_at: timestamp.nullable(),
+  details: z.record(z.string(), z.unknown()),
+});
+export type ExtractionRunRow = z.infer<typeof extractionRunRowSchema>;

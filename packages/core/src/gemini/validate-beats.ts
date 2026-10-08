@@ -56,7 +56,15 @@ export function validateBeats(answer: unknown, durationS: number): BeatsValidati
       ),
     };
   }
-  const video = toVideoBeats(parsed.data);
+  return checkBeats(toVideoBeats(parsed.data), durationS);
+}
+
+/**
+ * The checks and repairs of `validateBeats` on beats already in seconds: also
+ * used on stitched windows of a long video.
+ */
+export function checkBeats(video: VideoBeats, durationS: number): BeatsValidation {
+  if (!(durationS > 0)) throw new RangeError(`Video duration must be positive, got ${durationS}`);
   const errors: string[] = [];
   const fixes: string[] = [];
   const beats: Beat[] = [...video.beats]

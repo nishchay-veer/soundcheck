@@ -83,7 +83,7 @@ describe("stitchWindows", () => {
 
   it("drops later beats inside the overlap and merges a crossing beat of the same type", () => {
     const stitched = stitchWindows([
-      { window: first, beats: video([beat(0, 600), beat(600, 1_200, "demonstration", "a b")]) },
+      { window: first, beats: video([beat(0, 900), beat(900, 1_200, "demonstration", "a b")]) },
       {
         window: second,
         beats: video([
@@ -94,11 +94,24 @@ describe("stitchWindows", () => {
       },
     ]);
     expect(stitched.beats.map((b) => [b.start_s, b.end_s, b.beat_type])).toEqual([
-      [0, 600, "explanation"],
-      [600, 1_500, "demonstration"],
+      [0, 900, "explanation"],
+      [900, 1_500, "demonstration"],
       [1_500, 2_370, "explanation"],
     ]);
     expect(stitched.beats[1]?.transcript).toBe("a b c d");
+  });
+
+  it("does not merge when the joined beat would exceed 600 s", () => {
+    const stitched = stitchWindows([
+      { window: first, beats: video([beat(0, 800), beat(800, 1_200)]) },
+      { window: second, beats: video([beat(1_170, 1_570), beat(1_570, 2_370)]) },
+    ]);
+    expect(stitched.beats.map((b) => [b.start_s, b.end_s])).toEqual([
+      [0, 800],
+      [800, 1_200],
+      [1_200, 1_570],
+      [1_570, 2_370],
+    ]);
   });
 
   it("starts a crossing beat of another type where the earlier window ends", () => {

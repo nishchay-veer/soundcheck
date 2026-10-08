@@ -1,4 +1,5 @@
 import type { Beat, VideoBeats } from "../schemas/beats";
+import { MAX_BEAT_S } from "./validate-beats";
 
 /** Videos longer than this are extracted in windows. */
 export const SINGLE_PASS_MAX_S = 40 * 60;
@@ -45,8 +46,8 @@ export function toVideoTime(window: ExtractionWindow, beats: VideoBeats): VideoB
  * Joins windowed extractions, already in video time and in window order. In
  * each overlap the earlier window wins: later beats that start inside the
  * overlap are dropped, except the one that runs past it, which is merged into
- * the earlier window's last beat when both share a type, and otherwise starts
- * where that beat ends. A merged beat's transcript joins both, so it can
+ * the earlier window's last beat when both share a type and the joined beat
+ * stays within 600 s, and otherwise starts where that beat ends. A merged beat's transcript joins both, so it can
  * repeat up to 30 s of speech from the overlap. Video-level fields come from
  * the first window; the payoff is the first one any window reports.
  */
@@ -68,7 +69,7 @@ export function stitchWindows(
       if (beat.start_s < overlapEnd) {
         // Crosses the end of the overlap: continue the earlier beat or start where it ends.
         const last = beats[beats.length - 1] as Beat;
-        if (last.beat_type === beat.beat_type) {
+        if (last.beat_type === beat.beat_type && beat.end_s - last.start_s <= MAX_BEAT_S) {
           last.end_s = beat.end_s;
           last.transcript = [last.transcript, beat.transcript].filter(Boolean).join(" ");
         } else {
