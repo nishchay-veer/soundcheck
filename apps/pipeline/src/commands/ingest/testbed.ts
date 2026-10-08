@@ -112,6 +112,7 @@ export const COLUMNS: Record<string, string[]> = {
     "duration_s",
     "extracted_at",
   ],
+  quality_reports: ["report_id", "channel_id", "stage", "run_id", "created_at", "details"],
   extraction_runs: [
     "run_id",
     "channel_id",

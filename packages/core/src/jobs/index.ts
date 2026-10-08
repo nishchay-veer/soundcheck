@@ -3,5 +3,6 @@ export * from "./archive";
 export * from "./bigquery-load";
 export * from "./catalogue";
 export * from "./progress";
+export * from "./quality";
 export * from "./steps";
 export * from "./tables";

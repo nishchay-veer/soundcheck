@@ -247,6 +247,26 @@ describe("extractVideoBeats", () => {
     expect(outcome.extraction?.coverage).toBe(1);
   });
 
+  it("takes temperature, seed, archive location and cache writes as options", async () => {
+    gemini.answer(answer([[0, 88]]));
+    const outcome = await extractVideoBeats(target, {
+      settings,
+      log: quiet,
+      noCache: true,
+      writeCache: false,
+      temperature: 0.4,
+      seed: 7,
+      archive: { source: "consistency", label: "run1-fixtureVid1-r2" },
+    });
+    expect(outcome.status).toBe("extracted");
+    expect(gemini.requests[0]?.config).toMatchObject({ temperature: 0.4, seed: 7 });
+    const names = [...(storage.buckets["test-raw"] ?? [])];
+    expect(names).toEqual([
+      expect.stringMatching(new RegExp(`^${CHANNEL}/consistency/run1-fixtureVid1-r2-w0-a1/`)),
+    ]);
+    expect(names.some((name) => name.includes("/beats/"))).toBe(false);
+  });
+
   it("estimates cost from tokens and the configured prices", async () => {
     gemini.answer({
       ...answer([[0, 88]]),

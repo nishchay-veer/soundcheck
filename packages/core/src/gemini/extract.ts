@@ -162,13 +162,35 @@ function windowContents(
  * raw answer is archived before it is parsed (rule 6). A validated result is
  * cached, so a re-run costs no tokens.
  */
+export interface ExtractOptions {
+  settings?: ExtractionSettings;
+  /** Skip the cache lookup and ask Gemini. */
+  noCache?: boolean;
+  /** Store a validated result in the cache (default). Consistency runs do not. */
+  writeCache?: boolean;
+  /** Default 0. Consistency runs raise it to measure sensitivity. */
+  temperature?: number;
+  /** Default `EXTRACTION_SEED`. */
+  seed?: number;
+  /**
+   * Where raw answers are archived: `{source}/{label}-w{window}-a{answer}/`.
+   * Defaults to `gemini-beats` and the video ID.
+   */
+  archive?: { source: string; label: string };
+  log?: Logger;
+}
+
 export async function extractVideoBeats(
   target: ExtractionTarget,
   {
     settings = extractionSettings(),
     noCache = false,
+    writeCache = true,
+    temperature = 0,
+    seed = EXTRACTION_SEED,
+    archive = { source: "gemini-beats", label: target.videoId },
     log = rootLogger,
-  }: { settings?: ExtractionSettings; noCache?: boolean; log?: Logger } = {},
+  }: ExtractOptions = {},
 ): Promise<ExtractionOutcome> {
   const { channelId, videoId, durationS } = target;
   const request = extractionRequest(videoId, settings);
@@ -219,8 +241,8 @@ export async function extractVideoBeats(
               contents,
               config: {
                 systemInstruction: request.systemInstruction,
-                temperature: 0,
-                seed: EXTRACTION_SEED,
+                temperature,
+                seed,
                 responseMimeType: "application/json",
                 responseJsonSchema: request.responseSchema,
               },
@@ -235,12 +257,14 @@ export async function extractVideoBeats(
       const text = response.text ?? "";
       await archiveRaw({
         channelId,
-        source: "gemini-beats",
-        key: `${videoId}-w${window.index}-a${answer}`,
+        source: archive.source,
+        key: `${archive.label}-w${window.index}-a${answer}`,
         body: { text, usageMetadata: response.usageMetadata, modelVersion: response.modelVersion },
         request: {
           model: settings.model,
           videoMode: settings.videoMode,
+          temperature,
+          seed,
           window,
           answer,
           key: request.key,
@@ -331,6 +355,6 @@ export async function extractVideoBeats(
     usage: { ...usage, cost_usd: estimateCost(usage, settings.prices) },
     beats,
   };
-  await writeCachedExtraction(extraction);
+  if (writeCache) await writeCachedExtraction(extraction);
   return outcome("extracted", extraction);
 }

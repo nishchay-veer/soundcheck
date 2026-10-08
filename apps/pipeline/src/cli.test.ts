@@ -37,7 +37,7 @@ describe("soundcheck CLI", () => {
   it.each(
     commands
       .map((command) => command.name)
-      .filter((name) => name !== "ingest" && name !== "extract"),
+      .filter((name) => !["ingest", "extract", "consistency"].includes(name)),
   )("%s prints not implemented", async (name) => {
     const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
     await createProgram().parseAsync(["node", "soundcheck", name]);

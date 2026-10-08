@@ -225,3 +225,14 @@ export const extractionRunRowSchema = z.object({
   details: z.record(z.string(), z.unknown()),
 });
 export type ExtractionRunRow = z.infer<typeof extractionRunRowSchema>;
+
+/** `quality_reports`: one data-quality report from any stage, with the findings in `details`. */
+export const qualityReportRowSchema = z.object({
+  report_id: z.string().regex(/^[\w-]+$/),
+  channel_id: channelIdSchema,
+  stage: z.string().min(1),
+  run_id: z.string().nullable(),
+  created_at: timestamp,
+  details: z.record(z.string(), z.unknown()),
+});
+export type QualityReportRow = z.infer<typeof qualityReportRowSchema>;
