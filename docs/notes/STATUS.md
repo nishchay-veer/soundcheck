@@ -4,6 +4,32 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Phase 05: Beat extraction with Gemini (Oct 8, 2026)
+
+- **Built:**
+  - `soundcheck extract beats` (and `extract load`): Gemini 3.8 Flash on Vertex AI reads each video from its YouTube URL and returns typed beats as structured JSON;
+  - the answer is validated and repaired, and retried once with the exact errors;
+  - results are cached by source, version, model, prompt and mode, and every raw answer is archived;
+  - rows land in `beats`, the new `beat_videos` table and `extraction_runs`;
+  - reviewed few-shot examples live in `@soundcheck/core/prompts`.
+- **Verified live:**
+  - all 4 videos of the test channel, at 100% coverage, about 20k tokens per video and $0.0085 per minute of video;
+  - a re-run costs 0 tokens;
+  - Nishchay spot-checked the extractions: "everything is right".
+  - `pnpm check` passes (20 tasks).
+- **Differs from spec:**
+  - static is the default video mode; agentic (a setting) cost 2 to 7 times more and ran slower in the probe;
+  - `"M:SS"` timestamps;
+  - `performance` and `other` labels;
+  - the prompt is a `.ts` module;
+  - low media resolution has no effect on YouTube URLs.
+  - 4 of the spec's 10 videos exist, so the other 6 wait for more channels.
+- **Next phases must keep:**
+  - read beats for the current cache key only;
+  - leave the two example videos out of quality checks;
+  - bump `EXTRACTION_VERSION` and re-review the examples for any label change;
+  - update the prices in `.env` on Jan 1, 2027.
+
 ### Phase 04: Retention curves (Oct 7, 2026)
 
 - **Built:**
