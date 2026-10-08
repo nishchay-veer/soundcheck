@@ -1,7 +1,8 @@
 /**
  * In-memory stand-in for `GoogleGenAI.models.generateContent`, for unit tests:
  * it records every request and returns queued answers in order (or throws a
- * queued error). Install it with `setClientOverride("genai", fake.asGenAI())`.
+ * queued error); with the queue empty it asks the responder, if one is set.
+ * Install it with `setClientOverride("genai", fake.asGenAI())`.
  */
 import type { GenerateContentParameters, GoogleGenAI } from "@google/genai";
 
@@ -19,6 +20,7 @@ export interface FakeAnswer {
 export class FakeGenAI {
   readonly requests: GenerateContentParameters[] = [];
   private readonly queue: Array<FakeAnswer | Error> = [];
+  private responder: ((request: GenerateContentParameters) => FakeAnswer | Error) | undefined;
 
   /** Queues answers (or errors) for the next calls. */
   answer(...answers: Array<FakeAnswer | Error>): this {
@@ -26,10 +28,16 @@ export class FakeGenAI {
     return this;
   }
 
+  /** Answers every call the queue does not, e.g. from the video length in the request. */
+  respondWith(responder: (request: GenerateContentParameters) => FakeAnswer | Error): this {
+    this.responder = responder;
+    return this;
+  }
+
   readonly models = {
     generateContent: async (request: GenerateContentParameters) => {
       this.requests.push(structuredClone(request));
-      const next = this.queue.shift();
+      const next = this.queue.shift() ?? this.responder?.(request);
       if (!next) throw new Error("FakeGenAI: no answer queued");
       if (next instanceof Error) throw next;
       return {

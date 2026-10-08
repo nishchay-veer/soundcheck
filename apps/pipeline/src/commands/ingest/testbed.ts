@@ -6,7 +6,7 @@
 import { readFileSync } from "node:fs";
 import { createLogger, resetClients, resetEnvCache, setClientOverride } from "@soundcheck/core";
 import type { ChannelDoc } from "@soundcheck/core/schemas";
-import { FakeBigQuery, FakeFirestore, FakeStorage } from "@soundcheck/core/testing";
+import { FakeBigQuery, FakeFirestore, FakeGenAI, FakeStorage } from "@soundcheck/core/testing";
 import type { AnalyticsQuery } from "@soundcheck/core/youtube";
 import { vi, type Mock } from "vitest";
 import type { YoutubeApi } from "./run";
@@ -84,6 +84,45 @@ export const COLUMNS: Record<string, string[]> = {
     "as_of",
     "details",
   ],
+  beats: [
+    "channel_id",
+    "video_id",
+    "extraction_version",
+    "beat_index",
+    "start_s",
+    "end_s",
+    "beat_type",
+    "extracted_at",
+    "details",
+  ],
+  beat_videos: [
+    "channel_id",
+    "video_id",
+    "extraction_version",
+    "cache_key",
+    "gemini_model",
+    "video_mode",
+    "format",
+    "video_summary",
+    "title_promise",
+    "target_level",
+    "payoff_time_s",
+    "beat_count",
+    "coverage",
+    "duration_s",
+    "extracted_at",
+  ],
+  extraction_runs: [
+    "run_id",
+    "channel_id",
+    "video_id",
+    "extraction_version",
+    "gemini_model",
+    "status",
+    "started_at",
+    "finished_at",
+    "details",
+  ],
   video_device_mix: [
     "channel_id",
     "video_id",
@@ -148,6 +187,8 @@ export async function ingestTestbed() {
   setClientOverride("firestore", db.asFirestore());
   setClientOverride("bigquery", bigquery.asBigQuery());
   setClientOverride("storage", storage.asStorage());
+  const gemini = new FakeGenAI();
+  setClientOverride("genai", gemini.asGenAI());
 
   const channel: ChannelDoc = {
     userId: "111111111111111111111",
@@ -182,7 +223,7 @@ export async function ingestTestbed() {
     const text = storage.read(`gs://test-raw/${CHANNEL}/${path}/20261006.json`);
     return text === undefined ? undefined : JSON.parse(text);
   };
-  return { db, storage, bigquery, api, connect, archived };
+  return { db, storage, bigquery, gemini, api, connect, archived };
 }
 
 export function resetTestbed(): void {

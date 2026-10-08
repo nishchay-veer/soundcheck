@@ -34,14 +34,15 @@ describe("soundcheck CLI", () => {
     ]);
   });
 
-  it.each(commands.map((command) => command.name).filter((name) => name !== "ingest"))(
-    "%s prints not implemented",
-    async (name) => {
-      const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
-      await createProgram().parseAsync(["node", "soundcheck", name]);
-      expect(write).toHaveBeenCalledWith(`${name}: not implemented\n`);
-    },
-  );
+  it.each(
+    commands
+      .map((command) => command.name)
+      .filter((name) => name !== "ingest" && name !== "extract"),
+  )("%s prints not implemented", async (name) => {
+    const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
+    await createProgram().parseAsync(["node", "soundcheck", name]);
+    expect(write).toHaveBeenCalledWith(`${name}: not implemented\n`);
+  });
 
   it("has ingest subcommands", () => {
     const ingest = createProgram().commands.find((command) => command.name() === "ingest");
@@ -51,6 +52,17 @@ describe("soundcheck CLI", () => {
       "mix",
       "retention",
     ]);
+  });
+
+  it("has extract subcommands", () => {
+    const extract = createProgram().commands.find((command) => command.name() === "extract");
+    expect(extract?.commands.map((command) => command.name())).toEqual(["beats", "load"]);
+  });
+
+  it("rejects a non-numeric --limit", async () => {
+    expect(
+      await parse("extract", "beats", "--channel", "UCaBcDeFgHiJkLmNoPqRsTuV", "--limit", "two"),
+    ).toMatch(/expected a positive whole number/);
   });
 
   it("requires --channel", async () => {

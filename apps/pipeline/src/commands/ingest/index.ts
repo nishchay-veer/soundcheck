@@ -1,17 +1,10 @@
-import { channelIdSchema } from "@soundcheck/core/schemas";
-import { InvalidArgumentError, type Command } from "commander";
+import type { Command } from "commander";
+import { channelIdOption } from "../options";
 import type { PipelineCommand } from "../types";
 import { ingestCatalogue } from "./catalogue";
 import { ingestMix } from "./mix";
 import { formatCoverage, ingestRetention } from "./retention";
 import { ingestStats } from "./stats";
-
-function channelId(value: string): string {
-  if (!channelIdSchema.safeParse(value).success) {
-    throw new InvalidArgumentError("expected a channel ID: UC followed by 22 characters");
-  }
-  return value;
-}
 
 interface StepFlags {
   channel: string;
@@ -23,7 +16,7 @@ function step(parent: Command, name: string, description: string): Command {
   return parent
     .command(name)
     .description(description)
-    .requiredOption("--channel <id>", "a connected channel's ID", channelId)
+    .requiredOption("--channel <id>", "a connected channel's ID", channelIdOption)
     .option("--force", "redo the step even if it already finished for this data date", false);
 }
 
