@@ -1,2 +1,3 @@
-// Small numeric helpers: survival labels now, agreement metrics (kappa) later.
+// Small numeric helpers: survival labels and agreement metrics.
+export * from "./agreement";
 export * from "./survival";
