@@ -9,6 +9,7 @@
     "record-fixtures": "tsx --env-file-if-exists=../.env record-fixtures.ts",
     "probe-analytics": "tsx --env-file-if-exists=../.env probe-analytics.ts",
     "probe-gemini-video": "tsx --env-file-if-exists=../.env probe-gemini-video.ts",
+    "draft-beat-example": "tsx --env-file-if-exists=../.env draft-beat-example.ts",
     "lint": "eslint --max-warnings 0",
     "typecheck": "tsc --noEmit"
   },

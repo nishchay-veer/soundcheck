@@ -1,0 +1,83 @@
+{
+  "description": "A student's application video for a university developer-club lead role: one speaker to camera",
+  "duration": "1:28",
+  "reviewed": true,
+  "annotation": {
+    "schema_version": "beats-v1",
+    "video_summary": "A computer science undergraduate applies for the Google Developer Student Clubs (GDSC) Lead position, introducing his technical background, community leadership experience, and vision for bridging academia with industry.",
+    "format": "other",
+    "title_promise": "An application video presenting the candidate's qualifications and vision for the GDSC Lead role.",
+    "target_level": 2,
+    "payoff_time": null,
+    "beats": [
+      {
+        "start": "0:00",
+        "end": "0:18",
+        "beat_type": "setup",
+        "framing": "talking_head_static",
+        "cuts_per_min": 0,
+        "on_screen_text": false,
+        "music": "none",
+        "energy": 3,
+        "assumed_knowledge": 1,
+        "info_density": 3,
+        "opens_loop": "why he is applying for the GDSC Lead position",
+        "closes_loop": false,
+        "speaker_count": 1,
+        "transcript": "Hey everyone at Google, this is Nishchay, a second year CSE undergrad at National Institute of Technology, Jalandhar, and also a core team member of many technical societies at my college. Be it as a member of GDSC, or leading a technical team of 15 plus people at TEDx, I've always loved to share my knowledge.",
+        "summary": "Nishchay introduces himself, his college background, and leadership roles in technical societies."
+      },
+      {
+        "start": "0:18",
+        "end": "0:56",
+        "beat_type": "explanation",
+        "framing": "talking_head_static",
+        "cuts_per_min": 0,
+        "on_screen_text": false,
+        "music": "none",
+        "energy": 3,
+        "assumed_knowledge": 2,
+        "info_density": 3,
+        "opens_loop": null,
+        "closes_loop": false,
+        "speaker_count": 1,
+        "transcript": "And this process of conducting over 20 plus workshops and mentored over 100 plus students, guiding them about various technologies like Firebase, Google Cloud, and OpenCV, I've realized one simple thing: that students at our institute are very enthusiastic about technology, but one thing that they lack is the right guidance. And that's what I want to do by becoming a GDSC Lead. I want to bridge this gap between academia and industry so the student community could interact with the professionals. I also want to shift their competitive mindset into a collaborative one, so they would understand that it's not about competition anymore, but collaborating on real-world projects.",
+        "summary": "He outlines his mentoring experience and vision to connect students with industry professionals."
+      },
+      {
+        "start": "0:56",
+        "end": "1:21",
+        "beat_type": "explanation",
+        "framing": "talking_head_static",
+        "cuts_per_min": 0,
+        "on_screen_text": false,
+        "music": "none",
+        "energy": 3,
+        "assumed_knowledge": 2,
+        "info_density": 3,
+        "opens_loop": null,
+        "closes_loop": false,
+        "speaker_count": 1,
+        "transcript": "Telling a, telling a little bit about myself, I have a thorough understanding of many programming languages like C, C++, JavaScript, and PHP. Whether it's about leading a technical team or a team to organize events, I have always put myself forward. I believe that a GDSC Lead should have two qualities: A, effective communication skills, and B, a collaborative mindset. And these two are my greatest virtues.",
+        "summary": "He details his programming knowledge, leadership experience, and key virtues for the role."
+      },
+      {
+        "start": "1:21",
+        "end": "1:28",
+        "beat_type": "outro",
+        "framing": "talking_head_static",
+        "cuts_per_min": 0,
+        "on_screen_text": false,
+        "music": "none",
+        "energy": 3,
+        "assumed_knowledge": 1,
+        "info_density": 1,
+        "opens_loop": null,
+        "closes_loop": true,
+        "speaker_count": 1,
+        "transcript": "I'll be honored if I get a chance to serve as the next GDSC Lead at our institute. Thank you so much, Google.",
+        "summary": "He concludes with a final thank you and expression of hope to be selected."
+      }
+    ]
+  }
+}
