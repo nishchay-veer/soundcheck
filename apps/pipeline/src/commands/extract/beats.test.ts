@@ -37,7 +37,7 @@ function coveringAnswer(request: Parameters<FakeGenAI["models"]["generateContent
       start: clock(start),
       end: clock(Math.min(start + 120, duration)),
       beat_type: "performance",
-      framing: "talking_head_static",
+      framing: "talking_head",
       cuts_per_min: 0,
       on_screen_text: false,
       music: "foreground",
@@ -53,7 +53,7 @@ function coveringAnswer(request: Parameters<FakeGenAI["models"]["generateContent
   }
   return {
     text: JSON.stringify({
-      schema_version: "beats-v1",
+      schema_version: "beats-v2",
       video_summary: "A performance.",
       format: "performance",
       title_promise: "A song.",
@@ -138,7 +138,7 @@ describe("extract beats", () => {
       extraction_version: EXTRACTION_VERSION,
       beat_type: "performance",
       details: expect.objectContaining({
-        framing: "talking_head_static",
+        framing: "talking_head",
         words_per_minute: expect.any(Number),
       }),
     });

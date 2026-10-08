@@ -1,4 +1,4 @@
-import type { GeminiVideoBeats } from "../schemas/beats";
+import { BEATS_SCHEMA_VERSION, type GeminiVideoBeats } from "../schemas/beats";
 
 /**
  * The beat-extraction prompt (system instruction), versioned with the beats
@@ -74,21 +74,17 @@ When two types fit, decide by what the viewer sees and hears most of the beat:
 
 # Framing
 
-What fills the screen for more than half of the beat. Use mixed only when no
-single framing does.
+What fills the screen for more than half of the beat. Always choose one of
+these; when the picture alternates, pick the one on screen longest.
 
-- talking_head_static: a person speaking to camera, fixed framing (tripod).
-- talking_head_moving: a person speaking to camera, handheld or the camera
-  moves (walking, vlogging).
+- talking_head: a person speaking to camera, fixed or moving camera.
 - screen_recording: a real computer or phone screen: software, websites,
   apps, code. Zoomed, cropped, annotated or styled screens still count.
 - b_roll: footage of places, objects, people or action without anyone
   speaking to camera; a voice-over is allowed.
 - graphics: designed visuals made for the video: motion graphics, animated
-  illustrations, titles, charts. Not a software interface.
-- slides: presentation slides.
+  illustrations, titles, charts, presentation slides. Not a software interface.
 - gameplay: video game footage.
-- mixed: no single framing fills more than half of the beat.
 - other: none of the above.
 
 # Video formats
@@ -140,7 +136,7 @@ target_level, the audience expertise the whole video assumes:
 
 # Output
 
-Return JSON that matches the response schema, with schema_version "beats-v1".
+Return JSON that matches the response schema, with schema_version "${BEATS_SCHEMA_VERSION}".
 `.trim();
 
 export interface BeatExample {

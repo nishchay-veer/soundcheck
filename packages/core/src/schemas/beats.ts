@@ -13,7 +13,8 @@ import { z } from "zod";
  * additions to the spec's lists, for music and other performed content.
  */
 
-export const BEATS_SCHEMA_VERSION = "beats-v1";
+/** beats-v2: six framings; `mixed` removed, talking heads and slides merged (Phase 06). */
+export const BEATS_SCHEMA_VERSION = "beats-v2";
 
 export const videoFormatSchema = z.enum([
   "tutorial",
@@ -57,14 +58,11 @@ export const beatTypeSchema = z.enum([
 export type BeatType = z.infer<typeof beatTypeSchema>;
 
 export const framingSchema = z.enum([
-  "talking_head_static",
-  "talking_head_moving",
+  "talking_head",
   "screen_recording",
   "b_roll",
   "graphics",
-  "slides",
   "gameplay",
-  "mixed",
   "other",
 ]);
 export type Framing = z.infer<typeof framingSchema>;

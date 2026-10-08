@@ -21,41 +21,39 @@ function run(
     videoId,
     durationS,
     beats: {
-      schema_version: "beats-v1",
+      schema_version: "beats-v2",
       video_summary: "",
       format: "explainer",
       title_promise: "",
       target_level: 2,
       payoff_time_s: payoff,
-      beats: specs.map(
-        ([start_s, end_s, beat_type, framing = "talking_head_static", energy = 3]) => ({
-          start_s,
-          end_s,
-          beat_type,
-          framing,
-          cuts_per_min: 0,
-          on_screen_text: false,
-          music: "none",
-          energy,
-          assumed_knowledge: energy,
-          info_density: energy,
-          opens_loop: null,
-          closes_loop: false,
-          speaker_count: 1,
-          transcript: "",
-          summary: "",
-          words_per_minute: 0,
-        }),
-      ),
+      beats: specs.map(([start_s, end_s, beat_type, framing = "talking_head", energy = 3]) => ({
+        start_s,
+        end_s,
+        beat_type,
+        framing,
+        cuts_per_min: 0,
+        on_screen_text: false,
+        music: "none",
+        energy,
+        assumed_knowledge: energy,
+        info_density: energy,
+        opens_loop: null,
+        closes_loop: false,
+        speaker_count: 1,
+        transcript: "",
+        summary: "",
+        words_per_minute: 0,
+      })),
     } as VideoBeats,
   };
 }
 
 const base: BeatSpec[] = [
-  [0, 10, "hook", "talking_head_static", 4],
+  [0, 10, "hook", "talking_head", 4],
   [10, 40, "setup", "screen_recording", 3],
   [40, 90, "demonstration", "screen_recording", 2],
-  [90, 100, "outro", "talking_head_static", 3],
+  [90, 100, "outro", "talking_head", 3],
 ];
 
 describe("pairMetrics", () => {
@@ -74,10 +72,10 @@ describe("pairMetrics", () => {
 
   it("counts boundaries within 3 s as matching", () => {
     const shifted: BeatSpec[] = [
-      [0, 12, "hook", "talking_head_static", 4],
+      [0, 12, "hook", "talking_head", 4],
       [12, 38, "setup", "screen_recording", 3],
       [38, 95, "demonstration", "screen_recording", 2],
-      [95, 100, "outro", "talking_head_static", 3],
+      [95, 100, "outro", "talking_head", 3],
     ];
     const metrics = pairMetrics([run("a", 100, base)], [run("a", 100, shifted)]);
     // 10/12 and 40/38 match; 90/95 do not: 2 of 3 on each side.
@@ -86,7 +84,7 @@ describe("pairMetrics", () => {
   });
 
   it("pools videos, so one video with a single label throughout keeps kappa defined", () => {
-    const music: BeatSpec[] = [[0, 30, "performance", "talking_head_static", 2]];
+    const music: BeatSpec[] = [[0, 30, "performance", "talking_head", 2]];
     const metrics = pairMetrics(
       [run("talk", 100, base), run("song", 30, music)],
       [run("talk", 100, base), run("song", 30, music)],

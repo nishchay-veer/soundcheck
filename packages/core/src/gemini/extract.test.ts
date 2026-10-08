@@ -35,7 +35,7 @@ const beat = (start: number, end: number) => ({
   start: formatClock(start),
   end: formatClock(end),
   beat_type: "explanation",
-  framing: "talking_head_static",
+  framing: "talking_head",
   cuts_per_min: 0,
   on_screen_text: false,
   music: "none",
@@ -50,7 +50,7 @@ const beat = (start: number, end: number) => ({
 });
 const answer = (spans: Array<[number, number]>) => ({
   text: JSON.stringify({
-    schema_version: "beats-v1",
+    schema_version: "beats-v2",
     video_summary: "A video.",
     format: "other",
     title_promise: "Something.",

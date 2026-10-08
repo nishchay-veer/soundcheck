@@ -83,7 +83,7 @@ describe("cached extractions", () => {
       cost_usd: null,
     },
     beats: {
-      schema_version: "beats-v1",
+      schema_version: "beats-v2",
       video_summary: "A video.",
       format: "other",
       title_promise: "Something.",
@@ -94,7 +94,7 @@ describe("cached extractions", () => {
           start_s: 0,
           end_s: 88,
           beat_type: "explanation",
-          framing: "talking_head_static",
+          framing: "talking_head",
           cuts_per_min: 0,
           on_screen_text: false,
           music: "none",

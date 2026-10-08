@@ -36,7 +36,7 @@ function answer(request: Request, vary: boolean) {
       start: clock(start),
       end: clock(Math.min(start + 30, duration)),
       beat_type: vary && i === 0 && seed % 2 === 1 ? "context" : type,
-      framing: "talking_head_static",
+      framing: "talking_head",
       cuts_per_min: 0,
       on_screen_text: false,
       music: "none",
@@ -52,7 +52,7 @@ function answer(request: Request, vary: boolean) {
   }
   return {
     text: JSON.stringify({
-      schema_version: "beats-v1",
+      schema_version: "beats-v2",
       video_summary: "A video.",
       format: "explainer",
       title_promise: "Something.",
