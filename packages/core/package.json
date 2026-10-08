@@ -9,6 +9,7 @@
     "./data": "./src/data/index.ts",
     "./env": "./src/env.ts",
     "./features": "./src/features/index.ts",
+    "./gemini": "./src/gemini/index.ts",
     "./jobs": "./src/jobs/index.ts",
     "./model": "./src/model/index.ts",
     "./prompts": "./src/prompts/index.ts",
