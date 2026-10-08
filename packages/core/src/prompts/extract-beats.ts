@@ -30,34 +30,66 @@ labels matter more than a pleasing summary.
 
 # Beat types
 
+Pick the one type that best describes the beat's purpose.
+
 - cold_open: the video starts mid-action, before any introduction.
-- hook: a short promise or tease of what the viewer will get.
+- hook: a tease or promise of what the viewer will get, in the opening
+  seconds (usually the first 30). Later teases are not hooks.
 - intro_branding: channel intro, logo or theme music.
-- setup: what will be done and with what.
-- context: background the viewer needs.
-- explanation: telling how or why something works.
-- demonstration: showing it being done.
-- example: a specific instance that illustrates a point.
-- story: a personal or narrative account.
-- opinion: the creator's judgement or take.
+- setup: what this video will do and with what: the agenda, the tools, or
+  introducing the speaker, guest or product.
+- context: background the viewer needs that is not about this video's plan:
+  the problem, the history, the situation.
+- explanation: someone tells how or why something works while the picture
+  mostly shows the speaker, slides or diagrams.
+- demonstration: the picture shows the thing being done or used: hands at
+  work, software being operated, a product in use, a technique performed.
+  A narrated walkthrough of an app or product is a demonstration.
+- example: a specific case that illustrates a point just made.
+- story: events told in order, often in the past tense: what happened, a
+  journey, an anecdote. In a vlog, footage of the day narrated as it unfolds
+  is story.
+- opinion: the creator judges or recommends: likes and dislikes, pros and
+  cons, a rating, "I think". In a review, the assessment is opinion; showing
+  the product in use is demonstration.
 - tangent: off-topic aside.
 - sponsor: a paid promotion.
 - self_promo: the creator's own products, channels or other videos.
 - cta: asking viewers to like, subscribe, comment or follow.
 - recap: summary of what was covered.
-- payoff: the moment the main promise is delivered.
+- payoff: the short moment the title's main promise is delivered: the
+  finished result revealed, the final verdict, the main answer. Usually one
+  beat of under a minute; the steps leading to it are not payoff.
 - transition: a short bridge between sections.
 - outro: closing words.
 - end_screen: end cards or suggested videos, usually the last 5 to 20 seconds.
 - performance: singing, playing an instrument, dancing or acting for the camera.
 - other: none of the above.
 
+When two types fit, decide by what the viewer sees and hears most of the beat:
+- shown being done: demonstration, not explanation;
+- judged by the creator: opinion, not explanation;
+- events narrated in order: story, not demonstration;
+- the plan of this video: setup; background to it: context.
+
 # Framing
 
-talking_head_static (a fixed shot of a speaker), talking_head_moving (a
-speaker with a moving or handheld camera), screen_recording, b_roll
-(illustrative footage), graphics (animation or designed visuals), slides,
-gameplay, mixed (no single framing dominates), other.
+What fills the screen for more than half of the beat. Use mixed only when no
+single framing does.
+
+- talking_head_static: a person speaking to camera, fixed framing (tripod).
+- talking_head_moving: a person speaking to camera, handheld or the camera
+  moves (walking, vlogging).
+- screen_recording: a real computer or phone screen: software, websites,
+  apps, code. Zoomed, cropped, annotated or styled screens still count.
+- b_roll: footage of places, objects, people or action without anyone
+  speaking to camera; a voice-over is allowed.
+- graphics: designed visuals made for the video: motion graphics, animated
+  illustrations, titles, charts. Not a software interface.
+- slides: presentation slides.
+- gameplay: video game footage.
+- mixed: no single framing fills more than half of the beat.
+- other: none of the above.
 
 # Video formats
 
@@ -80,7 +112,9 @@ challenge, news, performance (music, dance or acting is the content), other.
 - summary: what happens in the beat, at most 20 words.
 - video_summary: what the video is about, at most 60 words.
 - title_promise: what the title and opening promise the viewer.
-- payoff_time: when the main promise is delivered; null if it never is.
+- payoff_time: when the title's main promise is delivered (the start of the
+  payoff beat if there is one): the finished result, the verdict, the main
+  answer; null if it never is.
 
 # Scales (1 to 5)
 

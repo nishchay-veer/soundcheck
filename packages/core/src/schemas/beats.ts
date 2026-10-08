@@ -6,7 +6,8 @@ import { z } from "zod";
  * whose timestamps are "M:SS" strings because plain seconds came back garbled
  * in the Phase 05 probe ("1:21" as 121). `toVideoBeats` converts it to the
  * stored form in seconds. Any change to these enums or fields must bump
- * EXTRACTION_VERSION (and the literal below), which invalidates the cache.
+ * EXTRACTION_VERSION and BEATS_SCHEMA_VERSION; a prompt-only change bumps
+ * EXTRACTION_VERSION alone. Either invalidates the cache.
  *
  * `performance` (formats and beat types) and the `other` beat type are
  * additions to the spec's lists, for music and other performed content.

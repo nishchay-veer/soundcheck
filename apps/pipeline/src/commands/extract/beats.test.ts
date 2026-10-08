@@ -1,3 +1,4 @@
+import { EXTRACTION_VERSION } from "@soundcheck/core";
 import { clockToSeconds } from "@soundcheck/core/schemas";
 import type { ExtractionSettings } from "@soundcheck/core/gemini";
 import type { FakeBigQuery, FakeFirestore, FakeGenAI, FakeStorage } from "@soundcheck/core/testing";
@@ -134,7 +135,7 @@ describe("extract beats", () => {
     expect(bigquery.tables.beats).toHaveLength(6);
     expect(bigquery.tables.beats?.[0]).toMatchObject({
       channel_id: CHANNEL,
-      extraction_version: "beats-v1",
+      extraction_version: EXTRACTION_VERSION,
       beat_type: "performance",
       details: expect.objectContaining({
         framing: "talking_head_static",

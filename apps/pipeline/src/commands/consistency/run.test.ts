@@ -1,3 +1,4 @@
+import { EXTRACTION_VERSION } from "@soundcheck/core";
 import type { ExtractionSettings } from "@soundcheck/core/gemini";
 import { clockToSeconds } from "@soundcheck/core/schemas";
 import type { FakeBigQuery, FakeGenAI, FakeStorage } from "@soundcheck/core/testing";
@@ -169,7 +170,7 @@ describe("runConsistency", () => {
       channel_id: CHANNEL,
       stage: CONSISTENCY_STAGE,
       details: expect.objectContaining({
-        extraction_version: "beats-v1",
+        extraction_version: EXTRACTION_VERSION,
         gemini_model: "test-model",
       }),
     });
