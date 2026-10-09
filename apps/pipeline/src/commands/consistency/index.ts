@@ -1,6 +1,7 @@
 import { formatClock } from "@soundcheck/core/gemini";
 import { channelIdOption, positiveIntegerOption } from "../options";
 import type { PipelineCommand } from "../types";
+import { formatGateSummary, summarizeGate } from "./gate";
 import { draftHumanLabels, formatHumanAgreement, runHumanAgreement } from "./human";
 import { formatConsistency, runConsistency } from "./run";
 
@@ -66,5 +67,14 @@ export const consistency: PipelineCommand = {
           process.stdout.write(`${formatHumanAgreement(report)}\n`);
         },
       );
+    command
+      .command("gate")
+      .description(
+        "Summarize every gate iteration and the verdict for the current extraction version",
+      )
+      .requiredOption("--channel <id>", "the connected channel that runs the gate", channelIdOption)
+      .action(async ({ channel }: { channel: string }) => {
+        process.stdout.write(`${formatGateSummary(await summarizeGate({ channelId: channel }))}\n`);
+      });
   },
 };

@@ -63,7 +63,11 @@ describe("soundcheck CLI", () => {
     const consistency = createProgram().commands.find(
       (command) => command.name() === "consistency",
     );
-    expect(consistency?.commands.map((command) => command.name())).toEqual(["runs", "human"]);
+    expect(consistency?.commands.map((command) => command.name())).toEqual([
+      "runs",
+      "human",
+      "gate",
+    ]);
   });
 
   it("rejects a non-numeric --limit", async () => {

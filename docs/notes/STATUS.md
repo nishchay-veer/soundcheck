@@ -4,6 +4,27 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Phase 06: Extraction quality gate (Oct 9, 2026)
+
+- **Built:**
+  - agreement statistics in `@soundcheck/core/stats`;
+  - `soundcheck consistency runs | human [--draft] | gate`, which take repeated extractions of a fixed six-video test set (pooled kappa, boundary F1, the gate verdict and confusions), compare them with a person's labels, and write a gate summary to `quality_reports`;
+  - `docs/extraction-quality.md`.
+- **Gate passed** with `beats-v5`, after 5 iterations ($6.19):
+  - boundaries 0.76, beat types 0.65, visual 0.81;
+  - energy, knowledge, density and talking-head share all 0.70 to 0.78.
+  - The human reviewer kept all 40 beats; Gemini versus those labels is kappa 0.68 (82% of seconds).
+- **Labels changed to pass:** `framing` became `talking_head_share` (1 to 5) and `visual`; there are sharper beat-type, energy and visual definitions.
+- **Real data:** the test channel was re-extracted with `beats-v5` ($0.089).
+- **Data gate still not met:** 1 channel, 3 videos.
+- **Fixed:**
+  - a Turborepo cache gap that let a stale web test pass (`transit` task);
+  - Vertex timeouts under the Free Trial quota (billing upgraded to Paid; `undici` declined).
+- **Next phases must keep:**
+  - features only from a version with a passing `extraction-quality-gate` row;
+  - a gate re-run after any prompt, label or model change;
+  - care with beat types and payoff time, the least stable fields.
+
 ### Phase 05: Beat extraction with Gemini (Oct 8, 2026)
 
 - **Built:**

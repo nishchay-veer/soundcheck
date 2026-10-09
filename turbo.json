@@ -8,9 +8,18 @@
       "env": ["NEXT_PUBLIC_*"],
       "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**", "dist/**"]
     },
-    "lint": {},
-    "typecheck": {},
-    "test": {},
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
+    "lint": {
+      "dependsOn": ["transit"]
+    },
+    "typecheck": {
+      "dependsOn": ["transit"]
+    },
+    "test": {
+      "dependsOn": ["transit"]
+    },
     "test:integration": {
       "cache": false
     },
