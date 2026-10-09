@@ -1,0 +1,11 @@
+start,end,beat_type
+0:00,0:23,context
+0:23,0:44,setup
+0:44,0:58,demonstration
+0:58,1:15,demonstration
+1:15,1:26,demonstration
+1:26,1:49,demonstration
+1:49,1:58,demonstration
+1:58,2:06,demonstration
+2:06,2:21,demonstration
+2:21,2:37,outro
