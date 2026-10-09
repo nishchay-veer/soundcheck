@@ -1,4 +1,4 @@
-import type { VideoBeats } from "@soundcheck/core/schemas";
+import { BEATS_SCHEMA_VERSION, type VideoBeats } from "@soundcheck/core/schemas";
 import { describe, expect, it } from "vitest";
 import {
   averageMetrics,
@@ -9,7 +9,7 @@ import {
   type RunExtraction,
 } from "./metrics";
 
-type BeatSpec = [start: number, end: number, type: string, framing?: string, energy?: number];
+type BeatSpec = [start: number, end: number, type: string, visual?: string, energy?: number];
 
 function run(
   videoId: string,
@@ -21,17 +21,18 @@ function run(
     videoId,
     durationS,
     beats: {
-      schema_version: "beats-v2",
+      schema_version: BEATS_SCHEMA_VERSION,
       video_summary: "",
       format: "explainer",
       title_promise: "",
       target_level: 2,
       payoff_time_s: payoff,
-      beats: specs.map(([start_s, end_s, beat_type, framing = "talking_head", energy = 3]) => ({
+      beats: specs.map(([start_s, end_s, beat_type, visual = "none", energy = 3]) => ({
         start_s,
         end_s,
         beat_type,
-        framing,
+        visual,
+        talking_head_share: visual === "none" ? 5 : 2,
         cuts_per_min: 0,
         on_screen_text: false,
         music: "none",
@@ -50,10 +51,10 @@ function run(
 }
 
 const base: BeatSpec[] = [
-  [0, 10, "hook", "talking_head", 4],
+  [0, 10, "hook", "none", 4],
   [10, 40, "setup", "screen_recording", 3],
   [40, 90, "demonstration", "screen_recording", 2],
-  [90, 100, "outro", "talking_head", 3],
+  [90, 100, "outro", "none", 3],
 ];
 
 describe("pairMetrics", () => {
@@ -62,8 +63,8 @@ describe("pairMetrics", () => {
     expect(metrics).toMatchObject({
       boundaryF1: 1,
       beatTypeKappa: 1,
-      framingKappa: 1,
-      ordinal: { energy: 1, assumed_knowledge: 1, info_density: 1 },
+      visualKappa: 1,
+      ordinal: { energy: 1, assumed_knowledge: 1, info_density: 1, talking_head_share: 1 },
       payoff: { meanAbsS: 0, compared: 1, oneMissing: 0 },
       seconds: 100,
       videos: 1,
@@ -72,10 +73,10 @@ describe("pairMetrics", () => {
 
   it("counts boundaries within 3 s as matching", () => {
     const shifted: BeatSpec[] = [
-      [0, 12, "hook", "talking_head", 4],
+      [0, 12, "hook", "none", 4],
       [12, 38, "setup", "screen_recording", 3],
       [38, 95, "demonstration", "screen_recording", 2],
-      [95, 100, "outro", "talking_head", 3],
+      [95, 100, "outro", "none", 3],
     ];
     const metrics = pairMetrics([run("a", 100, base)], [run("a", 100, shifted)]);
     // 10/12 and 40/38 match; 90/95 do not: 2 of 3 on each side.
@@ -84,7 +85,7 @@ describe("pairMetrics", () => {
   });
 
   it("pools videos, so one video with a single label throughout keeps kappa defined", () => {
-    const music: BeatSpec[] = [[0, 30, "performance", "talking_head", 2]];
+    const music: BeatSpec[] = [[0, 30, "performance", "none", 2]];
     const metrics = pairMetrics(
       [run("talk", 100, base), run("song", 30, music)],
       [run("talk", 100, base), run("song", 30, music)],
@@ -109,14 +110,14 @@ describe("averageMetrics and gateChecks", () => {
     const average = averageMetrics([perfect, { ...perfect, boundaryF1: 0.5, beatTypeKappa: 0.4 }]);
     expect(average.boundaryF1).toBe(0.75);
     expect(average.beatTypeKappa).toBeCloseTo(0.7, 12);
-    const gate = gateChecks({ ...average, framingKappa: 0.69 });
+    const gate = gateChecks({ ...average, visualKappa: 0.69 });
     expect(gate.passed).toBe(false);
-    expect(gate.checks.filter((c) => !c.passed).map((c) => c.metric)).toEqual(["framing kappa"]);
+    expect(gate.checks.filter((c) => !c.passed).map((c) => c.metric)).toEqual(["visual kappa"]);
   });
 
   it("reports an undefined kappa without failing the gate on it", () => {
     const metrics = pairMetrics([run("a", 100, base)], [run("a", 100, base)]);
-    expect(gateChecks({ ...metrics, framingKappa: null }).passed).toBe(true);
+    expect(gateChecks({ ...metrics, visualKappa: null }).passed).toBe(true);
   });
 });
 

@@ -20,7 +20,8 @@ labels matter more than a pleasing summary.
 - Beats are contiguous and cover the whole video: the first starts at "0:00",
   each starts where the previous one ends, and the last ends at the end of the
   video. No gaps, no overlaps.
-- Start a new beat when the purpose changes or the framing changes.
+- Start a new beat when the purpose changes or what the picture shows changes
+  for longer than a few seconds.
 - Timestamps are "M:SS" from the start of the video, for example "4:13".
   Minutes may exceed 59 ("75:30").
 - Judge only what you see and hear. Never infer from the title alone.
@@ -72,12 +73,14 @@ When two types fit, decide by what the viewer sees and hears most of the beat:
 - events narrated in order: story, not demonstration;
 - the plan of this video: setup; background to it: context.
 
-# Framing
+# Picture
 
-What fills the screen for more than half of the beat. Always choose one of
-these; when the picture alternates, pick the one on screen longest.
+Two fields describe the picture, because many beats cut between a presenter
+and something else.
 
-- talking_head: a person speaking to camera, fixed or moving camera.
+talking_head_share is a 1 to 5 scale (see Scales). visual is what the picture
+shows when it is not a person speaking or performing to camera:
+
 - screen_recording: a real computer or phone screen: software, websites,
   apps, code. Zoomed, cropped, annotated or styled screens still count.
 - b_roll: footage of places, objects, people or action without anyone
@@ -86,6 +89,9 @@ these; when the picture alternates, pick the one on screen longest.
   illustrations, titles, charts, presentation slides. Not a software interface.
 - gameplay: video game footage.
 - other: none of the above.
+- none: the beat is a person to camera throughout (talking_head_share 5).
+
+If several other pictures appear, choose the one shown longest.
 
 # Video formats
 
@@ -113,6 +119,12 @@ challenge, news, performance (music, dance or acting is the content), other.
   answer; null if it never is.
 
 # Scales (1 to 5)
+
+talking_head_share, how much of the beat shows a person speaking or performing
+to camera:
+- 1: none; another picture throughout.
+- 3: about half; the picture cuts between the person and something else.
+- 5: all or nearly all.
 
 energy, delivery energy:
 - 1: flat, slow, little movement or emphasis.

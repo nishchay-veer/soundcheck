@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { beatTypeSchema, framingSchema, videoFormatSchema } from "../schemas/beats";
+import { beatTypeSchema, videoFormatSchema, visualSchema } from "../schemas/beats";
 import {
   BEAT_EXAMPLES,
   BEAT_EXAMPLE_FILES,
@@ -9,7 +9,7 @@ import {
 } from "./index";
 
 describe("extraction prompt", () => {
-  it.each([...beatTypeSchema.options, ...framingSchema.options, ...videoFormatSchema.options])(
+  it.each([...beatTypeSchema.options, ...visualSchema.options, ...videoFormatSchema.options])(
     "explains the label %s",
     (label) => {
       expect(EXTRACT_BEATS_INSTRUCTIONS).toContain(label);
@@ -17,7 +17,13 @@ describe("extraction prompt", () => {
   );
 
   it("anchors every 1-to-5 scale at 1, 3 and 5", () => {
-    for (const scale of ["energy", "assumed_knowledge", "info_density", "target_level"]) {
+    for (const scale of [
+      "talking_head_share",
+      "energy",
+      "assumed_knowledge",
+      "info_density",
+      "target_level",
+    ]) {
       const section = EXTRACT_BEATS_INSTRUCTIONS.split(`${scale},`)[1]?.split("\n\n")[0] ?? "";
       expect(section).toMatch(/- 1: .+\n- 3: .+\n- 5: .+/);
     }

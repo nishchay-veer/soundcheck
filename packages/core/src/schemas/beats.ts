@@ -13,8 +13,11 @@ import { z } from "zod";
  * additions to the spec's lists, for music and other performed content.
  */
 
-/** beats-v2: six framings; `mixed` removed, talking heads and slides merged (Phase 06). */
-export const BEATS_SCHEMA_VERSION = "beats-v2";
+/**
+ * beats-v2: six framings; `mixed` removed, talking heads and slides merged.
+ * beats-v3: framing replaced by `talking_head_share` and `visual` (Phase 06).
+ */
+export const BEATS_SCHEMA_VERSION = "beats-v3";
 
 export const videoFormatSchema = z.enum([
   "tutorial",
@@ -57,15 +60,21 @@ export const beatTypeSchema = z.enum([
 ]);
 export type BeatType = z.infer<typeof beatTypeSchema>;
 
-export const framingSchema = z.enum([
-  "talking_head",
+/**
+ * What the picture shows apart from a person speaking or performing to camera.
+ * One label per beat could not describe beats that cut between a presenter and
+ * a screen (Phase 06), so the presenter's share and the other picture are
+ * separate fields.
+ */
+export const visualSchema = z.enum([
   "screen_recording",
   "b_roll",
   "graphics",
   "gameplay",
   "other",
+  "none",
 ]);
-export type Framing = z.infer<typeof framingSchema>;
+export type Visual = z.infer<typeof visualSchema>;
 
 export const musicSchema = z.enum(["none", "background", "foreground"]);
 
@@ -99,7 +108,12 @@ export const geminiBeatSchema = z.object({
   start: clockSchema,
   end: clockSchema,
   beat_type: beatTypeSchema.describe("The single purpose of this span"),
-  framing: framingSchema.describe("What the picture mostly shows"),
+  talking_head_share: scale(
+    "How much of the beat shows a person speaking or performing to camera, 1 to 5",
+  ),
+  visual: visualSchema.describe(
+    "What the picture shows when it is not a person to camera; none if it always is",
+  ),
   cuts_per_min: z.number().int().min(0).describe("Visible cuts per minute in this span"),
   on_screen_text: z.boolean().describe("Whether text is overlaid on screen for a noticeable time"),
   music: musicSchema,

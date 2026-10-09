@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   beatTypeSchema,
   clockToSeconds,
-  framingSchema,
+  visualSchema,
   geminiResponseJsonSchema,
   geminiVideoBeatsSchema,
   toVideoBeats,
@@ -16,7 +16,8 @@ const beat = (start: string, end: string, transcript = "") => ({
   start,
   end,
   beat_type: "explanation" as const,
-  framing: "talking_head" as const,
+  talking_head_share: 5,
+  visual: "none" as const,
   cuts_per_min: 2,
   on_screen_text: false,
   music: "none" as const,
@@ -31,7 +32,7 @@ const beat = (start: string, end: string, transcript = "") => ({
 });
 
 const answer: GeminiVideoBeats = {
-  schema_version: "beats-v2",
+  schema_version: "beats-v3",
   video_summary: "A short explainer.",
   format: "explainer",
   title_promise: "How the plan works.",
@@ -112,18 +113,18 @@ describe("word limits", () => {
 });
 
 describe("labels", () => {
-  it("adds performance and other, and uses six framings", () => {
+  it("adds performance and other, and describes the picture with a share and a visual", () => {
     expect(videoFormatSchema.options).toContain("performance");
     expect(beatTypeSchema.options).toEqual(expect.arrayContaining(["performance", "other"]));
     expect(beatTypeSchema.options).toHaveLength(21);
-    // Phase 06 iteration 2: no "mixed", one talking head, slides within graphics.
-    expect(framingSchema.options).toEqual([
-      "talking_head",
+    // Phase 06 iteration 3: framing became talking_head_share (1 to 5) and visual.
+    expect(visualSchema.options).toEqual([
       "screen_recording",
       "b_roll",
       "graphics",
       "gameplay",
       "other",
+      "none",
     ]);
   });
 });

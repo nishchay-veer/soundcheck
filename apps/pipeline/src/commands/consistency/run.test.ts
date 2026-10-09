@@ -36,7 +36,8 @@ function answer(request: Request, vary: boolean) {
       start: clock(start),
       end: clock(Math.min(start + 30, duration)),
       beat_type: vary && i === 0 && seed % 2 === 1 ? "context" : type,
-      framing: "talking_head",
+      talking_head_share: 5,
+      visual: "none",
       cuts_per_min: 0,
       on_screen_text: false,
       music: "none",
@@ -52,7 +53,7 @@ function answer(request: Request, vary: boolean) {
   }
   return {
     text: JSON.stringify({
-      schema_version: "beats-v2",
+      schema_version: "beats-v3",
       video_summary: "A video.",
       format: "explainer",
       title_promise: "Something.",
@@ -116,10 +117,11 @@ describe("runConsistency", () => {
     expect(sweep?.gate.checks.map((check) => check.metric)).toEqual([
       "boundary F1 (±3 s)",
       "beat_type kappa",
-      "framing kappa",
+      "visual kappa",
       "energy weighted kappa",
       "assumed_knowledge weighted kappa",
       "info_density weighted kappa",
+      "talking_head_share weighted kappa",
     ]);
   });
 

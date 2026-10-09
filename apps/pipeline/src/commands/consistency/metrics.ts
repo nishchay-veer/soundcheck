@@ -17,24 +17,32 @@ export interface RunExtraction {
   beats: VideoBeats;
 }
 
-export const ORDINAL_FIELDS = ["energy", "assumed_knowledge", "info_density"] as const;
+export const ORDINAL_FIELDS = [
+  "energy",
+  "assumed_knowledge",
+  "info_density",
+  "talking_head_share",
+] as const;
 export type OrdinalField = (typeof ORDINAL_FIELDS)[number];
 
 /** Boundaries agree within this many seconds. */
 export const BOUNDARY_TOLERANCE_S = 3;
 
-/** The spec's gate (Phase 06). */
+/**
+ * The spec's gate (Phase 06). Framing was replaced by `visual` (a label, held
+ * to framing's threshold) and `talking_head_share` (an ordinal field).
+ */
 export const GATE = {
   boundaryF1: 0.7,
   beatTypeKappa: 0.6,
-  framingKappa: 0.7,
+  visualKappa: 0.7,
   ordinalKappa: 0.5,
 } as const;
 
 export interface AgreementMetrics {
   boundaryF1: number;
   beatTypeKappa: number | null;
-  framingKappa: number | null;
+  visualKappa: number | null;
   ordinal: Record<OrdinalField, number | null>;
   payoff: { meanAbsS: number | null; compared: number; oneMissing: number };
   /** Seconds compared (labelled in both runs), over all videos. */
@@ -57,12 +65,13 @@ export function pairMetrics(
   const byVideo = new Map(second.map((run) => [run.videoId, run]));
   const labels = {
     beat_type: [[], []] as [string[], string[]],
-    framing: [[], []] as [string[], string[]],
+    visual: [[], []] as [string[], string[]],
   };
   const ordinal: Record<OrdinalField, [number[], number[]]> = {
     energy: [[], []],
     assumed_knowledge: [[], []],
     info_density: [[], []],
+    talking_head_share: [[], []],
   };
   let matched = 0;
   let boundaries = 0;
@@ -91,7 +100,7 @@ export function pairMetrics(
       target[1].push(...y);
     };
     add(labels.beat_type, (beat) => beat.beat_type);
-    add(labels.framing, (beat) => beat.framing);
+    add(labels.visual, (beat) => beat.visual);
     for (const field of ORDINAL_FIELDS) add(ordinal[field], (beat) => beat[field]);
   }
 
@@ -101,7 +110,7 @@ export function pairMetrics(
   return {
     boundaryF1: boundaries === 0 ? 1 : (2 * matched) / boundaries,
     beatTypeKappa: kappa(labels.beat_type),
-    framingKappa: kappa(labels.framing),
+    visualKappa: kappa(labels.visual),
     ordinal: Object.fromEntries(
       ORDINAL_FIELDS.map((field) => {
         const [x, y] = ordinal[field];
@@ -126,7 +135,7 @@ export function averageMetrics(pairs: readonly AgreementMetrics[]): AgreementMet
   return {
     boundaryF1: mean(pairs.map((p) => p.boundaryF1)) ?? 0,
     beatTypeKappa: mean(pairs.map((p) => p.beatTypeKappa)),
-    framingKappa: mean(pairs.map((p) => p.framingKappa)),
+    visualKappa: mean(pairs.map((p) => p.visualKappa)),
     ordinal: Object.fromEntries(
       ORDINAL_FIELDS.map((field) => [field, mean(pairs.map((p) => p.ordinal[field]))]),
     ) as Record<OrdinalField, number | null>,
@@ -159,7 +168,7 @@ export function gateChecks(metrics: AgreementMetrics): { passed: boolean; checks
   const checks = [
     check("boundary F1 (±3 s)", metrics.boundaryF1, GATE.boundaryF1),
     check("beat_type kappa", metrics.beatTypeKappa, GATE.beatTypeKappa),
-    check("framing kappa", metrics.framingKappa, GATE.framingKappa),
+    check("visual kappa", metrics.visualKappa, GATE.visualKappa),
     ...ORDINAL_FIELDS.map((field) =>
       check(`${field} weighted kappa`, metrics.ordinal[field], GATE.ordinalKappa),
     ),
@@ -170,7 +179,7 @@ export function gateChecks(metrics: AgreementMetrics): { passed: boolean; checks
 /** The most frequent disagreements in a label, pooled over every pair of runs. */
 export function topConfusions(
   runs: ReadonlyArray<readonly RunExtraction[]>,
-  field: "beat_type" | "framing",
+  field: "beat_type" | "visual",
   limit = 8,
 ): Array<{ first: string; second: string; seconds: number }> {
   const counts = new Map<string, number>();

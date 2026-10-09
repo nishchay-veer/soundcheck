@@ -12,7 +12,8 @@ const beat = (
   start_s,
   end_s,
   beat_type,
-  framing: "talking_head",
+  talking_head_share: 5,
+  visual: "none",
   cuts_per_min: 0,
   on_screen_text: false,
   music: "none",
@@ -27,7 +28,7 @@ const beat = (
   words_per_minute: 0,
 });
 const video = (beats: Beat[], overrides: Partial<VideoBeats> = {}): VideoBeats => ({
-  schema_version: "beats-v2",
+  schema_version: "beats-v3",
   video_summary: "A long video.",
   format: "explainer",
   title_promise: "Something.",

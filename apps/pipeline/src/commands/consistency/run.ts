@@ -60,7 +60,7 @@ export interface Sweep {
   gate: { passed: boolean; checks: GateCheck[] };
   confusions: {
     beat_type: Array<{ first: string; second: string; seconds: number }>;
-    framing: Array<{ first: string; second: string; seconds: number }>;
+    visual: Array<{ first: string; second: string; seconds: number }>;
   };
   /** Extractions that did not validate; their video is left out of that run's pairs. */
   failures: Array<{ videoId: string; run: number; status: string; errors: string[] }>;
@@ -213,7 +213,7 @@ export async function runConsistency(options: ConsistencyOptions): Promise<Consi
       gate: gateChecks(average),
       confusions: {
         beat_type: topConfusions(byRun, "beat_type"),
-        framing: topConfusions(byRun, "framing"),
+        visual: topConfusions(byRun, "visual"),
       },
       failures,
     };
@@ -290,7 +290,7 @@ export function formatConsistency(report: ConsistencyReport): string {
     lines.push(
       `          payoff time difference         ${payoff.meanAbsS === null ? "n/a" : `${payoff.meanAbsS.toFixed(1)} s`}   (${payoff.compared} compared, ${payoff.oneMissing} where only one run had a payoff)`,
     );
-    for (const field of ["beat_type", "framing"] as const) {
+    for (const field of ["beat_type", "visual"] as const) {
       const confusions = sweep.confusions[field].slice(0, 5);
       if (confusions.length > 0) {
         lines.push(
