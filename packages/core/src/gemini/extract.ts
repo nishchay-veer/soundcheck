@@ -127,9 +127,18 @@ export function estimateCost(
 }
 
 /** The API's own message for a failed call. */
-function errorMessage(error: unknown): string {
-  const { status, message } = error as { status?: number; message?: string };
-  return `${status ? `HTTP ${status}: ` : ""}${message ?? String(error)}`;
+/**
+ * The API's own message for a failed call. A network failure surfaces as
+ * "fetch failed" with the reason (a timeout, a reset socket) in `cause`.
+ */
+export function errorMessage(error: unknown): string {
+  const { status, message, cause } = error as {
+    status?: number;
+    message?: string;
+    cause?: { code?: string; message?: string };
+  };
+  const reason = cause?.code ?? cause?.message;
+  return `${status ? `HTTP ${status}: ` : ""}${message ?? String(error)}${reason ? ` (${reason})` : ""}`;
 }
 
 /** The video part and the instruction for one window. */

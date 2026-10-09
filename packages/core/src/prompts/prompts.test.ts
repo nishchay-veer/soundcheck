@@ -25,7 +25,8 @@ describe("extraction prompt", () => {
       "target_level",
     ]) {
       const section = EXTRACT_BEATS_INSTRUCTIONS.split(`${scale},`)[1]?.split("\n\n")[0] ?? "";
-      expect(section).toMatch(/- 1: .+\n- 3: .+\n- 5: .+/);
+      // Anchors may wrap onto indented continuation lines.
+      expect(section).toMatch(/- 1: [\s\S]+?\n- 3: [\s\S]+?\n- 5: .+/);
     }
   });
 

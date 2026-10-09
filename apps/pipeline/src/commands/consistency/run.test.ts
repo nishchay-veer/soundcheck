@@ -194,3 +194,48 @@ describe("runConsistency", () => {
     await expect(consistency({ runs: 1 })).rejects.toThrow(RangeError);
   });
 });
+
+describe("runConsistency reruns", () => {
+  afterEach(resetTestbed);
+
+  it("runs a failed call once more, but never re-runs an invalid answer", async () => {
+    const { gemini, connect } = await ingestTestbed();
+    const failedOnce = new Set<string>();
+    gemini.respondWith((request) => {
+      const key = `${String(request.config?.seed)}${JSON.stringify(request.contents).includes("fixtureVid1") ? "a" : "b"}`;
+      // A network failure for fixtureVid1 in run 1, the first time only.
+      if (key === "20261004a" && !failedOnce.has(key)) {
+        failedOnce.add(key);
+        return new Error("fetch failed");
+      }
+      // fixtureVid3 in run 3 always answers badly: invalid, not re-run.
+      if (key === "20261006b") return { text: "not json" };
+      return answer(request, false);
+    });
+    const report = await runConsistency({
+      channelId: CHANNEL,
+      settings,
+      videos,
+      log: quiet,
+      connect,
+      now: NOW,
+    });
+    const [sweep] = report.sweeps;
+    expect(sweep?.reruns).toEqual([
+      { videoId: "fixtureVid1", run: 1, error: "fetch failed", status: "extracted" },
+    ]);
+    expect(sweep?.failures).toEqual([
+      {
+        videoId: "fixtureVid3",
+        run: 3,
+        status: "invalid",
+        errors: ["Your output is not valid JSON."],
+      },
+    ]);
+    // 6 extractions, one re-run, and the invalid one asked twice: 8 calls.
+    expect(gemini.requests).toHaveLength(8);
+    expect(formatConsistency(report)).toMatch(
+      /run 1, fixtureVid1: re-run after "fetch failed", then extracted/,
+    );
+  });
+});

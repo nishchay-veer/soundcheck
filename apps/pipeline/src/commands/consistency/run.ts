@@ -35,7 +35,11 @@ export const CONSISTENCY_STAGE = "extraction-consistency";
 export const DEFAULT_RUNS = 3;
 /** Used when every run at temperature 0 comes back identical (spec step 1). */
 export const SENSITIVITY_TEMPERATURE = 0.4;
-const CONCURRENCY = 4;
+/**
+ * Two at a time: four long videos at once hit Vertex AI's rate limit (429)
+ * in Phase 06 iteration 3.
+ */
+const CONCURRENCY = 2;
 
 export interface ConsistencyOptions {
   /** The channel running the gate: raw answers and the report are stored under it. */
@@ -64,6 +68,11 @@ export interface Sweep {
   };
   /** Extractions that did not validate; their video is left out of that run's pairs. */
   failures: Array<{ videoId: string; run: number; status: string; errors: string[] }>;
+  /**
+   * Extractions whose Gemini call failed (an API or network error, not a bad
+   * answer) and were run once more at the end, so every comparison is complete.
+   */
+  reruns: Array<{ videoId: string; run: number; error: string; status: string }>;
 }
 
 export interface ConsistencyReport {
@@ -147,27 +156,54 @@ export async function runConsistency(options: ConsistencyOptions): Promise<Consi
 
   const sweep = async (temperature: number): Promise<Sweep> => {
     const seeds = Array.from({ length: runs }, (_, run) => EXTRACTION_SEED + run);
+    const extract = (target: ExtractionTarget, run: number, attempt = "") =>
+      extractVideoBeats(target, {
+        settings,
+        noCache: true,
+        writeCache: false,
+        temperature,
+        seed: seeds[run] as number,
+        archive: {
+          source: "consistency",
+          label: `${reportId}-t${temperature}-r${run + 1}-${target.videoId}${attempt}`,
+        },
+        log,
+      });
     const outcomes = await Promise.all(
-      seeds.flatMap((seed, run) =>
+      seeds.flatMap((_, run) =>
         targets.map((target) =>
-          limit(async (): Promise<[number, ExtractionTarget, ExtractionOutcome]> => {
-            const outcome = await extractVideoBeats(target, {
-              settings,
-              noCache: true,
-              writeCache: false,
-              temperature,
-              seed,
-              archive: {
-                source: "consistency",
-                label: `${reportId}-t${temperature}-r${run + 1}-${target.videoId}`,
-              },
-              log,
-            });
-            return [run, target, outcome];
-          }),
+          limit(async (): Promise<[number, ExtractionTarget, ExtractionOutcome]> => [
+            run,
+            target,
+            await extract(target, run),
+          ]),
         ),
       ),
     );
+
+    // A failed call is a glitch, not a quality result: run it once more, alone.
+    const reruns: Sweep["reruns"] = [];
+    for (const [index, [run, target, outcome]] of outcomes.entries()) {
+      if (outcome.status !== "failed") continue;
+      const again = await extract(target, run, "-rerun");
+      reruns.push({
+        videoId: target.videoId,
+        run: run + 1,
+        error: outcome.errors[0] ?? "",
+        status: again.status,
+      });
+      // Count the failed attempt's usage too.
+      again.usage.calls += outcome.usage.calls;
+      again.usage.prompt_tokens += outcome.usage.prompt_tokens;
+      again.usage.output_tokens += outcome.usage.output_tokens;
+      again.usage.thinking_tokens += outcome.usage.thinking_tokens;
+      again.usage.tool_use_tokens += outcome.usage.tool_use_tokens;
+      again.usage.cost_usd =
+        again.usage.cost_usd === null || outcome.usage.cost_usd === null
+          ? null
+          : again.usage.cost_usd + outcome.usage.cost_usd;
+      outcomes[index] = [run, target, again];
+    }
 
     const byRun: RunExtraction[][] = seeds.map(() => []);
     const failures: Sweep["failures"] = [];
@@ -216,6 +252,7 @@ export async function runConsistency(options: ConsistencyOptions): Promise<Consi
         visual: topConfusions(byRun, "visual"),
       },
       failures,
+      reruns,
     };
   };
 
@@ -297,6 +334,11 @@ export function formatConsistency(report: ConsistencyReport): string {
           `    Most confused ${field}: ${confusions.map((c) => `${c.first}/${c.second} ${c.seconds} s`).join(", ")}`,
         );
       }
+    }
+    for (const rerun of sweep.reruns) {
+      lines.push(
+        `    run ${rerun.run}, ${rerun.videoId}: re-run after "${rerun.error}", then ${rerun.status}`,
+      );
     }
     for (const failure of sweep.failures) {
       lines.push(

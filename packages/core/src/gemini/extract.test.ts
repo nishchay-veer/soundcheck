@@ -208,6 +208,15 @@ describe("extractVideoBeats", () => {
     });
   });
 
+  it("keeps the cause of a network failure in the message", async () => {
+    gemini.answer(
+      Object.assign(new TypeError("fetch failed"), {
+        cause: { code: "UND_ERR_HEADERS_TIMEOUT", message: "Headers Timeout Error" },
+      }),
+    );
+    expect((await extract()).errors).toEqual(["fetch failed (UND_ERR_HEADERS_TIMEOUT)"]);
+  });
+
   it("uses agentic processing when configured, under a different cache key", async () => {
     gemini.answer(answer([[0, 88]]));
     const agentic = { ...settings, videoMode: "agentic" as const };

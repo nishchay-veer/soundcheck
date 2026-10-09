@@ -81,17 +81,21 @@ and something else.
 talking_head_share is a 1 to 5 scale (see Scales). visual is what the picture
 shows when it is not a person speaking or performing to camera:
 
-- screen_recording: a real computer or phone screen: software, websites,
-  apps, code. Zoomed, cropped, annotated or styled screens still count.
-- b_roll: footage of places, objects, people or action without anyone
-  speaking to camera; a voice-over is allowed.
-- graphics: designed visuals made for the video: motion graphics, animated
-  illustrations, titles, charts, presentation slides. Not a software interface.
+- screen_recording: any software, website or app interface: a screen capture,
+  or an interface shown inside an animation, a mockup or a device frame. If an
+  interface is what you see, it is screen_recording.
+- b_roll: real-world footage filmed with a camera: places, objects, products,
+  people or action, with no one speaking to camera. A voice-over is allowed.
+- graphics: visuals designed or animated on a computer for the video, with no
+  software interface in them: illustrations, motion text, titles, charts,
+  slides.
 - gameplay: video game footage.
 - other: none of the above.
-- none: the beat is a person to camera throughout (talking_head_share 5).
+- none: only when talking_head_share is 5. If talking_head_share is 1 to 4,
+  name the other picture.
 
-If several other pictures appear, choose the one shown longest.
+If several other pictures appear, choose the one shown longest. Filmed is
+b_roll, designed is graphics, an interface is screen_recording.
 
 # Video formats
 
@@ -126,10 +130,14 @@ to camera:
 - 3: about half; the picture cuts between the person and something else.
 - 5: all or nearly all.
 
-energy, delivery energy:
-- 1: flat, slow, little movement or emphasis.
-- 3: conversational, steady.
-- 5: intense, fast, highly animated.
+energy, how energetic the delivery is, judged from what you see and hear,
+not from the topic:
+- 1: calm and slow: a low, even voice and slow pace, little movement; or
+  quiet, slow music.
+- 3: conversational: normal speaking pace and volume, some gestures; or
+  mid-tempo music.
+- 5: intense: fast, loud or excited delivery, big gestures, rapid action or
+  cuts; or loud, fast music.
 
 assumed_knowledge, expertise the beat assumes:
 - 1: none; anyone can follow.
