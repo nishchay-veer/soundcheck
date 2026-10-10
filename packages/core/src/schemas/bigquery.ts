@@ -273,3 +273,29 @@ export const featureSpecRowSchema = z.object({
   created_at: timestamp,
 });
 export type FeatureSpecRow = z.infer<typeof featureSpecRowSchema>;
+
+/** `channel_id` of the pooled model's runs, fitted across every usable channel. */
+export const POOLED_CHANNEL = "pooled";
+
+/**
+ * How one audience's fit ended: `fitted` (artifact written; it says whether
+ * it is usable), `not_converged` (no artifact: a model that did not converge
+ * is never shipped), `no_data` (no rows for the audience) or `failed`.
+ */
+export const modelRunStatusSchema = z.enum(["fitted", "not_converged", "no_data", "failed"]);
+export type ModelRunStatus = z.infer<typeof modelRunStatusSchema>;
+
+/** `model_runs`: one row per fit of one audience's model, written by the Python fitter. */
+export const modelRunRowSchema = z.object({
+  run_id: z.string().regex(/^[\w-]+$/),
+  channel_id: z.union([channelIdSchema, z.literal(POOLED_CHANNEL)]),
+  audience: trainingAudienceSchema,
+  model_version: z.string().min(1),
+  feature_version: z.string().min(1),
+  status: modelRunStatusSchema,
+  started_at: timestamp,
+  finished_at: timestamp.nullable(),
+  artifact_uri: z.string().startsWith("gs://").nullable(),
+  details: z.record(z.string(), z.unknown()),
+});
+export type ModelRunRow = z.infer<typeof modelRunRowSchema>;

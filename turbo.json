@@ -23,6 +23,10 @@
     "test:integration": {
       "cache": false
     },
+    "gen:schemas": {
+      "dependsOn": ["transit"],
+      "cache": false
+    },
     "dev": {
       "cache": false,
       "persistent": true

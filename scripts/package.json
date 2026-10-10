@@ -10,6 +10,7 @@
     "probe-analytics": "tsx --env-file-if-exists=../.env probe-analytics.ts",
     "probe-gemini-video": "tsx --env-file-if-exists=../.env probe-gemini-video.ts",
     "draft-beat-example": "tsx --env-file-if-exists=../.env draft-beat-example.ts",
+    "gen:schemas": "tsx gen-schemas.ts",
     "lint": "eslint --max-warnings 0",
     "typecheck": "tsc --noEmit"
   },

@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS `{{project}}.{{dataset}}.model_runs` (
   run_id STRING NOT NULL,
   channel_id STRING NOT NULL,
+  audience STRING,
   model_version STRING NOT NULL,
   feature_version STRING NOT NULL,
   status STRING NOT NULL,
@@ -10,4 +11,4 @@ CREATE TABLE IF NOT EXISTS `{{project}}.{{dataset}}.model_runs` (
   details JSON
 )
 CLUSTER BY channel_id
-OPTIONS (description = 'One row per model fit.');
+OPTIONS (description = 'One row per fitted audience model; channel_id is pooled for the model fitted across channels.');

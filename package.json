@@ -6,7 +6,8 @@
     "check": "turbo run lint typecheck test",
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "fmt": "prettier --write ."
+    "fmt": "prettier --write .",
+    "gen:schemas": "turbo run gen:schemas"
   },
   "devDependencies": {
     "pnpm": "12.6.0",

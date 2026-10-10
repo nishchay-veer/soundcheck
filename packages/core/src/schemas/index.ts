@@ -6,6 +6,7 @@ export * from "./channels";
 export * from "./features";
 export * from "./firestore";
 export * from "./health";
+export * from "./model-artifact";
 export * from "./session";
 export * from "./users";
 export * from "./youtube";
