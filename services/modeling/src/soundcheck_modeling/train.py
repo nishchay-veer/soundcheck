@@ -101,6 +101,50 @@ def _context(context: ChannelContext | None) -> dict[str, Any] | None:
     return {"medianTargetLevel": context.median_target_level, "mixMean": dict(context.mix_mean)}
 
 
+def artifact_document(
+    config: ModelConfig,
+    *,
+    run_id: str,
+    channel: str | None,
+    audience: str,
+    fit: Fit,
+    metrics: Mapping[str, Any],
+    extraction: str,
+    prior_ref: str | None,
+    channels: list[str],
+    videos: list[str],
+    context: ChannelContext | None,
+    reasons: list[str],
+    created: datetime,
+) -> dict[str, Any]:
+    """The artifact of a fit, in the shape of TypeScript's `modelArtifactSchema`."""
+    return {
+        "runId": run_id,
+        "channelId": channel,
+        "audience": audience,
+        "modelVersion": config.model_version,
+        "featureVersion": config.feature_version,
+        "extractionVersion": extraction,
+        "createdAt": created.isoformat(),
+        "featureNames": fit.names,
+        "droppedFeatures": fit.dropped,
+        "unpenalized": [name for name in fit.names if name in config.unpenalized],
+        "mean": fit.mean.tolist(),
+        "sd": fit.sd.tolist(),
+        "alpha": fit.alpha,
+        "beta": fit.beta.tolist(),
+        "cov": fit.cov.tolist(),
+        "lambda": fit.lam,
+        "priorRef": prior_ref,
+        "trainChannelIds": channels,
+        "trainVideoIds": videos,
+        "channelContext": _context(context),
+        "usable": not reasons,
+        "unusableReasons": reasons,
+        "metrics": dict(metrics),
+    }
+
+
 @dataclass
 class Trainer:
     source: Source
@@ -279,20 +323,20 @@ class Trainer:
             reasons.append(
                 f"trained on {len(videos)} videos; at least {self.min_train_videos} are needed"
             )
-        artifact = self._artifact(
-            run_id,
-            channel,
-            audience,
-            fit,
-            cv,
-            metrics,
-            extraction,
-            prior,
-            channels,
-            videos,
-            context,
-            reasons,
-            started,
+        artifact = artifact_document(
+            self.config,
+            run_id=run_id,
+            channel=channel,
+            audience=audience,
+            fit=fit,
+            metrics=metrics,
+            extraction=extraction,
+            prior_ref=prior[1] if prior else None,
+            channels=channels,
+            videos=videos,
+            context=context,
+            reasons=reasons,
+            created=started,
         )
         validate_artifact(artifact)
         uri = self.store.save_artifact(
@@ -312,48 +356,6 @@ class Trainer:
             ),
             details,
         )
-
-    def _artifact(
-        self,
-        run_id: str,
-        channel: str | None,
-        audience: str,
-        fit: Fit,
-        cv: CrossValidation,
-        metrics: dict[str, Any],
-        extraction: str,
-        prior: tuple[dict[str, float], str] | None,
-        channels: list[str],
-        videos: list[str],
-        context: ChannelContext | None,
-        reasons: list[str],
-        started: datetime,
-    ) -> dict[str, Any]:
-        return {
-            "runId": run_id,
-            "channelId": channel,
-            "audience": audience,
-            "modelVersion": self.config.model_version,
-            "featureVersion": self.config.feature_version,
-            "extractionVersion": extraction,
-            "createdAt": started.isoformat(),
-            "featureNames": fit.names,
-            "droppedFeatures": fit.dropped,
-            "unpenalized": [name for name in fit.names if name in self.config.unpenalized],
-            "mean": fit.mean.tolist(),
-            "sd": fit.sd.tolist(),
-            "alpha": fit.alpha,
-            "beta": fit.beta.tolist(),
-            "cov": fit.cov.tolist(),
-            "lambda": fit.lam,
-            "priorRef": prior[1] if prior else None,
-            "trainChannelIds": channels,
-            "trainVideoIds": videos,
-            "channelContext": _context(context),
-            "usable": not reasons,
-            "unusableReasons": reasons,
-            "metrics": metrics,
-        }
 
     def _log(
         self, scope: str, audience: str, run_id: str, fit: Fit, metrics: Mapping[str, Any]
