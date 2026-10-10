@@ -95,3 +95,9 @@ def validate_model_run(row: Mapping[str, Any], directory: Path = SCHEMAS_DIR) ->
     problems = _check("model-run-row.schema.json", row, directory)
     if problems:
         raise ValueError("Invalid model_runs row: " + "; ".join(problems))
+
+
+def validate_eval_run(row: Mapping[str, Any], directory: Path = SCHEMAS_DIR) -> None:
+    problems = _check("eval-run-row.schema.json", row, directory)
+    if problems:
+        raise ValueError("Invalid eval_runs row: " + "; ".join(problems))

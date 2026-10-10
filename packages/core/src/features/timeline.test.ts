@@ -334,7 +334,9 @@ describe("buildBins: any valid video", () => {
       }),
       { numRuns: 200 },
     );
-  });
+    // 200 videos of up to 30 beats: well under a second alone, but slow when
+    // `pnpm check` runs every package's tests at once.
+  }, 30_000);
 });
 
 describe("buildBins: rejected input", () => {

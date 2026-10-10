@@ -1,0 +1,82 @@
+# Soundcheck model card
+
+Model `{{ model_version }}` on features `{{ feature_version }}` · generated {{ generated }} by `soundcheck-modeling model-card` from the latest evaluation of each channel.
+
+{% if not channels %}
+> **No evaluation yet.** Run `soundcheck-modeling evaluate --channel <id>` for each channel first.
+{% elif not any_holdout %}
+> **No result yet.** No channel has enough videos to hold some out: a real test needs 6 test videos and {{ min_train_videos }} training videos. Every number below comes from check mode, where each video is held out in turn to make sure the whole pipeline runs. They say nothing about how good the model is.
+{% endif %}
+
+## What it predicts
+
+For each audience of a channel (all viewers, subscribers, and newcomers who are not subscribed), the share of viewers still watching at each 1% of a video, with an 80% uncertainty band. It also turns the model into traits, such as "a 30 s sponsor read at 30% is associated with 2 points fewer viewers at the end", by editing a video's beats and predicting again. Everything is an association in the channel's past videos, not a cause.
+
+## Data
+
+| Channel | Evaluation | Videos tested | Training videos per fit | Data through |
+| --- | --- | --- | --- | --- |
+{% for c in channels %}
+| `{{ c.channel_id }}` | {{ "held out (newest 20%)" if c.mode == "holdout" else "check: each video held out in turn" }} | {{ c.tested }} | {{ c.training }} | {{ c.as_of }} |
+{% endfor %}
+
+{% for c in channels if c.reason %}
+- `{{ c.channel_id }}` runs in check mode: {{ c.reason }}.
+{% endfor %}
+
+Each video is cut into 100 equal slices. Every slice has 86 features built by TypeScript from Gemini's beat extraction (`beats-v5`, which passed a consistency gate): beat types, picture, audio, delivery, pacing, narrative, position in the video, and for newcomers the traffic mix. The label is the measured share of viewers who leave during the slice.
+
+## Method
+
+- **Model:** a discrete-time hazard model, one per channel and audience: a fractional logistic regression of each slice's drop-off on 28 columns (49 for newcomers: plus traffic mix and its interactions). Columns that never vary in a channel's videos are dropped.
+- **Weights:** within a video by the viewers still watching; each video counts log(1 + views) in total, so one viral video cannot dominate.
+- **Shrinkage:** a ridge penalty whose strength is chosen by cross-validation that holds out whole videos; a pooled model across channels is the prior once at least 2 channels exist.
+- **Uncertainty:** the Laplace covariance, scaled by the quasi-likelihood dispersion (how much the drop-offs scatter around the fit); bands come from 200 coefficient draws.
+- **Evaluation:** the newest 20% of each channel's videos (at least 6, none under 14 days old) are held out; the model is refitted on the rest, and the pooled prior is refitted without the test videos.
+
+## Results
+
+Curve error is the mean absolute difference between the predicted and the measured share still watching, over slices 2 to 100, in percentage points; lower is better.
+
+- **B0** is the channel's average curve, or the average of its 10 training videos nearest in length, whichever did better on the test videos (choosing it that way favours the baseline).
+- **B1** is Gemini guessing the curve from the video alone, with no channel data.
+- **B2** is the model without content features: only position and length.
+
+{% for c in channels %}
+### `{{ c.channel_id }}`{{ " (check mode: not a result)" if c.mode != "holdout" else "" }}
+
+| Audience | Test videos | Model | B0 | B1 | B2 | Model minus B0, 95% interval | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+{% for a in c.audiences %}
+| {{ a.audience }} | {{ a.videos }} | {{ a.model }} | {{ a.b0 }} ({{ a.b0_variant }}) | {{ a.b1 }} | {{ a.b2 }} | {{ a.versus }} | {{ a.verdict }} |
+{% endfor %}
+
+| Audience | Measure | Model | B0 | B1 | B2 |
+| --- | --- | --- | --- | --- | --- |
+{% for a in c.audiences %}
+| {{ a.audience }} | Share watched, error (pp) | {{ a.retention.model }} | {{ a.retention.b0 }} | {{ a.retention.b1 }} | {{ a.retention.b2 }} |
+| {{ a.audience }} | Drop-offs found (top 3 within 3 slices) | {{ a.drops.model }} | {{ a.drops.b0 }} | {{ a.drops.b1 }} | {{ a.drops.b2 }} |
+| {{ a.audience }} | Ranking of test videos (Spearman) | {{ a.ranking.model }} | {{ a.ranking.b0 }} | {{ a.ranking.b1 }} | {{ a.ranking.b2 }} |
+{% endfor %}
+
+{% endfor %}
+## Calibration
+
+The 80% band should contain about 80% of the measured points (70% to 90% is acceptable). If the validation videos, held out from the training set, miss that range, one factor scales the covariance and the test bands are drawn again with it.
+
+| Channel | Audience | Measured points inside the 80% band | Inflation |
+| --- | --- | --- | --- |
+{% for c in channels %}
+{% for a in c.audiences %}
+| `{{ c.channel_id }}` | {{ a.audience }} | {{ a.coverage }} | {{ a.inflation }} |
+{% endfor %}
+{% endfor %}
+
+## Limitations
+
+- **Correlational.** The model learns which content goes with viewers leaving in a channel's past videos. It does not show that changing the content would change the viewers; the product says "associated with", never "causes".
+- **Small samples.** A channel's model learns from its own videos only. Below {{ min_train_videos }} training videos a model is marked not usable and never shown. Slices of one video are not independent, so the uncertainty bands need the calibration check above.
+- **Estimated audiences.** Search, suggested and browse newcomers are estimated from the newcomer model with the traffic mix set to one source. One is shown only when its share varies by at least 0.08 across at least 30 videos and at least one trait's interval excludes zero.
+- **The Aug 27, 2026 view-counting change.** From that day YouTube counts a view from the first frame, autoplay and hover included. Views and curves on either side of the date are measured differently; weights use views, and `engaged_views` keeps the earlier meaning.
+- **Baselines.** B1 is one prompt (`llm-retention-v1`) on one model; a better prompt could do better. B0 is chosen with the test videos in view, which favours it.
+- **YouTube's average view percentage** counts rewatches and can pass 100%, so the share-watched error compares against the measured curve instead.

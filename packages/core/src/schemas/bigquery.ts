@@ -342,3 +342,29 @@ export const baselineLlmCurveRowSchema = z.object({
   created_at: timestamp,
 });
 export type BaselineLlmCurveRow = z.infer<typeof baselineLlmCurveRowSchema>;
+
+/**
+ * How an evaluation ended (Phase 09): `holdout` (a real held-out result),
+ * `check` (a channel too small to hold videos out, each held out in turn: a
+ * pipeline check, never a result) or `failed`.
+ */
+export const evalRunStatusSchema = z.enum(["holdout", "check", "failed"]);
+
+/**
+ * `eval_runs`: one row per evaluation of a channel, written by the Python
+ * evaluator. `model_run_id` is the production run the evaluation vouches for
+ * (the evaluation's own run when the channel has none); the scores, baselines,
+ * calibration and bootstrap are in `details`.
+ */
+export const evalRunRowSchema = z.object({
+  run_id: z.string().regex(/^[\w-]+$/),
+  model_run_id: z.string().regex(/^[\w-]+$/),
+  channel_id: channelIdSchema,
+  model_version: z.string().min(1),
+  feature_version: z.string().min(1),
+  status: evalRunStatusSchema,
+  started_at: timestamp,
+  finished_at: timestamp.nullable(),
+  details: z.record(z.string(), z.unknown()),
+});
+export type EvalRunRow = z.infer<typeof evalRunRowSchema>;

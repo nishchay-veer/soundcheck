@@ -1,15 +1,18 @@
 """Command line entry point, run as a Cloud Run Job."""
 
 from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import typer
 
 from soundcheck_modeling import eda as eda_module
-from soundcheck_modeling.contract import load_config
+from soundcheck_modeling.contract import ModelConfig, load_config
 from soundcheck_modeling.data import AUDIENCES
+from soundcheck_modeling.evaluation_run import Evaluator
 from soundcheck_modeling.experiments import VertexExperiments
+from soundcheck_modeling.model_card import DEFAULT_CARD, card_context, render_card
 from soundcheck_modeling.settings import load_settings
 from soundcheck_modeling.store import CloudStore
 from soundcheck_modeling.train import Outcome, Trainer
@@ -85,12 +88,6 @@ def fit(
 
 
 @app.command()
-def evaluate() -> None:
-    """Evaluate fitted models on held-out videos against the baselines."""
-    typer.echo("evaluate: not implemented")
-
-
-@app.command()
 def eda(
     feature_version: Annotated[
         str | None, typer.Option(help="Feature version to analyse; the newest by default")
@@ -107,3 +104,86 @@ def eda(
         if top:
             ranked = ", ".join(f"{c.name} {c.spearman:+.2f}" for c in top if c.spearman is not None)
             typer.echo(f"  {audience}: {ranked}")
+
+
+def make_evaluator() -> Evaluator:
+    settings = load_settings()
+    store = CloudStore(settings)
+    return Evaluator(
+        source=store,
+        store=store,
+        experiments=VertexExperiments(settings.project, settings.region),
+        config=load_config(),
+        min_train_videos=settings.min_train_videos,
+    )
+
+
+def latest_evaluations(config: ModelConfig) -> list[dict[str, Any]]:
+    return CloudStore(load_settings()).latest_evaluations(
+        config.model_version, config.feature_version
+    )
+
+
+# What the evaluation commands run with; tests replace them.
+EVALUATOR: Callable[[], Evaluator] = make_evaluator
+EVALUATIONS: Callable[[ModelConfig], list[dict[str, Any]]] = latest_evaluations
+CONFIG: Callable[[], ModelConfig] = load_config
+
+
+def _pp(value: Any) -> str:
+    return "n/a" if value is None else f"{float(value):.1f}"
+
+
+@app.command()
+def evaluate(
+    channel: Annotated[str, typer.Option(help="The channel to evaluate")],
+    audience: AudienceOption = None,
+) -> None:
+    """Evaluate a channel's model on held-out videos against the baselines (Phase 09)."""
+    outcome = EVALUATOR().run(channel, _audiences(audience))
+    if outcome.status == "failed":
+        typer.echo(f"{channel}: evaluation failed: {outcome.error}")
+        raise typer.Exit(code=1)
+    details = outcome.details
+    mode = "held out" if outcome.status == "holdout" else f"check mode ({details['reason']})"
+    typer.echo(f"{channel}: {mode}, data through {details['as_of']}")
+    for name, result in details["audiences"].items():
+        summary = result["summary"]
+        if not summary:
+            typer.echo(f"  {name}: no test video could be scored")
+            continue
+        b0 = "b0_channel" if result["b0_variant"] == "channel average" else "b0_length"
+        line = (
+            f"  {name}: curve error model {_pp(summary['model']['curve_mae_pp'])} pp, "
+            f"B0 {_pp(summary[b0]['curve_mae_pp'])} ({result['b0_variant']}), "
+            f"B1 {_pp(summary.get('b1', {}).get('curve_mae_pp'))}, "
+            f"B2 {_pp(summary['b2']['curve_mae_pp'])}"
+        )
+        bootstrap = result["bootstrap"]
+        if bootstrap:
+            line += (
+                f"; model minus B0 {float(bootstrap['mean_difference_pp']):+.1f} "
+                f"({float(bootstrap['low']):+.1f} to {float(bootstrap['high']):+.1f})"
+            )
+        line += f"; 80% band covers {100 * float(result['coverage']):.0f}%"
+        typer.echo(line)
+    folder = outcome.plots[0].parent if outcome.plots else None
+    typer.echo(f"  plots: {len(outcome.plots)} in {folder}" if folder else "  plots: none")
+    typer.echo(f"  eval_runs: run {outcome.run_id[:8]} ({outcome.status})")
+
+
+@app.command("model-card")
+def model_card(
+    out: Annotated[Path, typer.Option(help="Where to write the card")] = DEFAULT_CARD,
+) -> None:
+    """Write docs/model-card.md from each channel's latest evaluation."""
+    config = CONFIG()
+    evaluations = EVALUATIONS(config)
+    context = card_context(
+        evaluations,
+        model_version=config.model_version,
+        feature_version=config.feature_version,
+        generated=datetime.now(UTC),
+    )
+    out.write_text(render_card(context))
+    typer.echo(f"wrote {out} from {len(evaluations)} channel evaluation(s)")

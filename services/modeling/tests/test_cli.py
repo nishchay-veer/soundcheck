@@ -9,11 +9,10 @@ from soundcheck_modeling.cli import app
 runner = CliRunner()
 
 
-@pytest.mark.parametrize("command", ["evaluate"])
-def test_stub_commands_print_not_implemented(command: str) -> None:
-    result = runner.invoke(app, [command])
-    assert result.exit_code == 0
-    assert result.output == f"{command}: not implemented\n"
+def test_every_command_is_listed() -> None:
+    result = runner.invoke(app, ["--help"])
+    for command in ("fit", "fit-pooled", "evaluate", "model-card", "eda"):
+        assert command in result.output
 
 
 @pytest.mark.filterwarnings("ignore:A test tried to use socket.socket")
