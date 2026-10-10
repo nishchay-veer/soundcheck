@@ -7,6 +7,7 @@ reads them.
 import json
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
+from datetime import date
 from typing import Any
 
 import numpy as np
@@ -47,6 +48,7 @@ class ChannelContext:
     median_target_level: float
     mix_mean: dict[str, float]  # search, suggested, browse
     video_ids: list[str]
+    as_of: str | None = None  # the curves' data date, YYYY-MM-DD
 
 
 def table_from_rows(
@@ -141,7 +143,8 @@ def read_channel_contexts(
     """Every channel's context for a feature version, by channel ID."""
     job = client.query(
         "SELECT channel_id, extraction_version, median_target_level, mix_mean_search, "
-        f"mix_mean_suggested, mix_mean_browse, video_ids FROM {settings.table('feature_contexts')} "
+        "mix_mean_suggested, mix_mean_browse, video_ids, as_of "
+        f"FROM {settings.table('feature_contexts')} "
         "WHERE feature_version = @version",
         job_config=_parameters(version=feature_version),
         location=settings.location,
@@ -156,6 +159,54 @@ def read_channel_contexts(
                 "browse": float(row["mix_mean_browse"]),
             },
             video_ids=[str(video) for video in row["video_ids"]],
+            as_of=str(row["as_of"]),
         )
         for row in job.result()
+    }
+
+
+@dataclass(frozen=True)
+class VideoInfo:
+    video_id: str
+    published: date
+    duration_s: float
+
+
+def read_videos(client: bigquery.Client, settings: Settings, channel: str) -> list[VideoInfo]:
+    """The channel's videos with their publish date and length."""
+    job = client.query(
+        "SELECT video_id, DATE(published_at) AS published, duration_s "
+        f"FROM {settings.table('videos')} "
+        "WHERE channel_id = @channel AND published_at IS NOT NULL",
+        job_config=_parameters(channel=channel),
+        location=settings.location,
+    )
+    return [
+        VideoInfo(str(row["video_id"]), row["published"], float(row["duration_s"]))
+        for row in job.result()
+    ]
+
+
+def read_view_percentages(
+    client: bigquery.Client, settings: Settings, channel: str
+) -> dict[tuple[str, str], float]:
+    """
+    YouTube's average view percentage by (video, audience), for subscribers and
+    newcomers; there is none for all viewers. It counts rewatches, so it can
+    pass 100: shown for reference, never scored against.
+    """
+    job = client.query(
+        "SELECT video_id, subscribed_status, average_view_percentage "
+        f"FROM {settings.table('video_stats')} "
+        "WHERE channel_id = @channel AND average_view_percentage IS NOT NULL",
+        job_config=_parameters(channel=channel),
+        location=settings.location,
+    )
+    audience = {"SUBSCRIBED": "subscribed", "UNSUBSCRIBED": "unsubscribed"}
+    return {
+        (str(row["video_id"]), audience[str(row["subscribed_status"])]): float(
+            row["average_view_percentage"]
+        )
+        for row in job.result()
+        if str(row["subscribed_status"]) in audience
     }
