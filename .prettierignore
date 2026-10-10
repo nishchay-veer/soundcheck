@@ -10,3 +10,5 @@ coverage
 docs/eda
 # Written by pnpm gen:schemas
 services/modeling/schemas
+# Written by soundcheck-modeling model-card
+docs/model-card.md

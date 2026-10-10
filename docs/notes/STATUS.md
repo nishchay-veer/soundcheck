@@ -4,6 +4,26 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Phase 09: Evaluation and baselines (Oct 10, 2026)
+
+- **Built:**
+  - `soundcheck-modeling evaluate`:
+    - holds out each channel's newest 20% (or, for small channels, each video in turn in a labelled check mode) and refits on the rest;
+    - scores curve error, share-watched error, drop-offs found and ranking against B0 (channel average), B1 (Gemini's generic guess, from the new `soundcheck baseline-llm`) and B2 (no content features);
+    - checks 80% band coverage, with inflation fitted on validation videos;
+    - runs a 2,000-resample bootstrap against B0;
+    - writes `eval_runs`, Experiments runs and plots.
+  - `soundcheck-modeling model-card` writes `docs/model-card.md`.
+- **Real data:** check mode on the 3-video channel, the Gemini baseline costing $0.047.
+  - The model is close on the two covers but far off on the application video.
+  - B2 beats it for newcomers, which is overfitting from 2 training videos.
+  - The card says "No result yet".
+- **Model gate: not passed.** No channel has the 38+ usable videos a held-out test needs. The next step is recruiting at least 2 channels with 40+ videos, then rerunning features, fit, baseline-llm, evaluate and model-card.
+- **Next phases must keep:**
+  - no UI before a real number, unless Nishchay overrides it explicitly;
+  - publish only `usable` models, and never present `check` evaluations as results;
+  - apply a holdout's inflation factor to the bands the product shows.
+
 ### Phase 08: The audience model (Oct 10, 2026)
 
 - **Built:**
