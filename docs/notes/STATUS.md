@@ -4,6 +4,27 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Phase 07: Timeline and training table (Oct 10, 2026)
+
+- **Built:**
+  - `@soundcheck/core/features`: the feature spec (86 columns; `FEATURE_VERSION` `feat-bf1e3064fa6f` is its hash), a B-spline basis checked against scipy, and `buildBins`, which turns a video's beats into a 100-bin frame for training and prediction;
+  - `soundcheck features --channel …`, which writes `training_bins` (hazard label, viewers at risk, views, `x`) and `feature_specs`;
+  - `soundcheck-modeling eda`, which writes `docs/eda/<version>/`.
+- **Real data:** 900 rows (3 videos × 3 audiences × 100 bins). All hazards match `retention_curves`, and a re-run skips the write.
+- **EDA:** `before_payoff` correlates most with hazard for every audience (+0.17 to +0.29). With 3 videos that mostly tells the videos apart; 37 of 86 columns never vary.
+- **Changed from the spec:**
+  - `framing` became `visual` shares and the talking-head features;
+  - transforms are stored (`log1p_*`, `has_open_loop`);
+  - `log_duration` dropped;
+  - clustered, not partitioned;
+  - features refuse an extraction version that hasn't passed the gate.
+- **Data gate still not met:** 1 channel, 3 videos.
+- **Next phases must keep:**
+  - the model reads columns by name from `feature_specs`;
+  - columns that never vary are handled before standardizing;
+  - the channel context is stored with each model for predictions;
+  - `soundcheck features` is re-run after any spec change.
+
 ### Phase 06: Extraction quality gate (Oct 9, 2026)
 
 - **Built:**
