@@ -6,3 +6,5 @@ node_modules
 dist
 coverage
 .venv
+# Written by soundcheck-modeling eda
+docs/eda
