@@ -153,23 +153,32 @@ class Trainer:
     config: ModelConfig
     min_train_videos: int
     now: Callable[[], datetime] = field(default=lambda: datetime.now(UTC))
+    # Called with (audiences done, audiences) after each fit, for build progress.
+    progress: Callable[[int, int], None] | None = None
+
+    def _done(self, done: int, total: int) -> None:
+        if self.progress is not None:
+            self.progress(done, total)
 
     def train_pooled(self, audiences: Sequence[str]) -> list[Outcome]:
         table = self.source.training_table(self.config.feature_version, None)
         contexts = self.source.channel_contexts(self.config.feature_version)
         run_id = uuid.uuid4().hex
-        return [
-            self._train(
-                run_id=run_id,
-                channel=None,
-                audience=audience,
-                table=table,
-                context=None,
-                extraction=",".join(sorted({c.extraction_version for c in contexts.values()})),
-                prior=None,
+        outcomes = []
+        for audience in audiences:
+            outcomes.append(
+                self._train(
+                    run_id=run_id,
+                    channel=None,
+                    audience=audience,
+                    table=table,
+                    context=None,
+                    extraction=",".join(sorted({c.extraction_version for c in contexts.values()})),
+                    prior=None,
+                )
             )
-            for audience in audiences
-        ]
+            self._done(len(outcomes), len(audiences))
+        return outcomes
 
     def train_channel(self, channel: str, audiences: Sequence[str]) -> list[Outcome]:
         table = self.source.training_table(self.config.feature_version, channel)
@@ -209,6 +218,7 @@ class Trainer:
                     prior=prior,
                 )
             )
+            self._done(len(outcomes), len(audiences))
         return outcomes
 
     def _train(

@@ -16,6 +16,11 @@ class Settings:
     raw_bucket: str = ""
     # A model trained on fewer videos than this is never shown or shipped.
     min_train_videos: int = 30
+    firestore_database: str = "(default)"
+    # Set on Cloud Run jobs by the channel_build workflow (Phase 10).
+    channel_id: str | None = None
+    run_id: str | None = None
+    build_mode: str = "build"
 
     def table(self, name: str) -> str:
         """A table's full name, quoted for SQL."""
@@ -32,6 +37,9 @@ def load_settings(environ: dict[str, str] | None = None) -> Settings:
     if not project:
         raise RuntimeError("GCP_PROJECT_ID is not set (locally: uv run --env-file ../../.env ...)")
     minimum = env.get("MIN_TRAIN_VIDEOS", "").strip() or "30"
+    mode = env.get("BUILD_MODE", "").strip() or "build"
+    if mode not in ("build", "refresh"):
+        raise RuntimeError(f"BUILD_MODE must be build or refresh, got {mode!r}")
     if not minimum.isdigit():
         raise RuntimeError(f"MIN_TRAIN_VIDEOS must be a whole number, got {minimum!r}")
     return Settings(
@@ -41,4 +49,8 @@ def load_settings(environ: dict[str, str] | None = None) -> Settings:
         region=env.get("GCP_REGION", "").strip() or "us-central1",
         raw_bucket=env.get("GCS_RAW_BUCKET", "").strip() or f"{project}-raw",
         min_train_videos=int(minimum),
+        firestore_database=env.get("FIRESTORE_DATABASE", "").strip() or "(default)",
+        channel_id=env.get("CHANNEL_ID", "").strip() or None,
+        run_id=env.get("RUN_ID", "").strip() or None,
+        build_mode=mode,
     )

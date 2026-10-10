@@ -16,7 +16,7 @@ runtime. Nothing here computes a feature.
 """
 
 import math
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Literal, cast
@@ -534,13 +534,32 @@ def evaluate_channel(
     view_percentages: Mapping[tuple[str, str], float] | None = None,
     audiences: Sequence[str] = AUDIENCES,
     seed: int = SEED,
+    progress: Callable[[int, int], None] | None = None,
 ) -> Evaluation:
-    """Evaluates every audience of one channel; `table` holds that channel's rows."""
+    """
+    Evaluates every audience of one channel; `table` holds that channel's rows.
+    `progress` is called with (audiences done, audiences) after each.
+    """
     present = set(table.video)
     usable = [v for v in videos if v.video_id in present]
     split = choose_split(usable, as_of, min_train_videos, config.evaluation)
     durations = {v.video_id: v.duration_s for v in usable}
     rng = np.random.default_rng(seed)
+    results: dict[str, AudienceResult] = {}
+    for audience in audiences:
+        results[audience] = _evaluate_audience(
+            table,
+            audience,
+            split,
+            config,
+            durations,
+            pooled,
+            llm_curves or {},
+            view_percentages or {},
+            rng,
+        )
+        if progress is not None:
+            progress(len(results), len(audiences))
     return Evaluation(
         channel_id=channel_id,
         model_version=config.model_version,
@@ -550,18 +569,5 @@ def evaluate_channel(
         as_of=as_of.isoformat(),
         folds=split.folds,
         too_new=split.too_new,
-        audiences={
-            audience: _evaluate_audience(
-                table,
-                audience,
-                split,
-                config,
-                durations,
-                pooled,
-                llm_curves or {},
-                view_percentages or {},
-                rng,
-            )
-            for audience in audiences
-        },
+        audiences=results,
     )

@@ -105,8 +105,11 @@ class Evaluator:
     experiments: ExperimentLog
     config: ModelConfig
     min_train_videos: int
-    plots_dir: Path = DEFAULT_PLOTS
+    # None skips the plots: a Cloud Run job has no repo to write them into.
+    plots_dir: Path | None = DEFAULT_PLOTS
     now: Callable[[], datetime] = field(default=lambda: datetime.now(UTC))
+    # Called with (audiences done, audiences), for build progress.
+    progress: Callable[[int, int], None] | None = None
 
     def run(self, channel: str, audiences: Sequence[str] = AUDIENCES) -> EvaluationOutcome:
         started = self.now()
@@ -127,12 +130,11 @@ class Evaluator:
             f"{channel}/evals/{run_id}/evaluation.json", details
         )
         details["experiment_runs"] = self._log(channel, run_id, evaluation)
-        plots = [
-            plot_video(evaluation, video, self.plots_dir / channel)
-            for video in sorted(
-                {v.video_id for r in evaluation.audiences.values() for v in r.videos}
-            )
-        ]
+        videos = sorted({v.video_id for r in evaluation.audiences.values() for v in r.videos})
+        folder = self.plots_dir
+        plots = (
+            [] if folder is None else [plot_video(evaluation, v, folder / channel) for v in videos]
+        )
         self._record(channel, run_id, production, evaluation.mode, details, started)
         return EvaluationOutcome(run_id, evaluation.mode, details, plots)
 
@@ -157,6 +159,7 @@ class Evaluator:
             llm_curves=self.source.llm_curves(channel),
             view_percentages=self.source.view_percentages(channel),
             audiences=audiences,
+            progress=self.progress,
         )
 
     def _record(

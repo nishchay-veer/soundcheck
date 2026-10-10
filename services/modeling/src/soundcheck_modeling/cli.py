@@ -10,9 +10,10 @@ import typer
 from soundcheck_modeling import eda as eda_module
 from soundcheck_modeling.contract import ModelConfig, load_config
 from soundcheck_modeling.data import AUDIENCES
-from soundcheck_modeling.evaluation_run import Evaluator
+from soundcheck_modeling.evaluation_run import EvaluationOutcome, Evaluator
 from soundcheck_modeling.experiments import VertexExperiments
 from soundcheck_modeling.model_card import DEFAULT_CARD, card_context, render_card
+from soundcheck_modeling.progress import ProgressWriter, channel_progress
 from soundcheck_modeling.settings import load_settings
 from soundcheck_modeling.store import CloudStore
 from soundcheck_modeling.train import Outcome, Trainer
@@ -140,7 +141,10 @@ def evaluate(
     audience: AudienceOption = None,
 ) -> None:
     """Evaluate a channel's model on held-out videos against the baselines (Phase 09)."""
-    outcome = EVALUATOR().run(channel, _audiences(audience))
+    _report_evaluation(channel, EVALUATOR().run(channel, _audiences(audience)))
+
+
+def _report_evaluation(channel: str, outcome: EvaluationOutcome) -> None:
     if outcome.status == "failed":
         typer.echo(f"{channel}: evaluation failed: {outcome.error}")
         raise typer.Exit(code=1)
@@ -187,3 +191,51 @@ def model_card(
     )
     out.write_text(render_card(context))
     typer.echo(f"wrote {out} from {len(evaluations)} channel evaluation(s)")
+
+
+STAGES = ("train", "train-pooled", "evaluate")
+
+
+def make_progress(stage: str, channel: str) -> ProgressWriter:
+    settings = load_settings()
+    return channel_progress(settings.project, settings.firestore_database, channel, stage)
+
+
+# The build-progress writer the stages use; tests replace it.
+PROGRESS: Callable[[str, str], ProgressWriter] = make_progress
+
+
+@app.command()
+def stage(
+    name: Annotated[str, typer.Argument(help="train | train-pooled | evaluate")],
+    channel: Annotated[
+        str | None, typer.Option(help="The channel (default: the job's CHANNEL_ID)")
+    ] = None,
+) -> None:
+    """Run one stage of the channel build, as its Cloud Run job does (Phase 10)."""
+    if name not in STAGES:
+        raise typer.BadParameter(f"expected one of {', '.join(STAGES)}", param_hint="STAGE")
+    if name == "train-pooled":
+        # Across every channel; the weekly refresh runs it once before the channels.
+        _report("pooled", TRAINER().train_pooled(list(AUDIENCES)))
+        return
+    target = channel or load_settings().channel_id
+    if not target:
+        raise typer.BadParameter("pass --channel or set CHANNEL_ID", param_hint="--channel")
+    writer = PROGRESS(name, target)
+    try:
+        if name == "train":
+            trainer = TRAINER()
+            trainer.progress = writer.update
+            outcomes = trainer.train_channel(target, list(AUDIENCES))
+        else:
+            evaluator = EVALUATOR()
+            evaluator.plots_dir = None
+            evaluator.progress = writer.update
+            evaluation = evaluator.run(target)
+    finally:
+        writer.flush()
+    if name == "train":
+        _report(target, outcomes)
+    else:
+        _report_evaluation(target, evaluation)
