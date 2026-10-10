@@ -1,8 +1,10 @@
 /**
  * In-memory stand-in for the BigQuery calls core makes, for unit tests: rows
  * per table, an INFORMATION_SCHEMA lookup for `channel_id` columns,
- * parameterized `DELETE … WHERE channel_id = @channelId` jobs, and the
- * staging-table load plus delete-and-insert transaction of `replaceChannelRows`.
+ * parameterized `DELETE … WHERE channel_id = @channelId` jobs, the
+ * staging-table load plus delete-and-insert transaction of `replaceChannelRows`,
+ * and the insert-once MERGE of `saveFeatureSpec`. Tests answer any other query
+ * with `respondTo`.
  */
 import type { BigQuery } from "@google-cloud/bigquery";
 import type { FakeStorage } from "./fake-storage";
@@ -19,6 +21,11 @@ interface LoadConfiguration {
 const DELETE = /^DELETE FROM `[^`]+\.([^.`]+)` WHERE channel_id = @channelId;?$/;
 const INSERT =
   /^INSERT INTO `[^`]+\.([^.`]+)` \(([^)]+)\) SELECT \2 FROM `[^`]+\.([^.`]+)` WHERE channel_id = @channelId;$/;
+/** `MERGE … USING (SELECT 1) S ON T.key = @key WHEN NOT MATCHED THEN INSERT (columns) VALUES (values)`. */
+const MERGE =
+  /^MERGE `[^`]+\.([^.`]+)` T USING \(SELECT 1\) S ON T\.(\w+) = @(\w+) WHEN NOT MATCHED THEN INSERT \(([^)]+)\) VALUES \((.+)\)$/;
+/** A MERGE value: `@name`, `PARSE_JSON(@name)` or `TIMESTAMP(@name)`. */
+const VALUE = /^(?:(PARSE_JSON|TIMESTAMP)\()?@(\w+)\)?$/;
 
 /** Sorts like BigQuery would: TIMESTAMP values arrive as `{ value }` objects. */
 const sortKey = (value: unknown): string =>
@@ -34,6 +41,10 @@ export class FakeBigQuery {
   failDeletes: Error | undefined;
   /** Set to make every load job fail. */
   failLoads: Error | undefined;
+  private readonly responders: Array<{
+    pattern: RegExp;
+    respond: (params: Record<string, unknown>) => Row[];
+  }> = [];
 
   constructor(
     readonly tables: Record<string, Row[]>,
@@ -45,8 +56,15 @@ export class FakeBigQuery {
     } = {},
   ) {}
 
+  /** Answers queries that match `pattern` with `respond(params)`, for queries the fake does not model. */
+  respondTo(pattern: RegExp, respond: (params: Record<string, unknown>) => Row[]): void {
+    this.responders.push({ pattern, respond });
+  }
+
   async query(options: { query: string; params?: Record<string, unknown>; location?: string }) {
     this.queries.push(options);
+    const responder = this.responders.find(({ pattern }) => pattern.test(options.query));
+    if (responder) return [responder.respond(options.params ?? {})] as const;
     if (options.query.includes("INFORMATION_SCHEMA.COLUMNS")) {
       return [
         Object.keys(this.tables)
@@ -94,7 +112,27 @@ export class FakeBigQuery {
     for (const statement of statements) {
       const deletion = DELETE.exec(statement);
       const insertion = INSERT.exec(statement);
-      if (deletion?.[1]) {
+      const merge = MERGE.exec(statement);
+      if (merge?.[1] && merge[2] && merge[3] && merge[4] && merge[5]) {
+        const [, table, column, key, columns, values] = merge;
+        const params = options.params ?? {};
+        const rows = next[table];
+        if (!rows) throw new Error(`Not found: Table ${table}`);
+        if (!rows.some((row) => row[column] === params[key])) {
+          const names = columns.split(", ");
+          const row = Object.fromEntries(
+            values.split(", ").map((value, index) => {
+              const [, wrapper, name = ""] = VALUE.exec(value) ?? [];
+              if (!(name in params)) throw new Error(`Unexpected MERGE value: ${value}`);
+              const parameter = params[name];
+              const parsed = wrapper === "PARSE_JSON" ? JSON.parse(String(parameter)) : parameter;
+              return [names[index] as string, parsed];
+            }),
+          );
+          rows.push(row);
+          affected += 1;
+        }
+      } else if (deletion?.[1]) {
         if (this.failDeletes) throw this.failDeletes;
         const rows = next[deletion[1]] ?? [];
         const kept = rows.filter((row) => row.channel_id !== channelId);

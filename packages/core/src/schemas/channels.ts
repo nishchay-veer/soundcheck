@@ -63,6 +63,8 @@ export type Channel = ChannelDoc & { id: string };
 export const stepMarkerSchema = z.object({
   asOf: z.iso.date(),
   version: z.string().min(1),
+  /** A fingerprint of the step's inputs, for steps whose inputs can change without a new data date. */
+  inputs: z.string().min(1).optional(),
   /** Rows written per table. */
   rows: z.record(z.string(), z.number().int().nonnegative()),
   finishedAt: firestoreDate,

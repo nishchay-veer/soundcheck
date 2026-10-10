@@ -42,6 +42,15 @@ describe("step markers", () => {
     expect(await isStepDone(CHANNEL, "ingest-mix", KEY)).toBe(false);
   });
 
+  it("also needs the same inputs when the key has a fingerprint", async () => {
+    await markStepDone(CHANNEL, "features", { ...KEY, inputs: "abc", rows: {} });
+    expect(await isStepDone(CHANNEL, "features", { ...KEY, inputs: "abc" })).toBe(true);
+    expect(await isStepDone(CHANNEL, "features", { ...KEY, inputs: "def" })).toBe(false);
+    expect(await isStepDone(CHANNEL, "features", KEY)).toBe(true);
+    await markStepDone(CHANNEL, "ingest-stats", { ...KEY, rows: {} });
+    expect(await isStepDone(CHANNEL, "ingest-stats", { ...KEY, inputs: "abc" })).toBe(false);
+  });
+
   it("reads the last finished run, or null", async () => {
     expect(await readStepMarker(CHANNEL, "ingest-stats")).toBeNull();
     await markStepDone(CHANNEL, "ingest-stats", { ...KEY, rows: { video_stats: 2 } });

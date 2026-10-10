@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { beatSchema } from "./beats";
 
 /**
  * The feature spec: the ordered columns of every feature vector, written to
@@ -50,3 +51,22 @@ export const featureSpecDocumentSchema = z.object({
   features: z.array(featureSpecEntrySchema).min(1),
 });
 export type FeatureSpecDocument = z.infer<typeof featureSpecDocumentSchema>;
+
+/** The parts of a stored beat the featurizer reads, as kept in `beats.details` plus the times and type. */
+export const featureBeatSchema = beatSchema.pick({
+  start_s: true,
+  end_s: true,
+  beat_type: true,
+  talking_head_share: true,
+  visual: true,
+  cuts_per_min: true,
+  on_screen_text: true,
+  music: true,
+  energy: true,
+  assumed_knowledge: true,
+  info_density: true,
+  opens_loop: true,
+  closes_loop: true,
+  transcript: true,
+  words_per_minute: true,
+});

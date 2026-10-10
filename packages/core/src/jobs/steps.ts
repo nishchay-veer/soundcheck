@@ -7,6 +7,8 @@ export interface StepKey {
   asOf: string;
   /** The code version that produced it, from `versions.ts`. */
   version: string;
+  /** A fingerprint of the inputs; when given, it must match too. */
+  inputs?: string;
 }
 
 function stepRef(channelId: string, step: string) {
@@ -26,10 +28,15 @@ export async function readStepMarker(channelId: string, step: string): Promise<S
   return marker.success ? marker.data : null;
 }
 
-/** True when `step` already finished for this channel with the same data date and version. */
+/** True when `step` already finished for this channel with the same data date, version and inputs. */
 export async function isStepDone(channelId: string, step: string, key: StepKey): Promise<boolean> {
   const marker = await readStepMarker(channelId, step);
-  return marker !== null && marker.asOf === key.asOf && marker.version === key.version;
+  return (
+    marker !== null &&
+    marker.asOf === key.asOf &&
+    marker.version === key.version &&
+    (key.inputs === undefined || marker.inputs === key.inputs)
+  );
 }
 
 /**
@@ -40,9 +47,15 @@ export async function isStepDone(channelId: string, step: string, key: StepKey):
 export async function markStepDone(
   channelId: string,
   step: string,
-  { asOf, version, rows }: StepKey & { rows: Record<string, number> },
+  { asOf, version, inputs, rows }: StepKey & { rows: Record<string, number> },
 ): Promise<StepMarker> {
-  const marker = stepMarkerSchema.parse({ asOf, version, rows, finishedAt: new Date() });
+  const marker = stepMarkerSchema.parse({
+    asOf,
+    version,
+    ...(inputs === undefined ? {} : { inputs }),
+    rows,
+    finishedAt: new Date(),
+  });
   await stepRef(channelId, step).set(marker);
   return marker;
 }

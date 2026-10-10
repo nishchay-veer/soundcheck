@@ -4,7 +4,12 @@ import { FakeBigQuery } from "../fake-bigquery";
 import { FakeStorage } from "../fake-storage";
 import { resetClients, setClientOverride } from "../gcp";
 import { createLogger } from "../logger";
-import { loadQualityReports, readQualityReports, writeQualityReport } from "./quality";
+import {
+  latestQualityVerdict,
+  loadQualityReports,
+  readQualityReports,
+  writeQualityReport,
+} from "./quality";
 
 const CHANNEL = "UCaBcDeFgHiJkLmNoPqRsTuV";
 const quiet = createLogger({ level: "silent" });
@@ -69,5 +74,25 @@ describe("quality reports", () => {
     await expect(
       writeQualityReport({ ...report("x", "2026-10-08T10:00:00.000Z"), report_id: "../x" }),
     ).rejects.toThrow();
+  });
+
+  it("reads the latest verdict for an extraction version from any channel", async () => {
+    const params: Array<Record<string, unknown>> = [];
+    bigquery.respondTo(
+      /^SELECT report_id, channel_id, JSON_VALUE\(details, '\$\.passed'\)/,
+      (p) => {
+        params.push(p);
+        return p.version === "beats-v5"
+          ? [{ report_id: "gate1", channel_id: CHANNEL, passed: "true" }]
+          : [];
+      },
+    );
+    expect(await latestQualityVerdict("extraction-quality-gate", "beats-v5")).toEqual({
+      reportId: "gate1",
+      channelId: CHANNEL,
+      passed: true,
+    });
+    expect(await latestQualityVerdict("extraction-quality-gate", "beats-v6")).toBeNull();
+    expect(params[0]).toEqual({ stage: "extraction-quality-gate", version: "beats-v5" });
   });
 });

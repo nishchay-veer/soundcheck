@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { channelIdSchema } from "./channels";
+import { featureSpecDocumentSchema } from "./features";
 
 /**
  * BigQuery rows, as written to NDJSON for load jobs: timestamps are ISO 8601
@@ -236,3 +237,39 @@ export const qualityReportRowSchema = z.object({
   details: z.record(z.string(), z.unknown()),
 });
 export type QualityReportRow = z.infer<typeof qualityReportRowSchema>;
+
+/** The audiences the hazard model is trained for (Phase 07 and 08). */
+export const trainingAudienceSchema = audienceSchema.extract(["all", "subscribed", "unsubscribed"]);
+export type TrainingAudience = z.infer<typeof trainingAudienceSchema>;
+
+/**
+ * `training_bins`: one row per video, audience and bin. `hazard` is the label,
+ * `n_at_risk` and `video_views` are weights (outcomes, never features), and
+ * `x` is the feature vector in the order of `feature_specs` for
+ * `feature_version`.
+ */
+export const trainingBinRowSchema = z.object({
+  channel_id: channelIdSchema,
+  video_id: z.string().min(1),
+  audience: trainingAudienceSchema,
+  bin: z.number().int().min(1).max(100),
+  hazard: z.number().min(0).max(0.999),
+  /** The audience's views times survival at the start of the bin. */
+  n_at_risk: z.number().nonnegative(),
+  /** The audience's views of the video. */
+  video_views: count,
+  feature_version: z.string().min(1),
+  extraction_version: z.string().min(1),
+  /** The data date of the retention curve. */
+  as_of: date,
+  x: z.array(z.number().refine(Number.isFinite, "must be finite")).min(1),
+});
+export type TrainingBinRow = z.infer<typeof trainingBinRowSchema>;
+
+/** `feature_specs`: the feature spec of each feature version, so Python can name the columns of `x`. */
+export const featureSpecRowSchema = z.object({
+  feature_version: z.string().min(1),
+  spec: featureSpecDocumentSchema,
+  created_at: timestamp,
+});
+export type FeatureSpecRow = z.infer<typeof featureSpecRowSchema>;
