@@ -42,3 +42,6 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+
+# infra/deploy-pipeline.sh: the images it last built
+infra/.last-images

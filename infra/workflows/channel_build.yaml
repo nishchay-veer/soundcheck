@@ -1,0 +1,284 @@
+# channel_build (Phase 10): builds one channel end to end, unattended.
+#
+# Argument: {channel_id, run_id, mode: "build" | "refresh", allow_small: bool}.
+# `startChannelBuild` (packages/core/src/data/build.ts) queues the build and
+# starts this; the weekly_refresh workflow starts it with mode "refresh".
+#
+# Each stage is a Cloud Run job execution from the pipeline or the modeling
+# image, given CHANNEL_ID, RUN_ID and BUILD_MODE. Every stage is safe to re-run
+# (rule 7), so a failed stage is retried twice with exponential backoff before
+# the build is marked failed. Progress lives on channels/{id}.build: this
+# workflow writes state and stage, the jobs write progress and the counts.
+#
+# Deployed by infra/deploy-workflows.sh with MIN_TRAIN_VIDEOS as an environment
+# variable. A channel with fewer usable videos stops as insufficient_data,
+# unless allow_small (testing and demos; its models stay marked not usable).
+
+main:
+  params: [args]
+  steps:
+    - init:
+        assign:
+          - project: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
+          - region: ${sys.get_env("GOOGLE_CLOUD_LOCATION")}
+          - min_videos: ${int(sys.get_env("MIN_TRAIN_VIDEOS"))}
+          - channel: ${args.channel_id}
+          - run_id: ${args.run_id}
+          - mode: ${default(map.get(args, "mode"), "build")}
+          - allow_small: ${default(map.get(args, "allow_small"), false)}
+          - doc: ${"projects/" + project + "/databases/(default)/documents/channels/" + channel}
+          - env:
+              - name: CHANNEL_ID
+                value: ${channel}
+              - name: RUN_ID
+                value: ${run_id}
+              - name: BUILD_MODE
+                value: ${mode}
+    - mark_running:
+        call: set_build
+        args:
+          doc: ${doc}
+          values:
+            state: { stringValue: "running" }
+            stage: { stringValue: "ingest" }
+          clear: ["error", "finishedAt", "progress"]
+    - ingest:
+        call: run_stage
+        args:
+          {
+            project: "${project}",
+            region: "${region}",
+            doc: "${doc}",
+            stage: "ingest",
+            job: "job-ingest",
+            env: "${env}",
+            tasks: 1,
+          }
+    - read_counts:
+        try:
+          steps:
+            - get_counts:
+                call: googleapis.firestore.v1.projects.databases.documents.get
+                args:
+                  name: ${doc}
+                  mask:
+                    fieldPaths: ["build.usableVideos", "build.eligibleVideos"]
+                result: counted
+            - counts:
+                assign:
+                  - counted_build: ${counted.fields.build.mapValue.fields}
+                  - usable: ${int(counted_build.usableVideos.integerValue)}
+                  - eligible: ${int(counted_build.eligibleVideos.integerValue)}
+        except:
+          as: failure
+          steps:
+            - counts_failed:
+                call: set_build
+                args:
+                  doc: ${doc}
+                  values:
+                    state: { stringValue: "failed" }
+                    error: { stringValue: "ingest: the video counts were not written" }
+                    finishedAt: { timestampValue: "${time.format(sys.now())}" }
+            - counts_give_up:
+                raise: ${failure}
+    - enough_data:
+        switch:
+          - condition: ${usable < min_videos and not allow_small}
+            steps:
+              - stop_insufficient:
+                  call: set_build
+                  args:
+                    doc: ${doc}
+                    values:
+                      state: { stringValue: "insufficient_data" }
+                      finishedAt: { timestampValue: "${time.format(sys.now())}" }
+                    clear: ["progress"]
+              - done_insufficient:
+                  return: '${"insufficient_data: " + string(usable) + " usable videos, " + string(min_videos) + " needed"}'
+    - extract:
+        call: run_stage
+        args:
+          project: ${project}
+          region: ${region}
+          doc: ${doc}
+          stage: "extract"
+          job: "job-extract"
+          env: ${env}
+          # One task per 10 eligible videos, at most 10 tasks.
+          tasks: ${math.max(1, math.min(10, (eligible + 9) // 10))}
+    - extract_load:
+        call: run_stage
+        args:
+          {
+            project: "${project}",
+            region: "${region}",
+            doc: "${doc}",
+            stage: "extract-load",
+            job: "job-extract-load",
+            env: "${env}",
+            tasks: 1,
+          }
+    - features:
+        call: run_stage
+        args:
+          {
+            project: "${project}",
+            region: "${region}",
+            doc: "${doc}",
+            stage: "features",
+            job: "job-features",
+            env: "${env}",
+            tasks: 1,
+          }
+    - train:
+        call: run_stage
+        args:
+          {
+            project: "${project}",
+            region: "${region}",
+            doc: "${doc}",
+            stage: "train",
+            job: "job-train",
+            env: "${env}",
+            tasks: 1,
+          }
+    - baseline:
+        call: run_stage
+        args:
+          {
+            project: "${project}",
+            region: "${region}",
+            doc: "${doc}",
+            stage: "baseline",
+            job: "job-baseline",
+            env: "${env}",
+            tasks: 1,
+          }
+    - evaluate:
+        call: run_stage
+        args:
+          {
+            project: "${project}",
+            region: "${region}",
+            doc: "${doc}",
+            stage: "evaluate",
+            job: "job-evaluate",
+            env: "${env}",
+            tasks: 1,
+          }
+    - publish:
+        call: run_stage
+        args:
+          {
+            project: "${project}",
+            region: "${region}",
+            doc: "${doc}",
+            stage: "publish",
+            job: "job-publish",
+            env: "${env}",
+            tasks: 1,
+          }
+    - mark_ready:
+        call: set_build
+        args:
+          doc: ${doc}
+          values:
+            state: { stringValue: "ready" }
+            finishedAt: { timestampValue: "${time.format(sys.now())}" }
+          clear: ["progress"]
+    - done:
+        return: '${"ready: " + string(usable) + " usable videos"}'
+
+# Runs one stage's job and waits for it. Retries twice with exponential
+# backoff; on the final failure marks the build failed with the stage and a
+# short message, then raises so the execution fails too.
+run_stage:
+  params: [project, region, doc, stage, job, env, tasks]
+  steps:
+    - mark_stage:
+        call: set_build
+        args:
+          doc: ${doc}
+          values:
+            stage: { stringValue: "${stage}" }
+          clear: ["progress"]
+    - run:
+        try:
+          call: googleapis.run.v2.projects.locations.jobs.run
+          args:
+            name: ${"projects/" + project + "/locations/" + region + "/jobs/" + job}
+            body:
+              overrides:
+                containerOverrides:
+                  - env: ${env}
+                taskCount: ${tasks}
+            connector_params:
+              timeout: 7200
+        retry:
+          predicate: ${always}
+          max_retries: 2
+          backoff:
+            initial_delay: 30
+            max_delay: 300
+            multiplier: 2
+        except:
+          as: failure
+          steps:
+            - describe:
+                assign:
+                  - message: '${stage + ": " + default(map.get(failure, "message"), json.encode_to_string(failure))}'
+                  - message: ${text.substring(message, 0, math.min(300, len(message)))}
+            - mark_failed:
+                call: set_build
+                args:
+                  doc: ${doc}
+                  values:
+                    state: { stringValue: "failed" }
+                    error: { stringValue: "${message}" }
+                    finishedAt: { timestampValue: "${time.format(sys.now())}" }
+            - give_up:
+                raise: ${failure}
+
+# Every stage is idempotent, so any failure may be retried.
+always:
+  params: [e]
+  steps:
+    - yes:
+        return: true
+
+# Sets fields of channels/{id}.build: `values` maps a field to a Firestore
+# value ({stringValue: …}); `clear` lists fields to delete.
+set_build:
+  params: [doc, values, clear: []]
+  steps:
+    - paths:
+        assign:
+          - fields: []
+    - add_values:
+        for:
+          value: key
+          in: ${keys(values)}
+          steps:
+            - add_value:
+                assign:
+                  - fields: ${list.concat(fields, "build." + key)}
+    - add_clears:
+        for:
+          value: key
+          in: ${clear}
+          steps:
+            - add_clear:
+                assign:
+                  - fields: ${list.concat(fields, "build." + key)}
+    - patch:
+        call: googleapis.firestore.v1.projects.databases.documents.patch
+        args:
+          name: ${doc}
+          updateMask:
+            fieldPaths: ${fields}
+          body:
+            fields:
+              build:
+                mapValue:
+                  fields: ${values}

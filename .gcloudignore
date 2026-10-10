@@ -1,0 +1,6 @@
+# What `gcloud builds submit` leaves out when it uploads the repository
+# (infra/deploy-pipeline.sh): everything git and Docker ignore, .env included.
+.gcloudignore
+.git
+#!include:.gitignore
+#!include:.dockerignore

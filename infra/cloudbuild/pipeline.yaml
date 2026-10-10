@@ -1,0 +1,8 @@
+# Builds the TypeScript pipeline image from the repository root (its
+# Dockerfile prunes the monorepo with turbo). Used by infra/deploy-pipeline.sh.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ["build", "-f", "apps/pipeline/Dockerfile", "-t", "${_IMAGE}", "."]
+images: ["${_IMAGE}"]
+options:
+  machineType: E2_HIGHCPU_8

@@ -1,0 +1,150 @@
+# weekly_refresh (Phase 10): Cloud Scheduler starts this on Mondays at 03:00
+# IST (infra/09-orchestration.sh). It refits the pooled models across every
+# channel once, then starts channel_build with mode "refresh" for each channel
+# whose build is ready. A refresh re-reads the catalogue, re-fetches stats and
+# retention for videos published in the last 60 days, extracts beats for new
+# videos, and rebuilds features, models, evaluation and publish.
+#
+# Only ready channels are refreshed, so a channel mid-build is left alone.
+# Each refresh is marked queued before its execution starts, like
+# startChannelBuild does.
+
+main:
+  steps:
+    - init:
+        assign:
+          - project: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
+          - region: ${sys.get_env("GOOGLE_CLOUD_LOCATION")}
+          - channel_build: ${sys.get_env("CHANNEL_BUILD_WORKFLOW")}
+          - documents: ${"projects/" + project + "/databases/(default)/documents"}
+          - started: 0
+    - find_ready:
+        call: googleapis.firestore.v1.projects.databases.documents.runQuery
+        args:
+          parent: ${documents}
+          body:
+            structuredQuery:
+              from:
+                - collectionId: channels
+              where:
+                fieldFilter:
+                  field:
+                    fieldPath: build.state
+                  op: EQUAL
+                  value:
+                    stringValue: ready
+        result: found
+    - refit_pooled:
+        try:
+          call: googleapis.run.v2.projects.locations.jobs.run
+          args:
+            name: ${"projects/" + project + "/locations/" + region + "/jobs/job-train"}
+            body:
+              overrides:
+                containerOverrides:
+                  - args: ["stage", "train-pooled"]
+            connector_params:
+              timeout: 3600
+        retry:
+          predicate: ${always}
+          max_retries: 2
+          backoff:
+            initial_delay: 30
+            max_delay: 300
+            multiplier: 2
+    - refresh_each:
+        for:
+          value: row
+          in: ${found}
+          steps:
+            - is_channel:
+                switch:
+                  # A query with no match returns one row without a document.
+                  - condition: ${"document" in row}
+                    steps:
+                      - refresh:
+                          call: start_refresh
+                          args:
+                            doc: ${row.document.name}
+                            parent: ${"projects/" + project + "/locations/" + region + "/workflows/" + channel_build}
+                      - count:
+                          assign:
+                            - started: ${started + 1}
+    - done:
+        return: '${"refreshes started: " + string(started)}'
+
+# Marks one channel's build queued for a refresh and starts its channel_build.
+start_refresh:
+  params: [doc, parent]
+  steps:
+    - ids:
+        assign:
+          - parts: ${text.split(doc, "/")}
+          - channel: ${parts[len(parts) - 1]}
+          - run_id: ${text.replace_all(uuid.generate(), "-", "")}
+    - queue:
+        call: set_build
+        args:
+          doc: ${doc}
+          values:
+            state: { stringValue: "queued" }
+            runId: { stringValue: "${run_id}" }
+            mode: { stringValue: "refresh" }
+            startedAt: { timestampValue: "${time.format(sys.now())}" }
+          clear: ["stage", "error", "finishedAt", "progress", "execution"]
+    - start:
+        call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
+        args:
+          parent: ${parent}
+          body:
+            argument: '${json.encode_to_string({"channel_id": channel, "run_id": run_id, "mode": "refresh", "allow_small": false})}'
+        result: execution
+    - record:
+        call: set_build
+        args:
+          doc: ${doc}
+          values:
+            execution: { stringValue: "${execution.name}" }
+
+always:
+  params: [e]
+  steps:
+    - yes:
+        return: true
+
+# Sets fields of channels/{id}.build: `values` maps a field to a Firestore
+# value ({stringValue: …}); `clear` lists fields to delete. The same as in
+# channel_build.yaml (a workflow cannot call another file's subworkflows).
+set_build:
+  params: [doc, values, clear: []]
+  steps:
+    - paths:
+        assign:
+          - fields: []
+    - add_values:
+        for:
+          value: key
+          in: ${keys(values)}
+          steps:
+            - add_value:
+                assign:
+                  - fields: ${list.concat(fields, "build." + key)}
+    - add_clears:
+        for:
+          value: key
+          in: ${clear}
+          steps:
+            - add_clear:
+                assign:
+                  - fields: ${list.concat(fields, "build." + key)}
+    - patch:
+        call: googleapis.firestore.v1.projects.databases.documents.patch
+        args:
+          name: ${doc}
+          updateMask:
+            fieldPaths: ${fields}
+          body:
+            fields:
+              build:
+                mapValue:
+                  fields: ${values}
