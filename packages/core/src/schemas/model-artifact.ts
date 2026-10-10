@@ -9,6 +9,7 @@ import { channelIdSchema } from "./channels";
  *
  * For video v, audience a and bin b: logit h = alpha + beta . (x - mean) / sd,
  * where x holds the columns `featureNames` of the Phase 07 feature vector.
+ * `cov` is the Laplace covariance scaled by the quasi-likelihood dispersion.
  */
 
 const share = z.number().min(0).max(1);
@@ -30,6 +31,10 @@ export const modelMetricsSchema = z.object({
   iterations: z.number().int().nonnegative(),
   converged: z.boolean(),
   gradientNorm: z.number().nonnegative(),
+  /** The quasi-likelihood dispersion the covariance is scaled by. */
+  dispersion: z.number().positive(),
+  /** The effective number of parameters, below the column count when penalized. */
+  effectiveParameters: z.number().nonnegative(),
 });
 
 export const modelArtifactSchema = z

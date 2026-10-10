@@ -73,6 +73,8 @@ const model: ModelArtifact = {
     iterations: 20,
     converged: true,
     gradientNorm: 1e-9,
+    dispersion: 0.002,
+    effectiveParameters: 8,
   },
 };
 

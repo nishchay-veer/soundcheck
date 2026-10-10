@@ -10,4 +10,5 @@ export const INGEST_VERSION = "ingest-v1";
 export const EXTRACTION_VERSION = "beats-v5";
 // A hash of the feature spec (features/spec.ts); spec.test.ts says when it must change.
 export const FEATURE_VERSION = "feat-bf1e3064fa6f";
-export const MODEL_VERSION = "hazard-v1";
+// hazard-v2: the covariance is scaled by the quasi-likelihood dispersion (Phase 08).
+export const MODEL_VERSION = "hazard-v2";

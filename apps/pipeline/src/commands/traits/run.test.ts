@@ -49,6 +49,8 @@ function artifact(audience: "all" | "unsubscribed", runId: string): ModelArtifac
       iterations: 10,
       converged: true,
       gradientNorm: 1e-9,
+      dispersion: 0.002,
+      effectiveParameters: 8,
     },
   };
 }
@@ -181,6 +183,8 @@ describe("buildTraits", () => {
 
   it("needs a fitted model first", async () => {
     bigquery.tables.model_runs = [];
-    await expect(buildTraits({ channelId: CHANNEL })).rejects.toThrow(/No fitted hazard-v1 models/);
+    await expect(buildTraits({ channelId: CHANNEL })).rejects.toThrow(
+      `No fitted ${MODEL_VERSION} models`,
+    );
   });
 });

@@ -41,6 +41,8 @@ const artifact: ModelArtifact = {
     iterations: 12,
     converged: true,
     gradientNorm: 1e-7,
+    dispersion: 0.002,
+    effectiveParameters: 8,
   },
 };
 

@@ -8,8 +8,13 @@ weighted fractional log-likelihood
     sum w * (h * log p + (1 - h) * log(1 - p)) - 0.5 * lambda * |beta - beta0|^2
 
 over penalized columns, with the analytic gradient, then polished with
-Newton steps. Its Laplace covariance is the inverse of the analytic Hessian,
-X^T W X + lambda * P with W = w * p * (1 - p). Reads features; never computes one.
+Newton steps. Its covariance is the Laplace approximation, the inverse of the
+analytic Hessian X^T W X + lambda * P with W = w * p * (1 - p), scaled by the
+quasi-likelihood dispersion: the weighted Pearson scatter of the hazards
+around the fit per residual degree of freedom. The weights only fix how much
+each bin and video counts relative to the others (log(1 + views) per video is
+a choice, not a count of observations), so the scatter sets their scale and
+the covariance does not depend on it. Reads features; never computes one.
 """
 
 from collections.abc import Mapping, Sequence
@@ -27,6 +32,8 @@ MIN_SD = 1e-12
 # Converged when the largest gradient component is below this times the total weight.
 GRADIENT_TOLERANCE = 1e-7
 NEWTON_STEPS = 50
+# A perfect fit has no scatter; this keeps its covariance positive definite.
+MIN_DISPERSION = 1e-12
 # Videos are shuffled into folds with this seed, so folds are reproducible.
 FOLD_SEED = 20261010
 
@@ -80,6 +87,8 @@ class Fit:
     iterations: int
     gradient_norm: float
     train_loss: float  # weighted mean negative log-likelihood, without the penalty
+    dispersion: float  # what the inverse Hessian is scaled by
+    effective_parameters: float  # trace of the hat matrix: below the column count when penalized
 
     def linear(self, x: Floats) -> Floats:
         """The logit of the hazard for rows of the input's columns."""
@@ -165,8 +174,10 @@ def fit_model(
     except np.linalg.LinAlgError:
         positive_definite = False
     converged = positive_definite and gradient_norm <= GRADIENT_TOLERANCE * max(1.0, float(w.sum()))
-    cov = np.linalg.pinv(information)
+    unscaled = np.linalg.pinv(information)
     eta = theta[0] + z @ theta[1:]
+    dispersion, effective = quasi_dispersion(problem, theta, information, unscaled)
+    cov = dispersion * unscaled
     return Fit(
         names=kept,
         dropped=[name for name, k in zip(names, keep, strict=True) if not k],
@@ -181,7 +192,30 @@ def fit_model(
         iterations=iterations,
         gradient_norm=gradient_norm,
         train_loss=mean_loss(eta, h, w),
+        dispersion=dispersion,
+        effective_parameters=effective,
     )
+
+
+def quasi_dispersion(
+    problem: Problem, theta: Floats, information: Floats, unscaled: Floats
+) -> tuple[float, float]:
+    """
+    The Pearson dispersion sum w * (h - p)^2 / (p * (1 - p)) / (n - k) over
+    rows with weight, with k the effective number of parameters,
+    trace((X^T W X + lambda * P)^-1 X^T W X). Returns (dispersion, k).
+    """
+    p = expit(theta[0] + problem.z @ theta[1:])
+    rows = problem.w > 0
+    pearson = float(
+        np.sum(problem.w[rows] * (problem.h[rows] - p[rows]) ** 2 / (p[rows] * (1 - p[rows])))
+    )
+    penalty = np.zeros(len(theta))
+    penalty[1:] = problem.lam * problem.penalized
+    # X^T W X is the Hessian without its penalty.
+    effective = float(np.trace(unscaled @ (information - np.diag(penalty))))
+    freedom = max(float(rows.sum()) - effective, 1.0)
+    return max(pearson / freedom, MIN_DISPERSION), effective
 
 
 def video_weights(videos: Sequence[str], n_at_risk: Floats, views: Floats) -> Floats:

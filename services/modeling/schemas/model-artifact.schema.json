@@ -239,6 +239,14 @@
         "gradientNorm": {
           "type": "number",
           "minimum": 0
+        },
+        "dispersion": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "effectiveParameters": {
+          "type": "number",
+          "minimum": 0
         }
       },
       "required": [
@@ -249,7 +257,9 @@
         "folds",
         "iterations",
         "converged",
-        "gradientNorm"
+        "gradientNorm",
+        "dispersion",
+        "effectiveParameters"
       ],
       "additionalProperties": false
     }

@@ -299,6 +299,8 @@ class Trainer:
             "iterations": fit.iterations,
             "converged": fit.converged,
             "gradientNorm": fit.gradient_norm,
+            "dispersion": fit.dispersion,
+            "effectiveParameters": fit.effective_parameters,
         }
         experiment = self._log(channel or POOLED_CHANNEL, audience, run_id, fit, metrics)
         details: dict[str, Any] = {"lambda": fit.lam, **metrics, **experiment}
@@ -381,6 +383,8 @@ class Trainer:
                     "iterations": metrics["iterations"],
                     "converged": int(metrics["converged"]),
                     "gradient_norm": metrics["gradientNorm"],
+                    "dispersion": metrics["dispersion"],
+                    "effective_parameters": metrics["effectiveParameters"],
                 },
             )
         # The fit stands without its experiment log; the failure is recorded instead.

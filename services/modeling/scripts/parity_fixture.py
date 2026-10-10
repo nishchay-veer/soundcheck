@@ -67,6 +67,8 @@ def main() -> None:
             "iterations": fit.iterations,
             "converged": fit.converged,
             "gradientNorm": fit.gradient_norm,
+            "dispersion": fit.dispersion,
+            "effectiveParameters": fit.effective_parameters,
         },
         extraction="beats-v5",
         prior_ref=None,

@@ -54,17 +54,39 @@ def test_recovers_known_coefficients_within_tolerance() -> None:
 
 
 def test_the_covariance_is_honest_about_the_estimates_spread() -> None:
-    """Across repeated datasets, coefficients scatter as the Laplace covariance says they should."""
+    """
+    With the production weights (log(1 + views) per video, which are not
+    counts of anything), coefficients scatter across repeated datasets as the
+    dispersion-scaled covariance says they should.
+    """
     estimates = []
     variances = []
     for seed in range(40):
-        x, h, n, _ = synthetic(videos=20, at_risk=2_000.0, seed=seed)
-        fit = fit_model(x, NAMES, h, n, lam=1e-6)
+        x, h, n, videos = synthetic(videos=20, at_risk=2_000.0, seed=seed)
+        w = video_weights(videos, n, np.full(len(n), 5_000.0))
+        fit = fit_model(x, NAMES, h, w, lam=1e-6)
         estimates.append(fit.beta / fit.sd)
         variances.append(np.diag(fit.cov)[1:] / fit.sd**2)
     spread = np.std(estimates, axis=0)
     predicted = np.sqrt(np.mean(variances, axis=0))
     assert spread == pytest.approx(predicted, rel=0.35)
+
+
+def test_binomial_counts_as_weights_give_a_dispersion_near_one() -> None:
+    x, h, n, _ = synthetic(videos=20, at_risk=2_000.0)
+    fit = fit_model(x, NAMES, h, n, lam=1e-6)
+    assert fit.dispersion == pytest.approx(1.0, abs=0.15)
+    assert fit.effective_parameters == pytest.approx(len(NAMES) + 1, abs=0.01)
+
+
+def test_the_covariance_does_not_depend_on_the_weights_scale() -> None:
+    x, h, n, videos = synthetic(videos=20, at_risk=2_000.0)
+    w = video_weights(videos, n, np.full(len(n), 5_000.0))
+    small = fit_model(x, NAMES, h, w / 1_000, lam=1e-9)
+    large = fit_model(x, NAMES, h, w * 1_000, lam=1e-9)
+    assert small.beta == pytest.approx(large.beta, rel=1e-6)
+    assert small.cov == pytest.approx(large.cov, rel=1e-4)
+    assert small.dispersion == pytest.approx(large.dispersion / 1e6, rel=1e-4)
 
 
 def _problem(seed: int = 3) -> tuple[Problem, np.ndarray]:
