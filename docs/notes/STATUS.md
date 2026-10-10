@@ -4,6 +4,35 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Phase 08: The audience model (Oct 10, 2026)
+
+- **Built:**
+  - **The contract:** the model artifact in zod; `pnpm gen:schemas` exports it for Python with the model's columns.
+  - **The Python fitter:** a penalized fractional logistic hazard model with an analytic gradient and Hessian, cross-validation by video, a pooled prior, and the Laplace covariance scaled by the quasi-likelihood dispersion. It writes artifacts to GCS, rows to `model_runs`, and runs to Vertex AI Experiments.
+  - **The TypeScript runtime:** predictions, survival, and sampled 10–90% bands.
+  - **Traits:** `soundcheck traits` edits beats in 19 scenarios and reports the change in viewers still watching at the end, with a 90% interval.
+  - **Estimated audiences,** with the spec's rule for when to show them.
+- **Verified:**
+  - recovery of known coefficients within 0.02;
+  - TypeScript/Python parity to 6.2e-17;
+  - honest coefficient spread with the production weights;
+  - covariance reproduced over 20,000 draws;
+  - 12 runs visible in Experiments.
+- **Real data (`hazard-v2`):** pooled and channel models for all, subscribed and unsubscribed converged. All are marked not usable (3 videos; the pooled models cover 1 channel). The traits are mostly "can't tell yet".
+  - Sanity read: "Payoff timing looks right; on-screen text is misleading (it's just the end screen); the rest can't be judged from 3 videos."
+- **Changed from the spec:**
+  - the covariance is scaled by the dispersion (the spec's was about 140 times too wide);
+  - models train on 28 or 49 configured columns;
+  - artifacts gain the channel context, a `usable` flag and other fields;
+  - `model_runs` gets an `audience` column;
+  - a new `feature_contexts` table.
+- **Data gate still not met:** 1 channel, 3 videos.
+- **Next phases must keep:**
+  - never ship `usable: false`;
+  - predictions use `artifact.channelContext`;
+  - Phase 09 checks the bands' calibration on held-out videos;
+  - on-screen text is confounded with end screens.
+
 ### Phase 07: Timeline and training table (Oct 10, 2026)
 
 - **Built:**
