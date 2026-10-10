@@ -6,21 +6,18 @@ distribution, and each feature's correlation with the hazard. It summarizes
 features; it never computes one.
 """
 
-import json
-from collections.abc import Callable, Iterable, Mapping
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 from google.cloud import bigquery
 from matplotlib.figure import Figure
-from numpy.typing import NDArray
 
+from soundcheck_modeling.data import AUDIENCES, Floats, TrainingTable, read_training_table
 from soundcheck_modeling.settings import Settings
 
-AUDIENCES = ("all", "subscribed", "unsubscribed")
 # Families that describe what is on screen and said, as opposed to where in the
 # video a bin is (position, spline), the video as a whole, or who arrived (mix
 # and its interactions).
@@ -29,108 +26,6 @@ CONTENT_KINDS = frozenset({"beat_type", "picture", "audio", "delivery", "dynamic
 # reflect which video a bin belongs to.
 DATA_GATE_VIDEOS = 40
 DEFAULT_OUT = Path(__file__).resolve().parents[4] / "docs" / "eda"
-
-Floats = NDArray[np.float64]
-
-
-@dataclass(frozen=True)
-class TrainingTable:
-    feature_version: str
-    names: list[str]
-    kinds: list[str]
-    channel: list[str]
-    video: list[str]
-    audience: list[str]
-    bin: NDArray[np.int64]
-    hazard: Floats
-    n_at_risk: Floats
-    x: Floats  # one row per bin, one column per feature
-
-    @property
-    def rows(self) -> int:
-        return len(self.hazard)
-
-
-def table_from_rows(
-    feature_version: str, spec: Mapping[str, Any], rows: Iterable[Mapping[str, Any]]
-) -> TrainingTable:
-    """A table from `training_bins` rows and the version's spec document."""
-    features = spec["features"]
-    names = [str(feature["name"]) for feature in features]
-    kinds = [str(feature["kind"]) for feature in features]
-    channel: list[str] = []
-    video: list[str] = []
-    audience: list[str] = []
-    bins: list[int] = []
-    hazard: list[float] = []
-    at_risk: list[float] = []
-    x: list[list[float]] = []
-    for row in rows:
-        vector = [float(value) for value in row["x"]]
-        if len(vector) != len(names):
-            raise ValueError(
-                f"{row['video_id']} {row['audience']} bin {row['bin']}: "
-                f"x has {len(vector)} values, the spec {len(names)}"
-            )
-        channel.append(str(row["channel_id"]))
-        video.append(str(row["video_id"]))
-        audience.append(str(row["audience"]))
-        bins.append(int(row["bin"]))
-        hazard.append(float(row["hazard"]))
-        at_risk.append(float(row["n_at_risk"]))
-        x.append(vector)
-    return TrainingTable(
-        feature_version=feature_version,
-        names=names,
-        kinds=kinds,
-        channel=channel,
-        video=video,
-        audience=audience,
-        bin=np.array(bins, dtype=np.int64),
-        hazard=np.array(hazard, dtype=np.float64),
-        n_at_risk=np.array(at_risk, dtype=np.float64),
-        x=np.array(x, dtype=np.float64).reshape(len(hazard), len(names)),
-    )
-
-
-def read_training_table(
-    client: bigquery.Client,
-    settings: Settings,
-    feature_version: str | None = None,
-    channel: str | None = None,
-) -> TrainingTable:
-    """Reads one feature version's rows (the newest version by default) from BigQuery."""
-    spec_job = client.query(
-        f"SELECT feature_version, spec FROM {settings.table('feature_specs')} "
-        "WHERE @version IS NULL OR feature_version = @version "
-        "ORDER BY created_at DESC LIMIT 1",
-        job_config=bigquery.QueryJobConfig(
-            query_parameters=[bigquery.ScalarQueryParameter("version", "STRING", feature_version)]
-        ),
-        location=settings.location,
-    )
-    specs = list(spec_job.result())
-    if not specs:
-        raise RuntimeError(f"No feature spec for {feature_version or 'any version'}")
-    version = str(specs[0]["feature_version"])
-    spec = specs[0]["spec"]
-    if isinstance(spec, str):
-        spec = json.loads(spec)
-
-    rows_job = client.query(
-        "SELECT channel_id, video_id, audience, bin, hazard, n_at_risk, x "
-        f"FROM {settings.table('training_bins')} "
-        "WHERE feature_version = @version AND (@channel IS NULL OR channel_id = @channel) "
-        "ORDER BY channel_id, video_id, audience, bin",
-        job_config=bigquery.QueryJobConfig(
-            query_parameters=[
-                bigquery.ScalarQueryParameter("version", "STRING", version),
-                bigquery.ScalarQueryParameter("channel", "STRING", channel),
-            ]
-        ),
-        location=settings.location,
-    )
-    return table_from_rows(version, spec, rows_job.result())
 
 
 def average_ranks(values: Floats) -> Floats:

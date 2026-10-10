@@ -4,7 +4,10 @@ version = "0.0.0"
 description = "Fits and evaluates Soundcheck's per-audience hazard models. Reads features; never computes them."
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "google-cloud-aiplatform>=2.4.0",
     "google-cloud-bigquery>=3.46.1",
+    "google-cloud-storage>=3.17.0",
+    "jsonschema>=4.26.0",
     "matplotlib>=3.11.2",
     "numpy>=2.5.3",
     "scipy>=1.18.1",
@@ -34,6 +37,11 @@ select = ["E", "W", "F", "I", "B", "UP", "SIM", "RUF"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
+
+# These ship no type information; their results are typed where they enter our code.
+[[tool.mypy.overrides]]
+module = ["scipy.*", "jsonschema.*", "google.cloud.storage.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

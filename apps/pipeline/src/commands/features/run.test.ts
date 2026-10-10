@@ -148,6 +148,20 @@ describe("buildFeatures", () => {
     expect(x("beat_hook")).toBe(1);
     expect(x("beat_story")).toBe(0);
     expect(x("format_tutorial")).toBe(1);
+    expect(bigquery.tables.feature_contexts).toEqual([
+      {
+        channel_id: CHANNEL,
+        feature_version: FEATURE_VERSION,
+        extraction_version: EXTRACTION_VERSION,
+        median_target_level: 2,
+        mix_mean_search: expect.closeTo(0.3, 12),
+        mix_mean_suggested: 0,
+        mix_mean_browse: 0.7,
+        video_ids: [VIDEO],
+        as_of: "2026-10-07",
+        created_at: NOW.toISOString(),
+      },
+    ]);
     expect(bigquery.tables.feature_specs).toEqual([
       {
         feature_version: FEATURE_VERSION,
@@ -204,7 +218,7 @@ describe("buildFeatures", () => {
       asOf: "2026-10-07",
       version: `${FEATURE_VERSION}+${EXTRACTION_VERSION}`,
       inputs: expect.stringMatching(/^[0-9a-f]{16}$/),
-      rows: { training_bins: 300 },
+      rows: { training_bins: 300, feature_contexts: 1 },
     });
   });
 });

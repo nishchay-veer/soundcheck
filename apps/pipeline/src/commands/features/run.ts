@@ -14,6 +14,7 @@ import {
   replaceChannelRows,
   saveFeatureSpec,
 } from "@soundcheck/core/jobs";
+import { featureContextRowSchema, type FeatureContextRow } from "@soundcheck/core/schemas";
 import { GATE_STAGE } from "../consistency/gate";
 import { assembleTrainingBins, type TrainingBins } from "./assemble";
 import { readFeatureInputs } from "./inputs";
@@ -63,7 +64,10 @@ export async function buildFeatures({
   const key = {
     asOf: bins.asOf ?? now.toISOString().slice(0, 10),
     version: `${FEATURE_VERSION}+${EXTRACTION_VERSION}`,
-    inputs: createHash("sha256").update(JSON.stringify(bins.rows)).digest("hex").slice(0, 16),
+    inputs: createHash("sha256")
+      .update(JSON.stringify([bins.rows, bins.context, bins.used]))
+      .digest("hex")
+      .slice(0, 16),
   };
   const { rows, ...summary } = bins;
   const result = {
@@ -78,13 +82,43 @@ export async function buildFeatures({
   }
 
   await saveFeatureSpec({ version: FEATURE_VERSION, document: FEATURE_SPEC_DOCUMENT, now });
+  const contexts = contextRows(channelId, bins, now);
   await replaceChannelRows({ table: "training_bins", channelId, rows, runId, log: runLog });
-  await markStepDone(channelId, FEATURES_STEP, { ...key, rows: { training_bins: rows.length } });
+  await replaceChannelRows({
+    table: "feature_contexts",
+    channelId,
+    rows: contexts,
+    runId,
+    log: runLog,
+  });
+  await markStepDone(channelId, FEATURES_STEP, {
+    ...key,
+    rows: { training_bins: rows.length, feature_contexts: contexts.length },
+  });
   runLog.info(
     { rows: rows.length, videos: bins.used.length, skipped: bins.skipped.length },
     "features built",
   );
   return { ...result, written: true };
+}
+
+/** The channel context row for `feature_contexts`; none when no video was usable. */
+function contextRows(channelId: string, bins: TrainingBins, now: Date): FeatureContextRow[] {
+  if (!bins.context || bins.asOf === null) return [];
+  return [
+    featureContextRowSchema.parse({
+      channel_id: channelId,
+      feature_version: FEATURE_VERSION,
+      extraction_version: EXTRACTION_VERSION,
+      median_target_level: bins.context.medianTargetLevel,
+      mix_mean_search: bins.context.mixMean.search,
+      mix_mean_suggested: bins.context.mixMean.suggested,
+      mix_mean_browse: bins.context.mixMean.browse,
+      video_ids: bins.used,
+      as_of: bins.asOf,
+      created_at: now.toISOString(),
+    }),
+  ];
 }
 
 /** A short report of a features run for the terminal. */

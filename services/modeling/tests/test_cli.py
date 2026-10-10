@@ -9,7 +9,7 @@ from soundcheck_modeling.cli import app
 runner = CliRunner()
 
 
-@pytest.mark.parametrize("command", ["fit", "evaluate"])
+@pytest.mark.parametrize("command", ["evaluate"])
 def test_stub_commands_print_not_implemented(command: str) -> None:
     result = runner.invoke(app, [command])
     assert result.exit_code == 0

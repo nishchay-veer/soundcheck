@@ -127,6 +127,18 @@ export const COLUMNS: Record<string, string[]> = {
     "x",
   ],
   feature_specs: ["feature_version", "spec", "created_at"],
+  feature_contexts: [
+    "channel_id",
+    "feature_version",
+    "extraction_version",
+    "median_target_level",
+    "mix_mean_search",
+    "mix_mean_suggested",
+    "mix_mean_browse",
+    "video_ids",
+    "as_of",
+    "created_at",
+  ],
   extraction_runs: [
     "run_id",
     "channel_id",

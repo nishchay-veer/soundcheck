@@ -299,3 +299,23 @@ export const modelRunRowSchema = z.object({
   details: z.record(z.string(), z.unknown()),
 });
 export type ModelRunRow = z.infer<typeof modelRunRowSchema>;
+
+/**
+ * `feature_contexts`: the channel context a channel's `training_bins` were
+ * built with, one row per channel. The fitter copies it into every model
+ * artifact so predictions measure features the same way.
+ */
+export const featureContextRowSchema = z.object({
+  channel_id: channelIdSchema,
+  feature_version: z.string().min(1),
+  extraction_version: z.string().min(1),
+  median_target_level: z.number().min(1).max(5),
+  mix_mean_search: z.number().min(0).max(1),
+  mix_mean_suggested: z.number().min(0).max(1),
+  mix_mean_browse: z.number().min(0).max(1),
+  /** The videos with rows in `training_bins`. */
+  video_ids: z.array(z.string().min(1)).min(1),
+  as_of: date,
+  created_at: timestamp,
+});
+export type FeatureContextRow = z.infer<typeof featureContextRowSchema>;

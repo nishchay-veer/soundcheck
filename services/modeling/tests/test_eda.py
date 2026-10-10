@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 from typer.testing import CliRunner
 
-from soundcheck_modeling import eda
+from soundcheck_modeling import data, eda
 from soundcheck_modeling.cli import app
 from soundcheck_modeling.settings import Settings
 
@@ -44,6 +44,7 @@ def make_rows(
                         "bin": b,
                         "hazard": 0.01 + 0.05 * hook - 0.004 * energy + 0.0001 * b,
                         "n_at_risk": 100.0 * (1 - b / 200),
+                        "video_views": 100,
                         "x": [hook, float(energy), 0.0, b / 100],
                     }
                 )
@@ -74,18 +75,18 @@ def test_weighted_pearson_reduces_to_pearson_and_ignores_zero_weights() -> None:
 
 
 def test_table_from_rows_checks_every_vector_against_the_spec() -> None:
-    table = eda.table_from_rows("feat-test", SPEC, make_rows())
+    table = data.table_from_rows("feat-test", SPEC, make_rows())
     assert table.rows == 600
     assert table.x.shape == (600, 4)
     assert table.names == ["beat_hook", "energy", "beat_tangent", "pos_b1"]
     bad = make_rows()[:1]
     bad[0]["x"] = [1.0]
     with pytest.raises(ValueError, match="x has 1 values, the spec 4"):
-        eda.table_from_rows("feat-test", SPEC, bad)
+        data.table_from_rows("feat-test", SPEC, bad)
 
 
 def test_summarize_counts_rows_and_ranks_the_strongest_features() -> None:
-    table = eda.table_from_rows("feat-test", SPEC, make_rows(skip=(("vidB", "subscribed"),)))
+    table = data.table_from_rows("feat-test", SPEC, make_rows(skip=(("vidB", "subscribed"),)))
     summary = eda.summarize(table)
     assert summary.groups == [
         ("UCchannel", "all", 2, 200),
@@ -114,7 +115,7 @@ def test_summarize_counts_rows_and_ranks_the_strongest_features() -> None:
 
 
 def test_write_report_writes_the_markdown_and_three_plots(tmp_path: Path) -> None:
-    table = eda.table_from_rows("feat-test", SPEC, make_rows())
+    table = data.table_from_rows("feat-test", SPEC, make_rows())
     folder, _ = eda.write_report(table, tmp_path, datetime(2026, 10, 10, 12, 0, tzinfo=UTC))
     assert folder == tmp_path / "feat-test"
     text = (folder / "README.md").read_text()
@@ -155,7 +156,7 @@ def test_read_training_table_takes_the_newest_spec_and_its_rows() -> None:
     settings = Settings(project="proj", dataset="ds", location="US")
     # The client may return a JSON column as text; the reader parses it.
     client = FakeClient(spec=json.dumps(SPEC), rows=make_rows())
-    table = eda.read_training_table(client, settings, None, "UCchannel")  # type: ignore[arg-type]
+    table = data.read_training_table(client, settings, None, "UCchannel")  # type: ignore[arg-type]
     assert table.feature_version == "feat-test"
     assert table.rows == 600
     (spec_sql, spec_params), (rows_sql, rows_params) = client.calls
@@ -170,9 +171,9 @@ def test_eda_command_writes_the_report_and_prints_the_top_features(
     monkeypatch.setenv("GCP_PROJECT_ID", "proj")
     seen: list[tuple[str | None, str | None]] = []
 
-    def reader(settings: Settings, version: str | None, channel: str | None) -> eda.TrainingTable:
+    def reader(settings: Settings, version: str | None, channel: str | None) -> data.TrainingTable:
         seen.append((version, channel))
-        return eda.table_from_rows("feat-test", SPEC, make_rows())
+        return data.table_from_rows("feat-test", SPEC, make_rows())
 
     monkeypatch.setattr(eda, "READER", reader)
     result = CliRunner().invoke(app, ["eda", "--channel", "UCchannel", "--out", str(tmp_path)])
