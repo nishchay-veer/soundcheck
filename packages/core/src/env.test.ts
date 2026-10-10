@@ -140,13 +140,18 @@ describe("client env", () => {
 
 describe("job env", () => {
   it("defaults to a single task", () => {
-    expect(parseJobEnv({})).toEqual({ CLOUD_RUN_TASK_INDEX: 0, CLOUD_RUN_TASK_COUNT: 1 });
+    expect(parseJobEnv({})).toEqual({
+      CLOUD_RUN_TASK_INDEX: 0,
+      CLOUD_RUN_TASK_COUNT: 1,
+      BUILD_MODE: "build",
+    });
   });
 
   it("reads the Cloud Run task variables", () => {
     expect(parseJobEnv({ CLOUD_RUN_TASK_INDEX: "3", CLOUD_RUN_TASK_COUNT: "8" })).toEqual({
       CLOUD_RUN_TASK_INDEX: 3,
       CLOUD_RUN_TASK_COUNT: 8,
+      BUILD_MODE: "build",
     });
   });
 

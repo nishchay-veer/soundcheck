@@ -5,6 +5,7 @@ import { features } from "./features";
 import { ingest } from "./ingest";
 import { publish } from "./publish";
 import { soundcheck } from "./soundcheck";
+import { stage } from "./stage";
 import { traits } from "./traits";
 import type { PipelineCommand } from "./types";
 
@@ -16,6 +17,7 @@ export const commands: readonly PipelineCommand[] = [
   features,
   traits,
   baselineLlm,
+  stage,
   publish,
   soundcheck,
 ];

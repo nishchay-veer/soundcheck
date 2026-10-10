@@ -31,6 +31,7 @@ describe("soundcheck CLI", () => {
       "features",
       "traits",
       "baseline-llm",
+      "stage",
       "publish",
       "soundcheck",
     ]);
@@ -41,9 +42,15 @@ describe("soundcheck CLI", () => {
       .map((command) => command.name)
       .filter(
         (name) =>
-          !["ingest", "extract", "consistency", "features", "traits", "baseline-llm"].includes(
-            name,
-          ),
+          ![
+            "ingest",
+            "extract",
+            "consistency",
+            "features",
+            "traits",
+            "baseline-llm",
+            "stage",
+          ].includes(name),
       ),
   )("%s prints not implemented", async (name) => {
     const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
@@ -88,6 +95,13 @@ describe("soundcheck CLI", () => {
     expect(await parse("features")).toMatch(/required option '--channel <id>'/);
     expect(await parse("traits")).toMatch(/required option '--channel <id>'/);
     expect(await parse("baseline-llm")).toMatch(/required option '--channel <id>'/);
+  });
+
+  it("names the stages a job can run", async () => {
+    expect(await parse("stage", "train")).toMatch(
+      /expected one of ingest, extract, extract-load, features, baseline, publish/,
+    );
+    expect(await parse("stage", "ingest", "--mode", "weekly")).toMatch(/expected build or refresh/);
   });
 
   it("rejects a malformed channel ID before doing anything", async () => {

@@ -17,6 +17,11 @@ export interface ReplaceRowsInput {
   rows: ReadonlyArray<Record<string, unknown>>;
   /** Unique per job run (letters, digits, `_`); names the staging object and table. */
   runId: string;
+  /**
+   * Replace only these videos' rows and keep the channel's others, e.g. a
+   * refresh of recent videos. Every row must belong to one of them.
+   */
+  videoIds?: readonly string[];
   log?: Logger;
 }
 
@@ -35,7 +40,7 @@ export interface ReplaceRowsInput {
  * Returns the number of rows written.
  */
 export async function replaceChannelRows(input: ReplaceRowsInput): Promise<number> {
-  const { table, channelId, rows, runId } = input;
+  const { table, channelId, rows, runId, videoIds } = input;
   channelIdSchema.parse(channelId);
   if (!TABLE_NAME.test(table)) throw new RangeError(`Invalid table name: ${table}`);
   if (!RUN_ID.test(runId)) throw new RangeError(`Invalid run ID: ${runId}`);
@@ -46,23 +51,34 @@ export async function replaceChannelRows(input: ReplaceRowsInput): Promise<numbe
     );
   }
 
+  if (videoIds) {
+    const allowed = new Set(videoIds);
+    const stray = rows.find((row) => !allowed.has(String(row.video_id)));
+    if (stray) {
+      throw new Error(`A row for video ${String(stray.video_id)} is outside the videos replaced`);
+    }
+    if (videoIds.length === 0) return 0;
+  }
+
   const env = pickServerEnv(["GCP_PROJECT_ID", "BQ_DATASET", "BQ_LOCATION", "GCS_RAW_BUCKET"]);
   const log = childLogger({ channel_id: channelId, run_id: runId, table }, input.log ?? rootLogger);
   const bigquery = getBigQuery();
   const dataset = bigquery.dataset(env.BQ_DATASET);
   const target = `${env.GCP_PROJECT_ID}.${env.BQ_DATASET}.${table}`;
 
+  const scope = videoIds ? " AND video_id IN UNNEST(@videoIds)" : "";
   const run = async (query: string) => {
     const [job] = await bigquery.createQueryJob({
       query,
-      params: { channelId },
+      params: videoIds ? { channelId, videoIds: [...videoIds] } : { channelId },
+      ...(videoIds ? { types: { videoIds: ["STRING"] } } : {}),
       location: env.BQ_LOCATION,
     });
     await job.getQueryResults();
   };
 
   if (rows.length === 0) {
-    await run(`DELETE FROM \`${target}\` WHERE channel_id = @channelId`);
+    await run(`DELETE FROM \`${target}\` WHERE channel_id = @channelId${scope}`);
     log.info({ rows: 0 }, "rows replaced");
     return 0;
   }
@@ -103,7 +119,7 @@ export async function replaceChannelRows(input: ReplaceRowsInput): Promise<numbe
     await run(
       [
         "BEGIN TRANSACTION;",
-        `DELETE FROM \`${target}\` WHERE channel_id = @channelId;`,
+        `DELETE FROM \`${target}\` WHERE channel_id = @channelId${scope};`,
         `INSERT INTO \`${target}\` (${columns}) SELECT ${columns} FROM \`${env.GCP_PROJECT_ID}.${env.BQ_DATASET}.${stagingId}\` WHERE channel_id = @channelId;`,
         "COMMIT TRANSACTION;",
       ].join("\n"),

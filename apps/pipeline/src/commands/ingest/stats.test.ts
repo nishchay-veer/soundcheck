@@ -45,7 +45,7 @@ describe("ingestStats", () => {
 
   afterEach(resetTestbed);
 
-  const ingest = (options: { force?: boolean } = {}) =>
+  const ingest = (options: { force?: boolean; publishedSince?: string } = {}) =>
     ingestStats({ channelId: CHANNEL, now: NOW, log: quiet, connect, ...options });
 
   it("queries the eligible videos from the oldest one's publish date", async () => {
@@ -96,6 +96,25 @@ describe("ingestStats", () => {
     await ingest({ force: true });
     expect(bigquery.tables.video_stats).toHaveLength(8);
     expect(api.report).toHaveBeenCalledTimes(2);
+  });
+
+  it("refreshes only recent videos and keeps the other videos' rows", async () => {
+    await ingest();
+    const before = (bigquery.tables.video_stats ?? []).filter(
+      (row) => row.video_id !== "fixtureVid1",
+    );
+    const full = fixture("reports.query.stats.json");
+    api.report.mockResolvedValueOnce({
+      ...full,
+      rows: (full.rows as unknown[][]).filter((row) => row[0] === "fixtureVid1"),
+    });
+    await ingest({ force: true, publishedSince: "2023-01-01" });
+    expect(api.report).toHaveBeenLastCalledWith(
+      expect.objectContaining({ startDate: "2023-03-26", filters: "video==fixtureVid1" }),
+    );
+    const rows = bigquery.tables.video_stats ?? [];
+    expect(rows).toHaveLength(8);
+    expect(rows.filter((row) => row.video_id !== "fixtureVid1")).toEqual(before);
   });
 
   it("refuses to run before the catalogue", async () => {

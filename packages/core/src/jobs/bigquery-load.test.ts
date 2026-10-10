@@ -124,6 +124,47 @@ describe("replaceChannelRows", () => {
     expect(bigquery.tables.video_stats).toEqual([stat(MINE, "old", 1), stat(OTHER, "theirs", 2)]);
   });
 
+  it("can replace only some videos' rows and keep the channel's others", async () => {
+    bigquery.tables.video_stats?.push(stat(MINE, "recent", 3));
+    const replaced = await replaceChannelRows({
+      table: "video_stats",
+      channelId: MINE,
+      rows: [stat(MINE, "recent", 30)],
+      runId: "run2",
+      videoIds: ["recent"],
+      log: quiet,
+    });
+    expect(replaced).toBe(1);
+    expect(bigquery.tables.video_stats).toEqual([
+      stat(MINE, "old", 1),
+      stat(OTHER, "theirs", 2),
+      stat(MINE, "recent", 30),
+    ]);
+    const transaction = bigquery.queries.at(-1);
+    expect(transaction?.query).toContain(
+      "WHERE channel_id = @channelId AND video_id IN UNNEST(@videoIds);",
+    );
+    expect(transaction?.params).toEqual({ channelId: MINE, videoIds: ["recent"] });
+  });
+
+  it("refuses a row outside the videos replaced, and does nothing for none", async () => {
+    const scoped = (rows: Array<Record<string, unknown>>, videoIds: string[]) =>
+      replaceChannelRows({
+        table: "video_stats",
+        channelId: MINE,
+        rows,
+        runId: "run3",
+        videoIds,
+        log: quiet,
+      });
+    await expect(scoped([stat(MINE, "old", 5)], ["recent"])).rejects.toThrow(
+      "A row for video old is outside the videos replaced",
+    );
+    await expect(scoped([], [])).resolves.toBe(0);
+    expect(bigquery.queries).toEqual([]);
+    expect(bigquery.tables.video_stats).toHaveLength(2);
+  });
+
   it("refuses a row that belongs to another channel", async () => {
     await expect(replace([stat(MINE, "a", 1), stat(OTHER, "b", 2)])).rejects.toThrow(
       `A row for ${OTHER}`,

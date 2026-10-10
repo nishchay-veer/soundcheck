@@ -49,6 +49,11 @@ export interface IngestOptions {
   channelId: string;
   /** Redo the step even if it already finished for this data date. */
   force?: boolean;
+  /**
+   * Only videos published on or after this day (`YYYY-MM-DD`), replacing just
+   * their rows: the weekly refresh of recent videos. Stats and retention only.
+   */
+  publishedSince?: string;
   now?: Date;
   log?: Logger;
   connect?: (channelId: string, log: Logger) => Promise<YoutubeApi>;
@@ -177,4 +182,14 @@ export async function startIngest(
   const channel = await loadChannel(channelId);
   const api = await connect(channelId, log);
   return new IngestRun(step, channel, asOf, now, log, api);
+}
+
+/** The videos a step covers: all of them, or those published since the refresh date. */
+export function coveredVideos<V extends { publishedAt: string }>(
+  videos: readonly V[],
+  publishedSince: string | undefined,
+): V[] {
+  return publishedSince
+    ? videos.filter((video) => video.publishedAt.slice(0, 10) >= publishedSince)
+    : [...videos];
 }

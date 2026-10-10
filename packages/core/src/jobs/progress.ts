@@ -17,9 +17,10 @@ export interface ProgressWriter {
 }
 
 /**
- * Writes `channels/{channelId}.build.progress` as `{stage, done, total,
- * updatedAt}`, throttled. Progress is best effort: a failed write is logged and
- * never fails the job.
+ * Writes `channels/{channelId}.build.progress` as `{stage, done, total, etaS,
+ * updatedAt}`, throttled. The ETA assumes the rest goes at the pace so far
+ * since the writer was made. Progress is best effort: a failed write is
+ * logged and never fails the job.
  */
 export function progressWriter(
   channelId: string,
@@ -30,6 +31,7 @@ export function progressWriter(
   }: { intervalMs?: number; log?: Logger } = {},
 ): ProgressWriter {
   const ref = getFirestore().collection(COLLECTIONS.channels).doc(channelId);
+  const startedAt = Date.now();
   let pending: { done: number; total: number } | undefined;
   let lastWriteAt = Number.NEGATIVE_INFINITY;
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -39,7 +41,15 @@ export function progressWriter(
     clearTimeout(timer);
     timer = undefined;
     if (!pending) return;
-    const progress = buildProgressSchema.parse({ stage, ...pending, updatedAt: new Date() });
+    const { done, total } = pending;
+    const elapsedS = (Date.now() - startedAt) / 1000;
+    const progress = buildProgressSchema.parse({
+      stage,
+      done,
+      total,
+      ...(done > 0 ? { etaS: Math.round((elapsedS / done) * (total - done)) } : {}),
+      updatedAt: new Date(),
+    });
     pending = undefined;
     lastWriteAt = Date.now();
     writes = writes
@@ -63,4 +73,19 @@ export function progressWriter(
       await writes;
     },
   };
+}
+
+/**
+ * Records how many eligible and usable videos a channel has after ingest, on
+ * `build`, where the `channel_build` workflow reads them to decide whether
+ * there is enough data to go on.
+ */
+export async function recordBuildCounts(
+  channelId: string,
+  counts: { eligibleVideos: number; usableVideos: number },
+): Promise<void> {
+  await getFirestore().collection(COLLECTIONS.channels).doc(channelId).update({
+    "build.eligibleVideos": counts.eligibleVideos,
+    "build.usableVideos": counts.usableVideos,
+  });
 }

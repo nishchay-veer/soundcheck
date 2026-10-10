@@ -72,7 +72,7 @@ describe("deleteChannel", () => {
       tokenCiphertext: "",
       tokenScope: "openid",
       connectedAt: new Date("2026-10-06T10:00:00Z"),
-      build: { state: "succeeded" },
+      build: { state: "ready" },
     });
     await db
       .collection("channels")

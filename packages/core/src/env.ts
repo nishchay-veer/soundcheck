@@ -54,11 +54,19 @@ export const serverEnvSchema = z.object({
 });
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
 
-/** Set by Cloud Run Jobs on every task; defaults describe a single local run. */
+/**
+ * Set on Cloud Run Jobs: the task variables by Cloud Run, and the channel,
+ * run and mode by the `channel_build` workflow (Phase 10). Defaults describe
+ * a single local run.
+ */
 export const jobEnvSchema = z
   .object({
     CLOUD_RUN_TASK_INDEX: z.coerce.number().int().nonnegative().default(0),
     CLOUD_RUN_TASK_COUNT: count.default(1),
+    CHANNEL_ID: required.optional(),
+    RUN_ID: z.string().regex(/^[\w-]+$/).optional(),
+    // `refresh` is the weekly update of a ready channel; `build` everything else.
+    BUILD_MODE: z.enum(["build", "refresh"]).default("build"),
   })
   .refine((env) => env.CLOUD_RUN_TASK_INDEX < env.CLOUD_RUN_TASK_COUNT, {
     message: "CLOUD_RUN_TASK_INDEX must be less than CLOUD_RUN_TASK_COUNT",

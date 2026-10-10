@@ -18,7 +18,8 @@ interface LoadConfiguration {
   writeDisposition?: string;
 }
 
-const DELETE = /^DELETE FROM `[^`]+\.([^.`]+)` WHERE channel_id = @channelId;?$/;
+const DELETE =
+  /^DELETE FROM `[^`]+\.([^.`]+)` WHERE channel_id = @channelId( AND video_id IN UNNEST\(@videoIds\))?;?$/;
 const INSERT =
   /^INSERT INTO `[^`]+\.([^.`]+)` \(([^)]+)\) SELECT \2 FROM `[^`]+\.([^.`]+)` WHERE channel_id = @channelId;$/;
 /** `MERGE … USING (SELECT 1) S ON T.key = @key WHEN NOT MATCHED THEN INSERT (columns) VALUES (values)`. */
@@ -93,6 +94,7 @@ export class FakeBigQuery {
   async createQueryJob(options: {
     query: string;
     params?: Record<string, unknown>;
+    types?: Record<string, unknown>;
     location?: string;
   }) {
     this.queries.push(options);
@@ -135,7 +137,12 @@ export class FakeBigQuery {
       } else if (deletion?.[1]) {
         if (this.failDeletes) throw this.failDeletes;
         const rows = next[deletion[1]] ?? [];
-        const kept = rows.filter((row) => row.channel_id !== channelId);
+        // With `video_id IN UNNEST(@videoIds)`, only those videos' rows go.
+        const only = deletion[2] ? new Set(options.params?.videoIds as string[]) : null;
+        const kept = rows.filter(
+          (row) =>
+            row.channel_id !== channelId || (only !== null && !only.has(String(row.video_id))),
+        );
         next[deletion[1]] = kept;
         affected += rows.length - kept.length;
       } else if (insertion?.[1] && insertion[2] && insertion[3]) {

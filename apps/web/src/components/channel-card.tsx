@@ -9,7 +9,8 @@ const BUILD_LABEL: Record<ChannelSummary["build"]["state"], string> = {
   not_started: "Not started",
   queued: "Queued",
   running: "Learning how your audiences watch",
-  succeeded: "Ready",
+  ready: "Ready",
+  insufficient_data: "Not enough videos yet",
   failed: "Failed",
 };
 

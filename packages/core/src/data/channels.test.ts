@@ -124,14 +124,14 @@ describe("connectChannel", () => {
     await db
       .collection("channels")
       .doc(CHANNEL_ID)
-      .set({ status: "reauth_required", build: { state: "succeeded" } }, { merge: true });
+      .set({ status: "reauth_required", build: { state: "ready" } }, { merge: true });
 
     const result = await connectChannel(input({ refreshToken: "1//a-newer-token" }), quietLogger());
 
     const second = await channelDoc();
     expect(result.created).toBe(false);
     expect(second.status).toBe("connected");
-    expect(second.build).toEqual({ state: "succeeded" });
+    expect(second.build).toEqual({ state: "ready" });
     expect(second.connectedAt).toEqual(first.connectedAt);
     expect(second.tokenCiphertext).not.toBe(first.tokenCiphertext);
     expect((await userDoc()).channelIds).toEqual([CHANNEL_ID]);

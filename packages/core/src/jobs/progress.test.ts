@@ -45,6 +45,7 @@ describe("progressWriter", () => {
         stage: "ingest",
         done: 1,
         total: 10,
+        etaS: 0,
         updatedAt: new Date("2026-10-06T12:00:00Z"),
       },
     });
@@ -58,10 +59,18 @@ describe("progressWriter", () => {
     }
     // t=0 wrote 1/6; t=5 s wrote the latest value then, 5/6; 6/6 waits for t=10 s.
     expect(update).toHaveBeenCalledTimes(2);
-    expect(build().progress).toMatchObject({ done: 5, total: 6 });
+    // 5 done in 5 s: the last one should take about 1 s more.
+    expect(build().progress).toMatchObject({ done: 5, total: 6, etaS: 1 });
     await vi.advanceTimersByTimeAsync(4_000);
     expect(update).toHaveBeenCalledTimes(3);
     expect(build().progress).toMatchObject({ done: 6, total: 6 });
+  });
+
+  it("leaves the ETA out until something is done", async () => {
+    const progress = progressWriter(CHANNEL, "extract", { log: quiet });
+    progress.update(0, 40);
+    await progress.flush();
+    expect(build().progress).not.toHaveProperty("etaS");
   });
 
   it("flush writes a pending value immediately and cancels the timer", async () => {

@@ -21,7 +21,7 @@ import pLimit from "p-limit";
 import { catalogueVideos } from "./catalogue";
 import { MIX_STEP } from "./mix";
 import type { IngestOptions, IngestRun } from "./run";
-import { startIngest } from "./run";
+import { coveredVideos, startIngest } from "./run";
 import { STATS_STEP } from "./stats";
 
 export const RETENTION_STEP = "ingest-retention";
@@ -170,7 +170,7 @@ export async function ingestRetention(
   if (!run) return undefined;
   const channelId = run.channel.id;
 
-  const videos = await catalogueVideos(run);
+  const videos = coveredVideos(await catalogueVideos(run), options.publishedSince);
   await requireStep(run, STATS_STEP, "stats");
   await requireStep(run, MIX_STEP, "mix");
   const { views, adViews } = await viewsByVideo(channelId);
@@ -213,7 +213,12 @@ export async function ingestRetention(
 
   const curves = results.flatMap((result) => result.curve);
   coverage.push(...results.map((result) => result.coverage));
-  const load = { channelId, runId: run.runId, log: run.log };
+  const load = {
+    channelId,
+    runId: run.runId,
+    log: run.log,
+    ...(options.publishedSince ? { videoIds: videos.map((video) => video.id) } : {}),
+  };
   await replaceChannelRows({ ...load, table: "retention_curves", rows: curves });
   await replaceChannelRows({ ...load, table: "retention_coverage", rows: coverage });
 
