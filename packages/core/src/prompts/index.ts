@@ -2,6 +2,7 @@
 import { BEAT_EXAMPLES } from "./examples";
 import { extractBeatsPrompt } from "./extract-beats";
 
+export * from "./baseline-retention";
 export * from "./extract-beats";
 export { BEAT_EXAMPLES, BEAT_EXAMPLE_FILES } from "./examples";
 

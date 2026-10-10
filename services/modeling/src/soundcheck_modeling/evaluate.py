@@ -24,15 +24,15 @@ from typing import Literal, cast
 import numpy as np
 from scipy.special import expit
 
-from soundcheck_modeling.contract import ModelConfig
+from soundcheck_modeling.contract import EvaluationSplit, ModelConfig
 from soundcheck_modeling.data import AUDIENCES, Floats, TrainingTable, VideoInfo
 from soundcheck_modeling.eda import spearman
 from soundcheck_modeling.fit import Fit, cross_validate, fit_model, video_weights
 from soundcheck_modeling.train import MIN_POOLED_CHANNELS
 
-MIN_TEST_VIDEOS = 6
-TEST_SHARE = 0.2
-MIN_AGE_DAYS = 14
+# The newest share of a fold's training videos that checks band coverage.
+VALIDATION_SHARE = 0.2
+DEFAULT_SPLIT = EvaluationSplit()
 BAND = (0.1, 0.9)  # the 80% band
 COVERAGE_TARGET = (0.7, 0.9)
 DRAWS = 200
@@ -62,21 +62,30 @@ class Split:
     reason: str | None  # why the channel runs in check mode
 
 
-def choose_split(videos: Sequence[VideoInfo], as_of: date, min_train: int) -> Split:
-    """The newest 20% (at least 6) of settled videos as the test set, or check mode."""
+def choose_split(
+    videos: Sequence[VideoInfo],
+    as_of: date,
+    min_train: int,
+    rule: EvaluationSplit = DEFAULT_SPLIT,
+) -> Split:
+    """
+    The newest 20% (at least 6) of settled videos as the test set, or check
+    mode. TypeScript's `evaluationTestVideos` applies the same rule, so the
+    generic-LLM baseline is asked about the same videos.
+    """
     settled = sorted(
-        (v for v in videos if (as_of - v.published).days >= MIN_AGE_DAYS),
+        (v for v in videos if (as_of - v.published).days >= rule.min_age_days),
         key=lambda v: (v.published, v.video_id),
     )
-    too_new = sorted(v.video_id for v in videos if (as_of - v.published).days < MIN_AGE_DAYS)
+    too_new = sorted(v.video_id for v in videos if (as_of - v.published).days < rule.min_age_days)
     ids = [v.video_id for v in settled]
-    tested = max(MIN_TEST_VIDEOS, math.ceil(TEST_SHARE * len(ids)))
+    tested = max(rule.min_test_videos, math.ceil(rule.test_share * len(ids)))
     if len(ids) - tested >= min_train:
         return Split("holdout", [Fold(ids[:-tested], ids[-tested:])], too_new, None)
     if len(ids) < 2:
         raise ValueError(f"Evaluation needs at least 2 settled videos; there are {len(ids)}")
     reason = (
-        f"{len(ids)} settled videos: a held-out test needs {MIN_TEST_VIDEOS} test videos "
+        f"{len(ids)} settled videos: a held-out test needs {rule.min_test_videos} test videos "
         f"and {min_train} training videos"
     )
     return Split("check", [Fold([i for i in ids if i != t], [t]) for t in ids], too_new, reason)
@@ -421,7 +430,7 @@ def _validation_cases(
     rng: np.random.Generator,
 ) -> list[Case]:
     """The newest 20% of the training videos, predicted by a model fitted on the rest."""
-    held = max(2, math.ceil(TEST_SHARE * len(train)))
+    held = max(2, math.ceil(VALIDATION_SHARE * len(train)))
     fitted, validation = list(train[:-held]), list(train[-held:])
     fit = _fit(select(table, audience, fitted, columns), columns, config, prior)
     if not fit.converged:
@@ -529,7 +538,7 @@ def evaluate_channel(
     """Evaluates every audience of one channel; `table` holds that channel's rows."""
     present = set(table.video)
     usable = [v for v in videos if v.video_id in present]
-    split = choose_split(usable, as_of, min_train_videos)
+    split = choose_split(usable, as_of, min_train_videos, config.evaluation)
     durations = {v.video_id: v.duration_s for v in usable}
     rng = np.random.default_rng(seed)
     return Evaluation(

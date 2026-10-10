@@ -3,9 +3,10 @@ import type { TrainingAudience } from "../schemas";
 import { FEATURE_VERSION, MODEL_VERSION } from "../versions";
 
 /**
- * What the hazard model is fitted on (Phase 08), exported for the Python
- * fitter by `gen:schemas` so both languages use one list. Changing a list or
- * a setting here bumps MODEL_VERSION.
+ * What the hazard model is fitted on (Phase 08) and how it is evaluated
+ * (Phase 09), exported for Python by `gen:schemas` so both languages use one
+ * list. Changing a column list or a fitting setting bumps MODEL_VERSION;
+ * the evaluation split does not change a model.
  */
 
 /** Where in the video a bin is; the spline columns are not penalized. */
@@ -68,6 +69,14 @@ export const POOLED_LAMBDA = 0.1;
 /** Cross-validation folds, grouped by video; fewer when a channel has fewer videos. */
 export const CV_FOLDS = 5;
 
+/**
+ * How Phase 09 splits a channel's videos: the newest `testShare` (at least
+ * `minTestVideos`) of those at least `minAgeDays` old are the test set. A
+ * channel that cannot also keep MIN_TRAIN_VIDEOS for training is evaluated in
+ * check mode, each video held out in turn.
+ */
+export const EVALUATION_SPLIT = { minTestVideos: 6, testShare: 0.2, minAgeDays: 14 };
+
 /** The settings the fitter reads, as `services/modeling/schemas/model-config.json`. */
 export const MODEL_CONFIG = {
   modelVersion: MODEL_VERSION,
@@ -81,4 +90,5 @@ export const MODEL_CONFIG = {
   lambdas: MODEL_LAMBDAS,
   pooledLambda: POOLED_LAMBDA,
   folds: CV_FOLDS,
+  evaluation: EVALUATION_SPLIT,
 };

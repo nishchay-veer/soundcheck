@@ -210,3 +210,21 @@ def read_view_percentages(
         for row in job.result()
         if str(row["subscribed_status"]) in audience
     }
+
+
+def read_llm_curves(client: bigquery.Client, settings: Settings, channel: str) -> dict[str, Floats]:
+    """
+    The generic-LLM baseline's 100-bin curve for each video (Phase 09, B1), the
+    latest per video, from `baseline_llm_curves` written by TypeScript.
+    """
+    job = client.query(
+        f"SELECT video_id, curve FROM {settings.table('baseline_llm_curves')} "
+        "WHERE channel_id = @channel ORDER BY created_at",
+        job_config=_parameters(channel=channel),
+        location=settings.location,
+    )
+    # Ordered oldest first, so a later row replaces an earlier one.
+    return {
+        str(row["video_id"]): np.array([float(v) for v in row["curve"]], dtype=np.float64)
+        for row in job.result()
+    }

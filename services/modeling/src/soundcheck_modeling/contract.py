@@ -5,7 +5,7 @@ validated against before they are written (rule 3).
 
 import json
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +13,15 @@ from jsonschema.validators import validator_for
 
 SCHEMAS_DIR = Path(__file__).resolve().parents[2] / "schemas"
 POOLED_CHANNEL = "pooled"
+
+
+@dataclass(frozen=True)
+class EvaluationSplit:
+    """Phase 09's split; TypeScript's `evaluationTestVideos` uses the same numbers."""
+
+    min_test_videos: int = 6
+    test_share: float = 0.2
+    min_age_days: int = 14
 
 
 @dataclass(frozen=True)
@@ -24,6 +33,7 @@ class ModelConfig:
     lambdas: list[float]
     pooled_lambda: float
     folds: int
+    evaluation: EvaluationSplit = field(default_factory=EvaluationSplit)
 
 
 def _load(name: str, directory: Path) -> Any:
@@ -40,6 +50,11 @@ def load_config(directory: Path = SCHEMAS_DIR) -> ModelConfig:
         lambdas=[float(lam) for lam in raw["lambdas"]],
         pooled_lambda=float(raw["pooledLambda"]),
         folds=int(raw["folds"]),
+        evaluation=EvaluationSplit(
+            min_test_videos=int(raw["evaluation"]["minTestVideos"]),
+            test_share=float(raw["evaluation"]["testShare"]),
+            min_age_days=int(raw["evaluation"]["minAgeDays"]),
+        ),
     )
 
 

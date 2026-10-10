@@ -1,3 +1,4 @@
+import { baselineLlm } from "./baseline-llm";
 import { consistency } from "./consistency";
 import { extract } from "./extract";
 import { features } from "./features";
@@ -14,6 +15,7 @@ export const commands: readonly PipelineCommand[] = [
   consistency,
   features,
   traits,
+  baselineLlm,
   publish,
   soundcheck,
 ];

@@ -319,3 +319,26 @@ export const featureContextRowSchema = z.object({
   created_at: timestamp,
 });
 export type FeatureContextRow = z.infer<typeof featureContextRowSchema>;
+
+/**
+ * `baseline_llm_curves`: the generic-LLM baseline (Phase 09, B1), one row per
+ * video and prompt: Gemini's 20-point guess for a typical YouTube audience and
+ * its 100-point interpolation, comparable to a measured `s_mono` curve.
+ */
+export const baselineLlmCurveRowSchema = z.object({
+  channel_id: channelIdSchema,
+  video_id: z.string().min(1),
+  prompt_version: z.string().min(1),
+  gemini_model: z.string().min(1),
+  video_mode: z.string().min(1),
+  cache_key: z.string().regex(/^[0-9a-f]{64}$/),
+  /** Share still watching at 5%, 10% … 100% of the video. */
+  points: z.array(z.number().min(0).max(1)).length(20),
+  /** Share still watching at the end of each of the 100 bins. */
+  curve: z.array(z.number().min(0).max(1)).length(100),
+  /** True when Gemini's points rose somewhere and were made non-increasing. */
+  repaired: z.boolean(),
+  cost_usd: z.number().nonnegative().nullable(),
+  created_at: timestamp,
+});
+export type BaselineLlmCurveRow = z.infer<typeof baselineLlmCurveRowSchema>;

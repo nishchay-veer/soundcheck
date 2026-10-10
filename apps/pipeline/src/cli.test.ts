@@ -30,6 +30,7 @@ describe("soundcheck CLI", () => {
       "consistency",
       "features",
       "traits",
+      "baseline-llm",
       "publish",
       "soundcheck",
     ]);
@@ -38,7 +39,12 @@ describe("soundcheck CLI", () => {
   it.each(
     commands
       .map((command) => command.name)
-      .filter((name) => !["ingest", "extract", "consistency", "features", "traits"].includes(name)),
+      .filter(
+        (name) =>
+          !["ingest", "extract", "consistency", "features", "traits", "baseline-llm"].includes(
+            name,
+          ),
+      ),
   )("%s prints not implemented", async (name) => {
     const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
     await createProgram().parseAsync(["node", "soundcheck", name]);
@@ -81,6 +87,7 @@ describe("soundcheck CLI", () => {
     expect(await parse("ingest", "catalogue")).toMatch(/required option '--channel <id>'/);
     expect(await parse("features")).toMatch(/required option '--channel <id>'/);
     expect(await parse("traits")).toMatch(/required option '--channel <id>'/);
+    expect(await parse("baseline-llm")).toMatch(/required option '--channel <id>'/);
   });
 
   it("rejects a malformed channel ID before doing anything", async () => {

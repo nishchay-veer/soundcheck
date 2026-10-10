@@ -5,6 +5,7 @@ from typing import Any
 from soundcheck_modeling.data import (
     VideoInfo,
     read_channel_contexts,
+    read_llm_curves,
     read_videos,
     read_view_percentages,
 )
@@ -77,3 +78,17 @@ def test_channel_contexts_carry_the_curves_data_date() -> None:
     assert context.as_of == "2026-10-03"
     assert context.video_ids == ["v1", "v2"]
     assert client.calls[0][1] == {"version": "feat-x"}
+
+
+def test_llm_curves_keep_the_latest_per_video() -> None:
+    client = Client(
+        [
+            {"video_id": "v1", "curve": [0.5] * 100},
+            {"video_id": "v2", "curve": [0.4] * 100},
+            {"video_id": "v1", "curve": [0.6] * 100},
+        ]
+    )
+    curves = read_llm_curves(client, SETTINGS, "UCx")  # type: ignore[arg-type]
+    assert sorted(curves) == ["v1", "v2"]
+    assert curves["v1"][0] == 0.6 and len(curves["v1"]) == 100
+    assert "ORDER BY created_at" in client.calls[0][0]
