@@ -3,6 +3,7 @@ export * from "./api";
 export * from "./beats";
 export * from "./bigquery";
 export * from "./channels";
+export * from "./features";
 export * from "./firestore";
 export * from "./health";
 export * from "./session";

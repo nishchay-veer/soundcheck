@@ -8,5 +8,6 @@ export const INGEST_VERSION = "ingest-v1";
 // beats-v4: talking_head_share and visual instead of framing (iteration 3; schema beats-v3).
 // beats-v5: observable energy anchors and sharper visual rules (iteration 4; prompt only).
 export const EXTRACTION_VERSION = "beats-v5";
-export const FEATURE_VERSION = "feat-v1";
+// A hash of the feature spec (features/spec.ts); spec.test.ts says when it must change.
+export const FEATURE_VERSION = "feat-bf1e3064fa6f";
 export const MODEL_VERSION = "hazard-v1";
