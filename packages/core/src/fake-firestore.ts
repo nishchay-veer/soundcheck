@@ -111,4 +111,9 @@ export class FakeTransaction {
     this.writes.push(() => ref.set(data, options));
     return this;
   }
+
+  update(ref: FakeDocRef, data: Data): this {
+    this.writes.push(() => ref.update(data));
+    return this;
+  }
 }

@@ -1,5 +1,6 @@
 import type { Logger } from "pino";
 import { encryptRefreshToken } from "../crypto/tokens";
+import { startChannelBuild } from "./build";
 import { ChannelOwnedError, MissingScopesError, NoChannelError, NotFoundError } from "../errors";
 import { getFirestore } from "../gcp";
 import { childLogger, logger as rootLogger } from "../logger";
@@ -118,18 +119,19 @@ export async function connectChannel(
     { created },
     created ? "channel connected" : "channel reconnected",
   );
-  if (created) await startChannelBuild(channel.id, log);
+  if (created) {
+    try {
+      await startChannelBuild(channel.id, { log });
+    } catch (error) {
+      // Connecting succeeds either way; the build state records a failed start,
+      // and a build can be started again from the API.
+      childLogger({ channel_id: channel.id, stage: "build" }, log).warn(
+        { err: error },
+        "the first build did not start",
+      );
+    }
+  }
   return { userId, channelId: channel.id, created };
-}
-
-/** Starts the `channel_build` workflow. A no-op until Phase 10 wires it to Workflows. */
-export async function startChannelBuild(
-  channelId: string,
-  log: Logger = rootLogger,
-): Promise<void> {
-  childLogger({ channel_id: channelId, stage: "build" }, log).info(
-    "channel build not started: Workflows are wired in Phase 10",
-  );
 }
 
 /**

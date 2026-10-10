@@ -6,4 +6,5 @@ export * from "./fake-genai";
 export * from "./fake-kms";
 export * from "./fake-secret-manager";
 export * from "./fake-storage";
+export * from "./fake-workflows";
 export * from "./test-utils";

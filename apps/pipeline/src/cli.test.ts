@@ -32,6 +32,7 @@ describe("soundcheck CLI", () => {
       "traits",
       "baseline-llm",
       "stage",
+      "build",
       "publish",
       "soundcheck",
     ]);
@@ -50,6 +51,7 @@ describe("soundcheck CLI", () => {
             "traits",
             "baseline-llm",
             "stage",
+            "build",
           ].includes(name),
       ),
   )("%s prints not implemented", async (name) => {
@@ -95,6 +97,7 @@ describe("soundcheck CLI", () => {
     expect(await parse("features")).toMatch(/required option '--channel <id>'/);
     expect(await parse("traits")).toMatch(/required option '--channel <id>'/);
     expect(await parse("baseline-llm")).toMatch(/required option '--channel <id>'/);
+    expect(await parse("build", "start")).toMatch(/required option '--channel <id>'/);
   });
 
   it("names the stages a job can run", async () => {

@@ -45,3 +45,22 @@ export class ReauthRequiredError extends Error {
     this.name = "ReauthRequiredError";
   }
 }
+
+/** A build of the channel is already queued or running; route handlers answer 409. */
+export class BuildInProgressError extends Error {
+  constructor(
+    readonly channelId: string,
+    readonly state: string,
+  ) {
+    super(`Channel ${channelId} already has a build ${state}`);
+    this.name = "BuildInProgressError";
+  }
+}
+
+/** WORKFLOW_CHANNEL_BUILD is not set, so builds cannot start (503). */
+export class BuildNotConfiguredError extends Error {
+  constructor() {
+    super("Channel builds are not configured: set WORKFLOW_CHANNEL_BUILD");
+    this.name = "BuildNotConfiguredError";
+  }
+}

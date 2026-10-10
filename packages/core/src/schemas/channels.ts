@@ -51,7 +51,10 @@ export type BuildProgress = z.infer<typeof buildProgressSchema>;
 export const buildSchema = z.object({
   state: buildStateSchema,
   /** The workflow argument; every job of the run logs it. */
-  runId: z.string().regex(/^[\w-]+$/).optional(),
+  runId: z
+    .string()
+    .regex(/^[\w-]+$/)
+    .optional(),
   mode: z.enum(["build", "refresh"]).optional(),
   /** The stage running, or the one that failed. */
   stage: z.string().min(1).optional(),
@@ -59,6 +62,8 @@ export const buildSchema = z.object({
   finishedAt: firestoreDate.optional(),
   /** A short reason, when `failed`. */
   error: z.string().optional(),
+  /** The Workflows execution, `projects/…/executions/…`. */
+  execution: z.string().min(1).optional(),
   /** Eligible videos, and those with a complete retention curve, after ingest. */
   eligibleVideos: z.number().int().nonnegative().optional(),
   usableVideos: z.number().int().nonnegative().optional(),

@@ -11,7 +11,9 @@ coverage
 # next.js
 .next/
 out/
-build
+# Build output only: a bare `build` would also hide source folders named build.
+/build/
+apps/*/build/
 .swc/
 
 # misc

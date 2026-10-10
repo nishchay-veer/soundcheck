@@ -30,3 +30,12 @@ export const channelDeletionSchema = z.object({
   storageObjectsDeleted: z.record(z.string(), z.number().int().nonnegative()),
 });
 export type ChannelDeletion = z.infer<typeof channelDeletionSchema>;
+
+/** `POST /api/v1/channels/{id}/build`: the build that was started. */
+export const buildStartSchema = z.object({
+  channelId: z.string().min(1),
+  runId: z.string().regex(/^[\w-]+$/),
+  mode: z.enum(["build", "refresh"]),
+  state: z.literal("queued"),
+});
+export type BuildStart = z.infer<typeof buildStartSchema>;
