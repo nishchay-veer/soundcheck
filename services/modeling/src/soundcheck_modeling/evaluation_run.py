@@ -25,8 +25,9 @@ from soundcheck_modeling.data import (
 from soundcheck_modeling.evaluate import Evaluation, evaluate_channel
 from soundcheck_modeling.experiments import ExperimentLog, run_name
 from soundcheck_modeling.plots import plot_video
+from soundcheck_modeling.settings import REPO_ROOT
 
-DEFAULT_PLOTS = Path(__file__).resolve().parents[4] / "docs" / "eval"
+DEFAULT_PLOTS = REPO_ROOT / "docs" / "eval"
 
 
 class EvaluationSource(Protocol):

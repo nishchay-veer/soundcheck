@@ -27,7 +27,7 @@ main:
           - mode: ${default(map.get(args, "mode"), "build")}
           - allow_small: ${default(map.get(args, "allow_small"), false)}
           - doc: ${"projects/" + project + "/databases/(default)/documents/channels/" + channel}
-          - env:
+          - job_env:
               - name: CHANNEL_ID
                 value: ${channel}
               - name: RUN_ID
@@ -51,7 +51,7 @@ main:
             doc: "${doc}",
             stage: "ingest",
             job: "job-ingest",
-            env: "${env}",
+            job_env: "${job_env}",
             tasks: 1,
           }
     - read_counts:
@@ -104,7 +104,7 @@ main:
           doc: ${doc}
           stage: "extract"
           job: "job-extract"
-          env: ${env}
+          job_env: ${job_env}
           # One task per 10 eligible videos, at most 10 tasks.
           tasks: ${math.max(1, math.min(10, (eligible + 9) // 10))}
     - extract_load:
@@ -116,7 +116,7 @@ main:
             doc: "${doc}",
             stage: "extract-load",
             job: "job-extract-load",
-            env: "${env}",
+            job_env: "${job_env}",
             tasks: 1,
           }
     - features:
@@ -128,7 +128,7 @@ main:
             doc: "${doc}",
             stage: "features",
             job: "job-features",
-            env: "${env}",
+            job_env: "${job_env}",
             tasks: 1,
           }
     - train:
@@ -140,7 +140,7 @@ main:
             doc: "${doc}",
             stage: "train",
             job: "job-train",
-            env: "${env}",
+            job_env: "${job_env}",
             tasks: 1,
           }
     - baseline:
@@ -152,7 +152,7 @@ main:
             doc: "${doc}",
             stage: "baseline",
             job: "job-baseline",
-            env: "${env}",
+            job_env: "${job_env}",
             tasks: 1,
           }
     - evaluate:
@@ -164,7 +164,7 @@ main:
             doc: "${doc}",
             stage: "evaluate",
             job: "job-evaluate",
-            env: "${env}",
+            job_env: "${job_env}",
             tasks: 1,
           }
     - publish:
@@ -176,7 +176,7 @@ main:
             doc: "${doc}",
             stage: "publish",
             job: "job-publish",
-            env: "${env}",
+            job_env: "${job_env}",
             tasks: 1,
           }
     - mark_ready:
@@ -194,7 +194,7 @@ main:
 # backoff; on the final failure marks the build failed with the stage and a
 # short message, then raises so the execution fails too.
 run_stage:
-  params: [project, region, doc, stage, job, env, tasks]
+  params: [project, region, doc, stage, job, job_env, tasks]
   steps:
     - mark_stage:
         call: set_build
@@ -211,7 +211,7 @@ run_stage:
             body:
               overrides:
                 containerOverrides:
-                  - env: ${env}
+                  - env: ${job_env}
                 taskCount: ${tasks}
             connector_params:
               timeout: 7200
@@ -225,9 +225,13 @@ run_stage:
         except:
           as: failure
           steps:
+            # A failed job comes back as "An error occurred during execution of
+            # a long-running operation"; the operation's own error names the
+            # job execution and the exit code, so it is kept when present.
             - describe:
                 assign:
-                  - message: '${stage + ": " + default(map.get(failure, "message"), json.encode_to_string(failure))}'
+                  - reason: ${default(map.get(failure, ["operation", "error", "message"]), map.get(failure, "message"))}
+                  - message: '${stage + ": " + default(reason, json.encode_to_string(failure))}'
                   - message: ${text.substring(message, 0, math.min(300, len(message)))}
             - mark_failed:
                 call: set_build
@@ -250,7 +254,7 @@ always:
 # Sets fields of channels/{id}.build: `values` maps a field to a Firestore
 # value ({stringValue: …}); `clear` lists fields to delete.
 set_build:
-  params: [doc, values, clear: []]
+  params: [doc, values, clear: null]
   steps:
     - paths:
         assign:
@@ -266,7 +270,7 @@ set_build:
     - add_clears:
         for:
           value: key
-          in: ${clear}
+          in: ${default(clear, [])}
           steps:
             - add_clear:
                 assign:

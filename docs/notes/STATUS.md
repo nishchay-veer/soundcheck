@@ -4,6 +4,24 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Phase 10: Pipeline orchestration (Oct 10, 2026)
+
+- **Built:**
+  - `channel_build` in Cloud Workflows runs eight Cloud Run jobs (ingest, extract, extract-load, features, train, baseline, evaluate, publish) from the pipeline and modeling images, with retries, the `MIN_TRAIN_VIDEOS` stop and failures recorded with the stage and message.
+  - `startChannelBuild` (Connect, `POST /api/v1/channels/[id]/build`, `soundcheck build start`) queues the build in a transaction, replaces stale builds, and starts the workflow.
+  - Throttled progress with an ETA on `channels/{id}.build`, from both languages.
+  - `weekly_refresh` on Mondays at 03:00 IST, plus the deploy and IAM scripts.
+- **Verified live on the 3-video channel:**
+  - without `allow_small`, `insufficient_data` after 4.6 minutes;
+  - with it, `ready` after 22.6 minutes, three quarters of it starting containers;
+  - a real failure (train crashing in the image) ending `failed` at stage `train`;
+  - a build killed during extract, restarted and finished: `ready`, with no duplicate rows and the cached beats reused.
+- **Fixed during the run:** paths in the modeling package that assumed the repo layout, a vague failure message, garbled run IDs in Cloud Logging, and four deploy-script and YAML problems.
+- **Next phases must keep:**
+  - redeploy the images after code changes (`infra/deploy-pipeline.sh`);
+  - Phase 11 fills in `job-publish`, which the workflow already runs;
+  - the weekly refresh runs without `allow_small`, so the test channel will drop to `insufficient_data` on Monday.
+
 ### Phase 09: Evaluation and baselines (Oct 10, 2026)
 
 - **Built:**

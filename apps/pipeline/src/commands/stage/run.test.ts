@@ -1,4 +1,4 @@
-import { resetEnvCache } from "@soundcheck/core";
+import { resetEnvCache, type Logger } from "@soundcheck/core";
 import type { FakeBigQuery } from "@soundcheck/core/testing";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CHANNEL, ingestTestbed, quiet, resetTestbed } from "../ingest/testbed";
@@ -89,6 +89,17 @@ describe("runStage", () => {
     expect(await run("features")).toBe("features: 900 rows from 3 videos");
     expect(await run("baseline")).toBe("baseline: 3 videos (check), 3 curves");
     expect(await run("publish")).toBe("publish: not built yet (Phase 11)");
+  });
+
+  it("binds the build's stage and run under keys the commands do not use", async () => {
+    vi.stubEnv("RUN_ID", "build-run");
+    resetEnvCache();
+    await run("baseline");
+    const [{ log }] = steps.runBaselineLlm.mock.calls[0] as [{ log: Logger }];
+    const bindings = log.bindings();
+    expect(bindings).toMatchObject({ build_stage: "baseline", build_run_id: "build-run" });
+    expect(bindings).not.toHaveProperty("run_id");
+    expect(bindings).not.toHaveProperty("stage");
   });
 
   it("takes the channel, mode and run from the job environment", async () => {

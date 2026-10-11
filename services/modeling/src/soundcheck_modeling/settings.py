@@ -5,6 +5,23 @@ Locally, pass the repo's .env: uv run --env-file ../../.env soundcheck-modeling 
 
 import os
 from dataclasses import dataclass
+from pathlib import Path
+
+
+def find_repo_root(start: Path) -> Path:
+    """The repository root above `start` (the folder with pnpm-workspace.yaml).
+
+    The container holds only the package under /app/src, with no repo around
+    it, so there the working directory stands in. The commands that write into
+    the repo's docs/ folder (eda, model-card, local evaluate) run in a checkout.
+    """
+    for folder in start.parents:
+        if (folder / "pnpm-workspace.yaml").is_file():
+            return folder
+    return Path.cwd()
+
+
+REPO_ROOT = find_repo_root(Path(__file__).resolve())
 
 
 @dataclass(frozen=True)

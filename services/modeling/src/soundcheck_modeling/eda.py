@@ -16,7 +16,7 @@ from google.cloud import bigquery
 from matplotlib.figure import Figure
 
 from soundcheck_modeling.data import AUDIENCES, Floats, TrainingTable, read_training_table
-from soundcheck_modeling.settings import Settings
+from soundcheck_modeling.settings import REPO_ROOT, Settings
 
 # Families that describe what is on screen and said, as opposed to where in the
 # video a bin is (position, spline), the video as a whole, or who arrived (mix
@@ -25,7 +25,7 @@ CONTENT_KINDS = frozenset({"beat_type", "picture", "audio", "delivery", "dynamic
 # The data gate: below this many videos per channel, correlations mostly
 # reflect which video a bin belongs to.
 DATA_GATE_VIDEOS = 40
-DEFAULT_OUT = Path(__file__).resolve().parents[4] / "docs" / "eda"
+DEFAULT_OUT = REPO_ROOT / "docs" / "eda"
 
 
 def average_ranks(values: Floats) -> Floats:

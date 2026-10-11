@@ -92,8 +92,11 @@ export async function countVideos(channelId: string) {
 export async function runStage(stage: Stage, options: StageOptions = {}): Promise<string> {
   const { channelId, mode, runId } = stageTarget(options);
   const { now = new Date(), steps = STEPS } = options;
+  // The build's stage and run go under their own keys: each command binds its
+  // own `stage` and `run_id`, and a key bound twice with different values
+  // comes out garbled in Cloud Logging (see childLogger).
   const log = childLogger(
-    { channel_id: channelId, stage, ...(runId ? { run_id: runId } : {}) },
+    { channel_id: channelId, build_stage: stage, ...(runId ? { build_run_id: runId } : {}) },
     options.log ?? rootLogger,
   );
   const ingest = { channelId, now, log };

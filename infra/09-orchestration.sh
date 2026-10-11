@@ -5,7 +5,7 @@
 # - sa-workflows may start workflow executions (weekly_refresh starts
 #   channel_build) and run jobs that act as sa-pipeline;
 # - the Compute Engine default service account, which Cloud Build uses, may
-#   push images to the repo and write build logs.
+#   read the uploaded source, push images to the repo and write build logs.
 # Safe to re-run.
 # shellcheck source=lib.sh
 source "$(dirname "$0")/lib.sh"
@@ -25,17 +25,29 @@ retry gcloud artifacts repositories add-iam-policy-binding "$AR_REPO" --location
   --project="$PROJECT_ID" --member="$BUILDER" --role=roles/artifactregistry.writer --quiet >/dev/null
 log "repo $AR_REPO: roles/artifactregistry.writer -> $BUILDER"
 grant_project "$BUILDER" roles/logging.logWriter
+# `gcloud builds submit` uploads the source to this bucket, and the builder
+# must read it back. gcloud creates it on the first build; create it first on
+# a fresh project so the grant has something to attach to.
+SOURCE_BUCKET="${PROJECT_ID}_cloudbuild"
+if ! gcloud storage buckets describe "gs://${SOURCE_BUCKET}" --project="$PROJECT_ID" >/dev/null 2>&1; then
+  gcloud storage buckets create "gs://${SOURCE_BUCKET}" --project="$PROJECT_ID" --location=US \
+    --uniform-bucket-level-access >/dev/null
+  log "created: gs://${SOURCE_BUCKET}"
+fi
+grant_bucket "$SOURCE_BUCKET" "$BUILDER" roles/storage.objectViewer
 
 JOB="weekly-refresh"
 URI="https://workflowexecutions.googleapis.com/v1/projects/${PROJECT_ID}/locations/${REGION}/workflows/weekly_refresh/executions"
 ARGS=(--project="$PROJECT_ID" --location="$REGION" --schedule="0 3 * * 1"
   --time-zone="Asia/Kolkata" --uri="$URI" --http-method=POST
   --oauth-service-account-email="$(sa_email sa-workflows)"
-  --message-body='{"argument": "{}"}' --headers="Content-Type=application/json")
+  --message-body='{"argument": "{}"}')
+HEADER="Content-Type=application/json"
 if gcloud scheduler jobs describe "$JOB" --project="$PROJECT_ID" --location="$REGION" >/dev/null 2>&1; then
-  gcloud scheduler jobs update http "$JOB" "${ARGS[@]}" --quiet >/dev/null
+  # `update` names the headers flag differently from `create`.
+  gcloud scheduler jobs update http "$JOB" "${ARGS[@]}" --update-headers="$HEADER" --quiet >/dev/null
   log "updated: scheduler job $JOB (Mondays 03:00 IST)"
 else
-  gcloud scheduler jobs create http "$JOB" "${ARGS[@]}" --quiet >/dev/null
+  gcloud scheduler jobs create http "$JOB" "${ARGS[@]}" --headers="$HEADER" --quiet >/dev/null
   log "created: scheduler job $JOB (Mondays 03:00 IST)"
 fi

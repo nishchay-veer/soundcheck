@@ -9,8 +9,10 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
+from soundcheck_modeling.settings import REPO_ROOT
+
 TEMPLATES = Path(__file__).resolve().parent / "templates"
-DEFAULT_CARD = Path(__file__).resolve().parents[4] / "docs" / "model-card.md"
+DEFAULT_CARD = REPO_ROOT / "docs" / "model-card.md"
 LABELS = {"all": "All viewers", "subscribed": "Subscribers", "unsubscribed": "Newcomers"}
 DEFAULT_MIN_TRAIN = 30
 

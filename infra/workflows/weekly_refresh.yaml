@@ -82,6 +82,12 @@ start_refresh:
           - parts: ${text.split(doc, "/")}
           - channel: ${parts[len(parts) - 1]}
           - run_id: ${text.replace_all(uuid.generate(), "-", "")}
+          # Expressions cannot hold map literals, so the argument is built here.
+          - argument:
+              channel_id: ${channel}
+              run_id: ${run_id}
+              mode: refresh
+              allow_small: false
     - queue:
         call: set_build
         args:
@@ -97,7 +103,7 @@ start_refresh:
         args:
           parent: ${parent}
           body:
-            argument: '${json.encode_to_string({"channel_id": channel, "run_id": run_id, "mode": "refresh", "allow_small": false})}'
+            argument: ${json.encode_to_string(argument)}
         result: execution
     - record:
         call: set_build
@@ -116,7 +122,7 @@ always:
 # value ({stringValue: …}); `clear` lists fields to delete. The same as in
 # channel_build.yaml (a workflow cannot call another file's subworkflows).
 set_build:
-  params: [doc, values, clear: []]
+  params: [doc, values, clear: null]
   steps:
     - paths:
         assign:
@@ -132,7 +138,7 @@ set_build:
     - add_clears:
         for:
           value: key
-          in: ${clear}
+          in: ${default(clear, [])}
           steps:
             - add_clear:
                 assign:

@@ -49,12 +49,14 @@ SECRETS="AUTH_GOOGLE_ID=oauth-client-id:latest,AUTH_GOOGLE_SECRET=oauth-client-s
 
 # deploy_job <name> <image> <args> <task timeout> <retries> <memory> <cpu> [parallelism]
 deploy_job() {
+  # macOS's bash 3.2 treats an empty array as unset under `set -u`, hence the
+  # `${extra[@]+…}` form below.
   local extra=()
   if [[ "$2" == "$PIPELINE_IMAGE" ]]; then extra+=(--set-secrets="$SECRETS"); fi
   gcloud run jobs deploy "$1" --project="$PROJECT_ID" --region="$REGION" --quiet \
     --image="$2" --args="$3" --service-account="$(sa_email sa-pipeline)" \
     --tasks=1 --parallelism="${8:-1}" --task-timeout="$4" --max-retries="$5" \
-    --memory="$6" --cpu="$7" --env-vars-file="$ENV_FILE" "${extra[@]}" >/dev/null
+    --memory="$6" --cpu="$7" --env-vars-file="$ENV_FILE" ${extra[@]+"${extra[@]}"} >/dev/null
   log "job $1 -> $3"
 }
 
