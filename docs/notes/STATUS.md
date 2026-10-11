@@ -4,6 +4,26 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Phase 11: Serving layer and API contracts (Oct 11, 2026)
+
+- **Built:**
+  - zod contracts for every serving document (`schemas/documents.ts`): the summary with audience cards, the video list, video pages with curves, beats and drop-offs, and the soundcheck and edit documents for Phases 14 and 15;
+  - `soundcheck publish` (the build's last stage): predicted bands, drop-offs attributed to content groups with a residual that always ships, traits, and Gemini captions whose numbers must all be in their facts;
+  - `getChannel`, `getSummary`, `listVideos` and `getVideo`, owner-only, and their `/api/v1` routes;
+  - fixtures mode (`NEXT_PUBLIC_USE_FIXTURES`, development only) and `export-fixtures`;
+  - `infra/deploy-web.sh`: the app on Cloud Run.
+- **Verified live:**
+  - `job-publish` wrote every document for the test channel; a re-run writes nothing;
+  - p95 55 ms on Cloud Run over 499 requests;
+  - fixtures mode served every route with no Google credentials.
+  - sign-in works on the deployed app.
+- **Real data:** every document is stamped "not usable" (3 videos). The evaluation is empty and there are no traits; drop-offs are mostly unexplained.
+- **Next phases must keep:**
+  - show "not a result yet" whenever `model.usable` is false;
+  - re-run `export-fixtures` after document changes; the fixtures hold real analytics;
+  - add the deployed origin to the uploads bucket's CORS before uploads there (`WEB_ORIGIN=… infra/02-storage.sh`);
+  - redeploy the web app and the jobs after changes to `packages/core`.
+
 ### Phase 10: Pipeline orchestration (Oct 10, 2026)
 
 - **Built:**
