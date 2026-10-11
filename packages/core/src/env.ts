@@ -50,6 +50,8 @@ export const serverEnvSchema = z.object({
   MIN_VIEWS: count.default(500),
   MIN_TRAIN_VIDEOS: count.default(30),
   DEMO_CHANNEL_ID: required.optional(),
+  // Fixtures mode reads saved documents from here, relative to the app (Phase 11).
+  FIXTURES_DIR: required.default("fixtures"),
   ...clientShape,
 });
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -64,7 +66,10 @@ export const jobEnvSchema = z
     CLOUD_RUN_TASK_INDEX: z.coerce.number().int().nonnegative().default(0),
     CLOUD_RUN_TASK_COUNT: count.default(1),
     CHANNEL_ID: required.optional(),
-    RUN_ID: z.string().regex(/^[\w-]+$/).optional(),
+    RUN_ID: z
+      .string()
+      .regex(/^[\w-]+$/)
+      .optional(),
     // `refresh` is the weekly update of a ready channel; `build` everything else.
     BUILD_MODE: z.enum(["build", "refresh"]).default("build"),
   })
@@ -129,6 +134,20 @@ export function getClientEnv(): ClientEnv {
     NEXT_PUBLIC_USE_FIXTURES: process.env.NEXT_PUBLIC_USE_FIXTURES,
   });
   return clientEnv;
+}
+
+/**
+ * Fixtures mode (Phase 11): the data functions read saved documents instead of
+ * Firestore and a fixed user stands in for sign-in, so screens can be built
+ * without Google Cloud. Development only: with the flag set in a production
+ * build this throws, so sign-in can never be skipped there.
+ */
+export function fixturesMode(): boolean {
+  if (!getClientEnv().NEXT_PUBLIC_USE_FIXTURES) return false;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("NEXT_PUBLIC_USE_FIXTURES must not be set in production");
+  }
+  return true;
 }
 
 export function getJobEnv(): JobEnv {

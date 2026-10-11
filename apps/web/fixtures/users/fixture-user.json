@@ -1,0 +1,12 @@
+{
+  "email": "fixture@example.com",
+  "channelIds": [
+    "UC-BHlgFbFh3V76yth-XCmlw"
+  ],
+  "createdAt": {
+    "$date": "2026-10-06T08:23:08.077Z"
+  },
+  "lastSignInAt": {
+    "$date": "2026-10-06T08:23:08.077Z"
+  }
+}

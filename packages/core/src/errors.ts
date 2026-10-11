@@ -64,3 +64,11 @@ export class BuildNotConfiguredError extends Error {
     this.name = "BuildNotConfiguredError";
   }
 }
+
+/** Fixtures mode reads saved documents and never writes; route handlers answer 503. */
+export class FixturesModeError extends Error {
+  constructor(action: string) {
+    super(`Fixtures mode is read-only: ${action} is not available`);
+    this.name = "FixturesModeError";
+  }
+}

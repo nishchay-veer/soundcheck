@@ -1,4 +1,9 @@
-import { BuildInProgressError, BuildNotConfiguredError, NotFoundError } from "@soundcheck/core";
+import {
+  BuildInProgressError,
+  BuildNotConfiguredError,
+  FixturesModeError,
+  NotFoundError,
+} from "@soundcheck/core";
 import { requireChannel, startChannelBuild } from "@soundcheck/core/data";
 import { buildStartSchema, type Channel } from "@soundcheck/core/schemas";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -58,11 +63,16 @@ describe("POST /api/v1/channels/[id]/build", () => {
   it("returns 409 while a build is running and 503 when builds are not configured", async () => {
     mockAuth.mockResolvedValue({ userId: USER });
     vi.mocked(requireChannel).mockResolvedValue({ id: CHANNEL_ID } as Channel);
-    vi.mocked(startChannelBuild).mockRejectedValueOnce(new BuildInProgressError(CHANNEL_ID, "running"));
+    vi.mocked(startChannelBuild).mockRejectedValueOnce(
+      new BuildInProgressError(CHANNEL_ID, "running"),
+    );
     const busy = await call();
     expect(busy.status).toBe(409);
     expect(await busy.json()).toEqual({ error: "build_in_progress", state: "running" });
     vi.mocked(startChannelBuild).mockRejectedValueOnce(new BuildNotConfiguredError());
     expect((await call()).status).toBe(503);
+    vi.mocked(startChannelBuild).mockRejectedValueOnce(new FixturesModeError("starting a build"));
+    const fixtures = await call();
+    expect([fixtures.status, await fixtures.json()]).toEqual([503, { error: "fixtures_mode" }]);
   });
 });

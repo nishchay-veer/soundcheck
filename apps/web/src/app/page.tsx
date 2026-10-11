@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { auth } from "@/auth";
 import { ConnectButton } from "@/components/auth-buttons";
+import { currentUserId } from "@/lib/session";
 
 export default async function HomePage() {
-  const session = await auth();
+  const userId = await currentUserId();
   return (
     <main className="mx-auto flex max-w-[1200px] flex-col justify-center gap-6 px-6 py-24">
       <span className="w-fit rounded-full border-2 border-ink bg-highlight px-3 py-1 text-sm font-medium">
@@ -15,7 +15,7 @@ export default async function HomePage() {
         you publish it.
       </p>
       <div>
-        {session?.userId ? (
+        {userId ? (
           <Link href="/app" className="font-medium underline underline-offset-4">
             Open your channel
           </Link>

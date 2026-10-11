@@ -5,6 +5,7 @@ import { BuildInProgressError, BuildNotConfiguredError, NotFoundError } from "..
 import { getFirestore, getWorkflowExecutions } from "../gcp";
 import { childLogger, logger as rootLogger } from "../logger";
 import { COLLECTIONS, buildSchema, type Build } from "../schemas";
+import { refuseInFixturesMode } from "./store";
 
 /**
  * Starting the `channel_build` workflow (Phase 10). The stages run in Cloud
@@ -77,6 +78,7 @@ export async function startChannelBuild(
     now = new Date(),
   }: { mode?: BuildMode; allowSmall?: boolean; log?: Logger; now?: Date } = {},
 ): Promise<StartedBuild> {
+  refuseInFixturesMode("starting a build");
   const parent = channelBuildWorkflow();
   if (!parent) throw new BuildNotConfiguredError();
   const buildLog = childLogger({ channel_id: channelId, stage: "build" }, log);

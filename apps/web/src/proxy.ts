@@ -1,3 +1,4 @@
+import { fixturesMode } from "@soundcheck/core/env";
 import NextAuth from "next-auth";
 import {
   NextResponse,
@@ -25,6 +26,8 @@ const checkSession = auth((request) => {
 });
 
 export default async function proxy(request: NextRequest, event: NextFetchEvent) {
+  // Fixtures mode (development only) has no sign-in: the fixture user is everyone.
+  if (fixturesMode()) return NextResponse.next();
   // auth()'s overloads type the wrapped handler as a route handler; it is a proxy.
   const handler = (await checkSession) as unknown as NextMiddleware;
   return handler(request, event);

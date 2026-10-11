@@ -1,4 +1,4 @@
-import { NotFoundError } from "@soundcheck/core";
+import { FixturesModeError, NotFoundError } from "@soundcheck/core";
 import { deleteChannel } from "@soundcheck/core/data";
 import { channelDeletionSchema, type ChannelDeletion } from "@soundcheck/core/schemas";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -48,5 +48,12 @@ describe("DELETE /api/v1/channels/[id]", () => {
     mockAuth.mockResolvedValue({ userId: "222222222222222222222" });
     vi.mocked(deleteChannel).mockRejectedValue(new NotFoundError("channel"));
     expect((await call()).status).toBe(404);
+  });
+
+  it("returns 503 in fixtures mode, which never deletes", async () => {
+    mockAuth.mockResolvedValue({ userId: "111111111111111111111" });
+    vi.mocked(deleteChannel).mockRejectedValue(new FixturesModeError("disconnecting a channel"));
+    const response = await call();
+    expect([response.status, await response.json()]).toEqual([503, { error: "fixtures_mode" }]);
   });
 });

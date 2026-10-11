@@ -1,0 +1,47 @@
+{
+  "channelId": "UC-BHlgFbFh3V76yth-XCmlw",
+  "runId": "5d499607f1f54731a1c28c18dbee245b",
+  "generatedAt": "2026-10-11T04:21:19.186Z",
+  "videosAnalysed": 3,
+  "beatsExtracted": 20,
+  "evaluation": null,
+  "headline": "Across 3 analyzed videos, Subscribers made up 21 percent of views with 46.8 percent average view, while Newcomers made up 79 percent with 51.3 percent.",
+  "audiences": [
+    {
+      "key": "subscribed",
+      "label": "Subscribers",
+      "kind": "measured",
+      "viewShare": 0.21,
+      "watchTimeShare": 0.2372,
+      "avgViewPct": 46.8,
+      "traits": [],
+      "description": "Subscribers brought 21 percent of your views, 24 percent of your watch time, and an average view of 46.8 percent.",
+      "model": {
+        "runId": "81dd634d2b00403f9a393f2d38331415",
+        "usable": false,
+        "unusableReasons": [
+          "trained on 3 videos; at least 30 are needed"
+        ],
+        "trainedVideos": 3
+      }
+    },
+    {
+      "key": "unsubscribed",
+      "label": "Newcomers",
+      "kind": "measured",
+      "viewShare": 0.79,
+      "watchTimeShare": 0.7628,
+      "avgViewPct": 51.3,
+      "traits": [],
+      "description": "Newcomers brought 79 percent of your views, 76 percent of your watch time, and an average view of 51.3 percent.",
+      "model": {
+        "runId": "81dd634d2b00403f9a393f2d38331415",
+        "usable": false,
+        "unusableReasons": [
+          "trained on 3 videos; at least 30 are needed"
+        ],
+        "trainedVideos": 3
+      }
+    }
+  ]
+}

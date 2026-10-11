@@ -1,0 +1,49 @@
+{
+  "channelId": "UC-BHlgFbFh3V76yth-XCmlw",
+  "runId": "5d499607f1f54731a1c28c18dbee245b",
+  "generatedAt": "2026-10-11T04:21:19.186Z",
+  "videos": [
+    {
+      "videoId": "qIKLe-WFUbw",
+      "title": "GDSC Lead Application Video || Nishchay Veer",
+      "publishedAt": "2023-03-26T07:49:18.000Z",
+      "durationS": 88,
+      "thumbnailUrl": "https://i.ytimg.com/vi/qIKLe-WFUbw/maxresdefault.jpg",
+      "avgViewPct": 67.8,
+      "biggestDrop": {
+        "audience": "unsubscribed",
+        "atS": 16.7,
+        "lossPp": 12.2
+      },
+      "inSample": true
+    },
+    {
+      "videoId": "FhcM0zUTVv0",
+      "title": "Alag Aasmaan - Anuv Jain | Acoustic Version | Nishchay Veer",
+      "publishedAt": "2022-05-31T12:32:43.000Z",
+      "durationS": 222,
+      "thumbnailUrl": "https://i.ytimg.com/vi/FhcM0zUTVv0/maxresdefault.jpg",
+      "avgViewPct": 42.8,
+      "biggestDrop": {
+        "audience": "subscribed",
+        "atS": 2.2,
+        "lossPp": 24.44
+      },
+      "inSample": true
+    },
+    {
+      "videoId": "lgxOjPdCGkw",
+      "title": "Because she will always be our side",
+      "publishedAt": "2022-05-08T16:00:26.000Z",
+      "durationS": 262,
+      "thumbnailUrl": "https://i.ytimg.com/vi/lgxOjPdCGkw/maxresdefault.jpg",
+      "avgViewPct": 36.9,
+      "biggestDrop": {
+        "audience": "unsubscribed",
+        "atS": 2.6,
+        "lossPp": 41.9
+      },
+      "inSample": true
+    }
+  ]
+}

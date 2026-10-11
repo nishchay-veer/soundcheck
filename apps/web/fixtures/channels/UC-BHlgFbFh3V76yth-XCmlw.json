@@ -1,0 +1,28 @@
+{
+  "userId": "fixture-user",
+  "title": "Nishchay Veer",
+  "thumbnailUrl": "https://yt3.ggpht.com/QtorcOqKKbg_gRgwWr9OJpFu05Nlfji4FiYhU7DPHKAeatAslT1fjOY08HMUjOSTUD_4gdbSgQ=s800-c-k-c0x00ffffff-no-rj",
+  "subscriberCount": 48,
+  "videoCount": 4,
+  "uploadsPlaylistId": "UU-BHlgFbFh3V76yth-XCmlw",
+  "status": "connected",
+  "tokenCiphertext": "fixture",
+  "tokenScope": "",
+  "connectedAt": {
+    "$date": "2026-10-06T08:23:08.077Z"
+  },
+  "build": {
+    "state": "ready",
+    "runId": "618c9c8254454d8f85454fe52624fb72",
+    "mode": "build",
+    "stage": "publish",
+    "startedAt": {
+      "$date": "2026-10-10T16:32:29.266Z"
+    },
+    "finishedAt": {
+      "$date": "2026-10-10T16:56:51.258Z"
+    },
+    "eligibleVideos": 3,
+    "usableVideos": 3
+  }
+}

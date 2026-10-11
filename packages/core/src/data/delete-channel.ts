@@ -12,6 +12,7 @@ import {
   type ChannelDeletion,
 } from "../schemas";
 import { requireChannel } from "./authz";
+import { refuseInFixturesMode } from "./store";
 
 const REVOKE_URL = "https://oauth2.googleapis.com/revoke";
 
@@ -98,6 +99,7 @@ export async function deleteChannel(
   channelId: string,
   log: Logger = rootLogger,
 ): Promise<ChannelDeletion> {
+  refuseInFixturesMode("disconnecting a channel");
   const channel = await requireChannel(userId, channelId);
   const channelLog = childLogger({ channel_id: channelId, stage: "delete" }, log);
 

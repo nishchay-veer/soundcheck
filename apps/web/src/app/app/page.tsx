@@ -1,18 +1,18 @@
 import { NotFoundError } from "@soundcheck/core";
 import { getMe } from "@soundcheck/core/data";
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 import { ChannelCard } from "@/components/channel-card";
+import { currentUserId } from "@/lib/session";
 
 export const runtime = "nodejs";
 
 export default async function AppPage() {
-  const session = await auth();
-  if (!session?.userId) redirect("/");
+  const userId = await currentUserId();
+  if (!userId) redirect("/");
 
   let me;
   try {
-    me = await getMe(session.userId);
+    me = await getMe(userId);
   } catch (error) {
     if (error instanceof NotFoundError) redirect("/");
     throw error;

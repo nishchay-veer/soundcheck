@@ -1,5 +1,4 @@
 import { NotFoundError } from "../errors";
-import { getFirestore } from "../gcp";
 import {
   COLLECTIONS,
   meResponseSchema,
@@ -11,11 +10,12 @@ import {
   type MeResponse,
 } from "../schemas";
 import { requireChannel } from "./authz";
+import { readDocument } from "./store";
 
 /** The channel IDs on a user's document; empty when the user has none yet. */
 export async function getUserChannelIds(userId: string): Promise<string[]> {
-  const snapshot = await getFirestore().collection(COLLECTIONS.users).doc(userId).get();
-  return snapshot.exists ? userDocSchema.parse(snapshot.data()).channelIds : [];
+  const data = await readDocument(`${COLLECTIONS.users}/${userId}`);
+  return data === undefined ? [] : userDocSchema.parse(data).channelIds;
 }
 
 /** A build as the browser sees it: ISO dates, and no Workflows execution path. */
@@ -56,9 +56,9 @@ export function toChannelView(channel: Channel): ChannelView {
  * document that no longer resolve to one of their channels are skipped.
  */
 export async function getMe(userId: string): Promise<MeResponse> {
-  const snapshot = await getFirestore().collection(COLLECTIONS.users).doc(userId).get();
-  if (!snapshot.exists) throw new NotFoundError("user");
-  const user = userDocSchema.parse(snapshot.data());
+  const data = await readDocument(`${COLLECTIONS.users}/${userId}`);
+  if (data === undefined) throw new NotFoundError("user");
+  const user = userDocSchema.parse(data);
 
   const channels: ChannelView[] = [];
   for (const channelId of user.channelIds) {

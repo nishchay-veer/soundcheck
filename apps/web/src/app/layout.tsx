@@ -3,8 +3,9 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { auth } from "@/auth";
+import { fixturesMode } from "@soundcheck/core/env";
 import { SignOutButton } from "@/components/auth-buttons";
+import { currentUserId } from "@/lib/session";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -20,7 +21,8 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const session = await auth();
+  const fixtures = fixturesMode();
+  const signedIn = !fixtures && (await currentUserId()) !== null;
   return (
     <html
       lang="en"
@@ -32,7 +34,13 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             <Link href="/" className="font-heading text-xl font-bold tracking-tight">
               Soundcheck
             </Link>
-            {session?.userId ? <SignOutButton /> : null}
+            {fixtures ? (
+              <span className="rounded-full border-2 border-ink bg-highlight px-3 py-1 text-sm font-medium">
+                Fixture data
+              </span>
+            ) : signedIn ? (
+              <SignOutButton />
+            ) : null}
           </div>
         </header>
         {children}

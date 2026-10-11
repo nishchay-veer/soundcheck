@@ -12,3 +12,5 @@ docs/eda
 services/modeling/schemas
 # Written by soundcheck-modeling model-card
 docs/model-card.md
+# Written by scripts/export-fixtures.ts
+apps/web/fixtures
