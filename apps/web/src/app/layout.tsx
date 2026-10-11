@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { fixturesMode } from "@soundcheck/core/env";
+import { TooltipProvider } from "@soundcheck/ui/components/tooltip";
 import { SignOutButton } from "@/components/auth-buttons";
 import { currentUserId } from "@/lib/session";
 
@@ -43,7 +44,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             ) : null}
           </div>
         </header>
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>
   );

@@ -19,6 +19,7 @@
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "lucide-react": "1.49.0",
+    "radix-ui": "1.7.0",
     "tailwind-merge": "3.7.0"
   },
   "peerDependencies": {
@@ -28,10 +29,16 @@
     "@soundcheck/eslint-config": "workspace:*",
     "@soundcheck/typescript-config": "workspace:*",
     "@soundcheck/vitest-config": "workspace:*",
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.7",
     "@types/node": "24.19.0",
     "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "eslint": "10.11.0",
+    "jsdom": "30.1.2",
     "react": "19.3.0",
+    "react-dom": "19.3.0",
     "typescript": "7.0.2",
     "vitest": "5.0.3"
   }

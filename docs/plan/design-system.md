@@ -6,22 +6,24 @@ Read by Phases 12 to 17 and any session that touches the UI. Soundcheck uses a G
 
 Defined as CSS variables in `apps/web/src/app/globals.css` and exposed through Tailwind v4 `@theme`. No raw hex values anywhere else.
 
-| Token | Value | Use |
-| --- | --- | --- |
-| `--bg` | `#F4F4F0` cream | Page background |
-| `--surface` | `#FFFFFF` | Cards, inputs, chart plot areas, tooltips |
-| `--ink` | `#000000` | Text, borders, shadows, axes |
-| `--ink-muted` | `#4A4A4A` | Secondary text (about 8:1 contrast on cream) |
-| `--rule` | `#D9D9D0` | Chart gridlines only |
-| `--accent` | `#FF90E8` pink | Primary buttons, the selected item, key highlights; black text on it |
-| `--highlight` | `#FFC900` yellow | Badges, "new" markers, the headline banner |
-| `--positive` | `#00A86B` | Positive deltas (arrow and chip border, never body text) |
-| `--negative` | `#E5482D` | Negative deltas, drop windows |
-| `--aud-subscribers` | `#8FD5C2` mint | Subscriber audience everywhere |
-| `--aud-newcomers` | `#FF8A5B` orange | Newcomer audience everywhere |
-| `--aud-search` | `#FFC900` yellow | Estimated search audience |
-| `--aud-suggested` | `#B9A7FF` lavender | Estimated suggested audience |
-| `--aud-browse` | `#C9C9C0` stone | Estimated browse audience |
+| Token               | Value              | Use                                                                                       |
+| ------------------- | ------------------ | ----------------------------------------------------------------------------------------- |
+| `--bg`              | `#F4F4F0` cream    | Page background                                                                           |
+| `--surface`         | `#FFFFFF`          | Cards, inputs, chart plot areas, tooltips                                                 |
+| `--ink`             | `#000000`          | Text, borders, shadows, axes                                                              |
+| `--ink-muted`       | `#4A4A4A`          | Secondary text (about 8:1 contrast on cream)                                              |
+| `--rule`            | `#D9D9D0`          | Chart gridlines only                                                                      |
+| `--accent`          | `#FF90E8` pink     | Primary buttons, the selected item, key highlights; black text on it                      |
+| `--highlight`       | `#FFC900` yellow   | Badges, "new" markers, the headline banner                                                |
+| `--positive`        | `#00A86B`          | Positive deltas (arrow and chip border, never body text)                                  |
+| `--negative`        | `#E5482D`          | Negative deltas, drop windows                                                             |
+| `--aud-subscribers` | `#8FD5C2` mint     | Subscriber audience everywhere                                                            |
+| `--aud-newcomers`   | `#FF8A5B` orange   | Newcomer audience everywhere                                                              |
+| `--aud-search`      | `#FFC900` yellow   | Estimated search audience                                                                 |
+| `--aud-suggested`   | `#B9A7FF` lavender | Estimated suggested audience                                                              |
+| `--aud-browse`      | `#C9C9C0` stone    | Estimated browse audience                                                                 |
+| `--beat-opening`    | `#7CC6FE` sky      | Beat blocks that open a video (cold open, hook, branded intro)                            |
+| `--beat-promotion`  | `#EAD7B7` sand     | Beat blocks that promote (sponsor, self-promotion, call to action); other beats are white |
 
 ## Shape, depth and type
 
