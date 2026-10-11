@@ -15,12 +15,25 @@ export class FakeFirestore {
     return new FakeCollection(this, path);
   }
 
+  /** A document by its full path, e.g. "channels/UC…/summary/current". */
+  doc(path: string): FakeDocRef {
+    return new FakeDocRef(this, path);
+  }
+
   /** Runs `fn`, then applies its queued writes, as a committed transaction would. */
   async runTransaction<T>(fn: (tx: FakeTransaction) => Promise<T>): Promise<T> {
     const tx = new FakeTransaction();
     const result = await fn(tx);
     for (const write of tx.writes) await write();
     return result;
+  }
+
+  /** Sizes of the write batches committed so far, in order. */
+  readonly commits: number[] = [];
+
+  /** A write batch: its writes apply together on commit; Firestore allows at most 500. */
+  batch(): FakeWriteBatch {
+    return new FakeWriteBatch(this);
   }
 
   /** Deletes the document and everything under it (subcollections included). */
@@ -43,6 +56,14 @@ export class FakeCollection {
 
   doc(id: string): FakeDocRef {
     return new FakeDocRef(this.db, `${this.path}/${id}`);
+  }
+
+  /** The documents directly in this collection (not in its subcollections). */
+  async listDocuments(): Promise<FakeDocRef[]> {
+    const prefix = `${this.path}/`;
+    return [...this.db.docs.keys()]
+      .filter((path) => path.startsWith(prefix) && !path.slice(prefix.length).includes("/"))
+      .map((path) => new FakeDocRef(this.db, path));
   }
 }
 
@@ -115,5 +136,31 @@ export class FakeTransaction {
   update(ref: FakeDocRef, data: Data): this {
     this.writes.push(() => ref.update(data));
     return this;
+  }
+}
+
+export class FakeWriteBatch {
+  private readonly writes: Array<() => Promise<void>> = [];
+
+  constructor(private readonly db: FakeFirestore) {}
+
+  set(ref: FakeDocRef, data: Data, options?: { merge?: boolean }): this {
+    this.writes.push(() => ref.set(data, options));
+    return this;
+  }
+
+  delete(ref: FakeDocRef): this {
+    this.writes.push(() => ref.delete());
+    return this;
+  }
+
+  async commit(): Promise<void> {
+    if (this.writes.length > 500) {
+      throw new Error(
+        `3 INVALID_ARGUMENT: maximum 500 writes allowed per request, got ${this.writes.length}`,
+      );
+    }
+    for (const write of this.writes) await write();
+    this.db.commits.push(this.writes.length);
   }
 }

@@ -144,13 +144,18 @@ export const audienceCardSchema = z
     /** At most 3, by absolute effect. */
     traits: z.array(traitCardSchema).max(3),
     description: limitedWords(30),
-    model: modelStampSchema,
+    /** Null when the audience has no fitted model: its measured numbers still show. */
+    model: modelStampSchema.nullable(),
   })
   .refine(
     (card) =>
       card.kind === (measuredAudienceSchema.safeParse(card.key).success ? "measured" : "estimated"),
     { message: "Subscribers and newcomers are measured; the rest are estimated", path: ["kind"] },
-  );
+  )
+  .refine((card) => card.model !== null || card.traits.length === 0, {
+    message: "Traits come from a model",
+    path: ["traits"],
+  });
 export type AudienceCard = z.infer<typeof audienceCardSchema>;
 
 /**

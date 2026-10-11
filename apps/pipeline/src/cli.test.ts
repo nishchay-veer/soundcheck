@@ -52,6 +52,7 @@ describe("soundcheck CLI", () => {
             "baseline-llm",
             "stage",
             "build",
+            "publish",
           ].includes(name),
       ),
   )("%s prints not implemented", async (name) => {

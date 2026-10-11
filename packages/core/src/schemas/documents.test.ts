@@ -209,6 +209,9 @@ describe("serving documents", () => {
     expect(audienceCardSchema.safeParse(card({ description: "word ".repeat(31) })).success).toBe(
       false,
     );
+    // Without a model, the measured numbers still show, but no traits.
+    expect(audienceCardSchema.safeParse(card({ model: null })).success).toBe(false);
+    expect(audienceCardSchema.safeParse(card({ model: null, traits: [] })).success).toBe(true);
   });
 
   it("allows one card per audience in a summary", () => {

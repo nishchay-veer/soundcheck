@@ -134,7 +134,8 @@ export async function narrate(
     if (errors.length) throw new Error(`The template for ${item.id} fails: ${errors.join("; ")}`);
   }
   const key = narrationKey(items, model);
-  const narrationLog = childLogger({ channel_id: channelId, stage: "narrate" }, log);
+  // `step`, not `stage`: publish binds its own stage (see childLogger).
+  const narrationLog = childLogger({ channel_id: channelId, step: "narrate" }, log);
   const file = rawBucket().file(`${channelIdSchema.parse(channelId)}/narration/${key}.json`);
   if (!noCache) {
     const cached = await readCached(file, items);

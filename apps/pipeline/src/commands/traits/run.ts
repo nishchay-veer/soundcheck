@@ -8,7 +8,7 @@ import {
   type Trait,
 } from "@soundcheck/core/model";
 import type { ModelArtifact, TrainingAudience } from "@soundcheck/core/schemas";
-import { readFeatureInputs } from "../features/inputs";
+import { readFeatureInputs, type FeatureInputs } from "../features/inputs";
 
 export interface AudienceTraits {
   audience: TrainingAudience;
@@ -53,8 +53,19 @@ export async function buildTraits({
   }
   const models: ModelArtifact[] = [];
   for (const model of fitted.values()) models.push(await readModelArtifact(model.artifactUri));
+  return computeTraits(channelId, models, await readFeatureInputs(channelId), { draws, seed });
+}
 
-  const inputs = await readFeatureInputs(channelId);
+/**
+ * The traits of the given models, simulated on their training video of
+ * median length (shared with `publish`, which has the models and inputs).
+ */
+export function computeTraits(
+  channelId: string,
+  models: readonly ModelArtifact[],
+  inputs: Pick<FeatureInputs, "videos" | "extractions">,
+  options: { draws: number; seed: number },
+): TraitsResult {
   const trained = new Set(models.flatMap((model) => model.trainVideoIds));
   const candidates = inputs.videos
     .filter((video) => trained.has(video.videoId) && inputs.extractions.has(video.videoId))
@@ -66,7 +77,6 @@ export async function buildTraits({
   }
 
   const order: TrainingAudience[] = ["all", "subscribed", "unsubscribed"];
-  const options = { draws, seed };
   const audiences = order.flatMap((audience) => {
     const model = models.find((m) => m.audience === audience);
     if (!model?.channelContext) return [];

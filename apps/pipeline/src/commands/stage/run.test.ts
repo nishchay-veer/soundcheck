@@ -20,6 +20,16 @@ function fakeSteps() {
     buildFeatures: vi.fn(async () => ({ rows: 900, used: ["a", "b", "c"], written: true })),
     runBaselineLlm: vi.fn(async () => ({ outcomes: [{}, {}, {}], mode: "check", rows: 3 })),
     recordBuildCounts: vi.fn(async () => undefined),
+    publishChannel: vi.fn(async () => ({
+      channelId: CHANNEL,
+      runId: "run",
+      videos: 3,
+      drops: 20,
+      templated: 0,
+      written: true,
+      deleted: 0,
+      notUsable: true,
+    })),
   } as unknown as typeof STEPS & Record<keyof typeof STEPS, ReturnType<typeof vi.fn>>;
 }
 
@@ -88,7 +98,9 @@ describe("runStage", () => {
     expect(await run("extract-load")).toBe("extract-load: 3 videos, 20 beats");
     expect(await run("features")).toBe("features: 900 rows from 3 videos");
     expect(await run("baseline")).toBe("baseline: 3 videos (check), 3 curves");
-    expect(await run("publish")).toBe("publish: not built yet (Phase 11)");
+    expect(await run("publish")).toBe(
+      'publish: 3 videos, 20 drop-offs (written); models not usable: screens must say "not a result yet"',
+    );
   });
 
   it("binds the build's stage and run under keys the commands do not use", async () => {

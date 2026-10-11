@@ -85,7 +85,7 @@ export function audienceNarration(card: Omit<AudienceCard, "description">): Narr
         ? {}
         : { watchTimeSharePercent: percent(card.watchTimeShare) }),
       ...(average === null ? {} : { averageViewPercent: average }),
-      ...(card.model.usable && card.traits.length
+      ...(card.model?.usable && card.traits.length
         ? { traits: card.traits.map((t) => ({ trait: t.statement, points: points(t.deltaPp) })) }
         : {}),
     },

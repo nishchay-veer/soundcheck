@@ -368,3 +368,25 @@ export const evalRunRowSchema = z.object({
   details: z.record(z.string(), z.unknown()),
 });
 export type EvalRunRow = z.infer<typeof evalRunRowSchema>;
+
+/**
+ * The parts of an evaluation's `details` (written by Python's
+ * `evaluation_details`) that the publish job reads (Phase 11): per audience,
+ * each contender's mean scores, which B0 variant was stronger, the band
+ * inflation fitted on validation videos, and the bootstrap against B0.
+ */
+export const evalDetailsSchema = z.object({
+  audiences: z.record(
+    z.string(),
+    z.object({
+      b0_variant: z.enum(["channel average", "length matched"]),
+      summary: z.record(
+        z.string(),
+        z.object({ videos: z.number().nonnegative(), curve_mae_pp: z.number().nonnegative() }),
+      ),
+      inflation: z.object({ factor: z.number().positive() }).nullable(),
+      bootstrap: z.object({ beats_b0: z.boolean() }).nullable(),
+    }),
+  ),
+});
+export type EvalDetails = z.infer<typeof evalDetailsSchema>;

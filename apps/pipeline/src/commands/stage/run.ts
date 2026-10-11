@@ -8,6 +8,8 @@ import { ingestCatalogue } from "../ingest/catalogue";
 import { ingestMix } from "../ingest/mix";
 import { ingestRetention } from "../ingest/retention";
 import { ingestStats } from "../ingest/stats";
+import { formatPublish } from "../publish";
+import { publishChannel } from "../publish/run";
 
 /**
  * The TypeScript stages of the `channel_build` workflow (Phase 10), one per
@@ -40,6 +42,7 @@ export const STEPS = {
   buildFeatures,
   runBaselineLlm,
   recordBuildCounts,
+  publishChannel,
 };
 
 export interface StageOptions {
@@ -135,8 +138,8 @@ export async function runStage(stage: Stage, options: StageOptions = {}): Promis
       return `baseline: ${run.outcomes.length} videos (${run.mode}), ${run.rows} curves`;
     }
     case "publish":
-      // Phase 11 writes the Firestore serving documents here.
-      log.info("publish is built in Phase 11; nothing to do yet");
-      return "publish: not built yet (Phase 11)";
+      return formatPublish(
+        await steps.publishChannel({ channelId, now, log, ...(runId ? { runId } : {}) }),
+      );
   }
 }
