@@ -54,9 +54,22 @@ export function survival(hazard: ArrayLike<number>): Float64Array {
  * `n` coefficient vectors (alpha, beta...) drawn from the model's normal
  * approximation: the estimate plus L z, with L the Cholesky factor of the
  * covariance and z standard normals. The same seed gives the same draws.
+ *
+ * `inflation` multiplies the covariance (each shift grows by its square
+ * root): Phase 09's calibration factor, applied as the evaluation's
+ * `sampled_curves` does in Python.
  */
-export function drawCoefficients(artifact: ModelArtifact, n: number, seed: number): Float64Array[] {
+export function drawCoefficients(
+  artifact: ModelArtifact,
+  n: number,
+  seed: number,
+  inflation = 1,
+): Float64Array[] {
   if (!Number.isInteger(n) || n < 1) throw new RangeError(`Need at least one draw, got ${n}`);
+  if (!Number.isFinite(inflation) || inflation <= 0) {
+    throw new RangeError(`The inflation factor must be positive, got ${inflation}`);
+  }
+  const scale = Math.sqrt(inflation);
   const cholesky = new CholeskyDecomposition(new Matrix(artifact.cov));
   if (!cholesky.isPositiveDefinite()) {
     throw new RangeError(`The covariance of model ${artifact.runId} is not positive definite`);
@@ -71,7 +84,7 @@ export function drawCoefficients(artifact: ModelArtifact, n: number, seed: numbe
       const row = lower[i] as number[];
       let shift = 0;
       for (let k = 0; k <= i; k += 1) shift += (row[k] as number) * (z[k] as number);
-      return value + shift;
+      return value + scale * shift;
     });
   });
 }
@@ -94,16 +107,18 @@ export interface SurvivalBand {
 
 /**
  * The 10th, 50th and 90th percentile survival curves over `n` coefficient
- * draws: the uncertainty band every prediction ships with.
+ * draws: the uncertainty band every prediction ships with. `inflation` widens
+ * it by a held-out evaluation's calibration factor (see drawCoefficients).
  */
 export function sampleCurves(
   artifact: ModelArtifact,
   frame: FeatureFrame,
   n = 200,
   seed = 1,
+  inflation = 1,
 ): SurvivalBand {
   const rows = standardized(artifact, frame);
-  const curves = drawCoefficients(artifact, n, seed).map((theta) =>
+  const curves = drawCoefficients(artifact, n, seed, inflation).map((theta) =>
     survival(hazardsFor(theta, rows)),
   );
   const band = (q: number) =>

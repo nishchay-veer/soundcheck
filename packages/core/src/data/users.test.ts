@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { NotFoundError } from "../errors";
 import { FakeFirestore } from "../fake-firestore";
 import { resetClients, setClientOverride } from "../gcp";
-import type { ChannelDoc } from "../schemas";
-import { getMe, getUserChannelIds } from "./users";
+import { channelViewSchema, type ChannelDoc } from "../schemas";
+import { getMe, getUserChannelIds, toChannelView } from "./users";
 
 const ME = "111111111111111111111";
 const OTHER = "222222222222222222222";
@@ -67,6 +67,45 @@ describe("users", () => {
       ],
     });
     expect(JSON.stringify(me)).not.toMatch(/tokenCiphertext|tokenScope|c2VjcmV0/);
+  });
+
+  it("shows a running build with ISO dates and without its execution path", () => {
+    const view = toChannelView({
+      id: MINE,
+      ...channel(ME, "Mine"),
+      build: {
+        state: "running",
+        runId: "d81fba4cba194878a25705b6d33d9e5f",
+        mode: "build",
+        stage: "extract",
+        startedAt: new Date("2026-10-10T15:59:08Z"),
+        execution: "projects/p/locations/us-central1/workflows/channel_build/executions/e",
+        usableVideos: 3,
+        progress: {
+          stage: "extract",
+          done: 2,
+          total: 3,
+          etaS: 12,
+          updatedAt: new Date("2026-10-10T16:02:00Z"),
+        },
+      },
+    });
+    expect(channelViewSchema.parse(view).build).toEqual({
+      state: "running",
+      runId: "d81fba4cba194878a25705b6d33d9e5f",
+      mode: "build",
+      stage: "extract",
+      startedAt: "2026-10-10T15:59:08.000Z",
+      usableVideos: 3,
+      progress: {
+        stage: "extract",
+        done: 2,
+        total: 3,
+        etaS: 12,
+        updatedAt: "2026-10-10T16:02:00.000Z",
+      },
+    });
+    expect(JSON.stringify(view)).not.toMatch(/execution|tokenCiphertext|tokenScope/);
   });
 
   it("throws NotFoundError for a user without a document", async () => {

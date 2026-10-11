@@ -99,6 +99,22 @@ describe("drawCoefficients", () => {
     expect(() => drawCoefficients(broken, 5, 1)).toThrow(/not positive definite/);
     expect(() => drawCoefficients(small, 0, 1)).toThrow(RangeError);
   });
+
+  it("widens every draw by the square root of an inflation factor", () => {
+    const estimate = [small.alpha, ...small.beta];
+    const plain = drawCoefficients(small, 5, 42);
+    const inflated = drawCoefficients(small, 5, 42, 4);
+    inflated.forEach((draw, d) =>
+      draw.forEach((value, i) => {
+        const shift = ((plain[d] as Float64Array)[i] as number) - (estimate[i] as number);
+        expect(value - (estimate[i] as number)).toBeCloseTo(2 * shift, 12);
+      }),
+    );
+    expect(drawCoefficients(small, 5, 42, 1)).toEqual(plain);
+    for (const factor of [0, -1, Number.NaN]) {
+      expect(() => drawCoefficients(small, 5, 42, factor)).toThrow(/must be positive/);
+    }
+  });
 });
 
 describe("sampleCurves", () => {
@@ -132,6 +148,16 @@ describe("sampleCurves", () => {
       expect((certain.p90[bin] as number) - (certain.p10[bin] as number)).toBeLessThan(1e-3);
       expect(moderate.p10[bin]).toBeLessThanOrEqual(value);
       expect(moderate.p90[bin]).toBeGreaterThanOrEqual(value);
+    }
+  });
+
+  it("widens the band with an inflation factor", () => {
+    const frame = parityFrame();
+    const plain = sampleCurves(artifact, frame, 200, 11);
+    const wide = sampleCurves(artifact, frame, 200, 11, 9);
+    for (let bin = 0; bin < 100; bin += 1) {
+      expect(wide.p10[bin]).toBeLessThanOrEqual(plain.p10[bin] as number);
+      expect(wide.p90[bin]).toBeGreaterThanOrEqual(plain.p90[bin] as number);
     }
   });
 

@@ -13,6 +13,9 @@ export const SIGN_IN_SCOPES = ["openid", "email", "profile", ...YOUTUBE_SCOPES] 
 /** A YouTube channel ID: "UC" followed by 22 URL-safe characters. */
 export const channelIdSchema = z.string().regex(/^UC[\w-]{22}$/);
 
+/** A pipeline or publish run: letters, digits, `_` and `-` (env's RUN_ID uses the same). */
+export const runIdSchema = z.string().regex(/^[\w-]+$/);
+
 export const channelStatusSchema = z.enum(["connected", "reauth_required"]);
 export type ChannelStatus = z.infer<typeof channelStatusSchema>;
 
@@ -51,10 +54,7 @@ export type BuildProgress = z.infer<typeof buildProgressSchema>;
 export const buildSchema = z.object({
   state: buildStateSchema,
   /** The workflow argument; every job of the run logs it. */
-  runId: z
-    .string()
-    .regex(/^[\w-]+$/)
-    .optional(),
+  runId: runIdSchema.optional(),
   mode: z.enum(["build", "refresh"]).optional(),
   /** The stage running, or the one that failed. */
   stage: z.string().min(1).optional(),

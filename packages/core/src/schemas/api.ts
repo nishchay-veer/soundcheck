@@ -1,8 +1,37 @@
 import { z } from "zod";
-import { buildStateSchema, channelStatusSchema } from "./channels";
+import { buildStateSchema, channelStatusSchema, runIdSchema } from "./channels";
 
-/** What the browser may see of a channel: never the token ciphertext or scopes. */
-export const channelSummarySchema = z.object({
+/**
+ * What the browser may see of a channel's build: `channels/{id}.build` with
+ * dates as ISO strings, without the Workflows execution path.
+ */
+export const buildViewSchema = z.object({
+  state: buildStateSchema,
+  runId: runIdSchema.optional(),
+  mode: z.enum(["build", "refresh"]).optional(),
+  stage: z.string().min(1).optional(),
+  startedAt: z.iso.datetime().optional(),
+  finishedAt: z.iso.datetime().optional(),
+  error: z.string().optional(),
+  eligibleVideos: z.number().int().nonnegative().optional(),
+  usableVideos: z.number().int().nonnegative().optional(),
+  progress: z
+    .object({
+      stage: z.string().min(1),
+      done: z.number().int().nonnegative(),
+      total: z.number().int().nonnegative(),
+      etaS: z.number().nonnegative().optional(),
+      updatedAt: z.iso.datetime(),
+    })
+    .optional(),
+});
+export type BuildView = z.infer<typeof buildViewSchema>;
+
+/**
+ * What the browser may see of a channel: never the token ciphertext or scopes.
+ * `GET /api/v1/channels/{id}` returns one; `GET /api/v1/me` lists them.
+ */
+export const channelViewSchema = z.object({
   id: z.string(),
   title: z.string(),
   thumbnailUrl: z.url().nullable(),
@@ -10,14 +39,14 @@ export const channelSummarySchema = z.object({
   videoCount: z.number().int().nonnegative(),
   status: channelStatusSchema,
   connectedAt: z.iso.datetime(),
-  build: z.object({ state: buildStateSchema }),
+  build: buildViewSchema,
 });
-export type ChannelSummary = z.infer<typeof channelSummarySchema>;
+export type ChannelView = z.infer<typeof channelViewSchema>;
 
 /** `GET /api/v1/me` response. */
 export const meResponseSchema = z.object({
   user: z.object({ id: z.string(), email: z.email() }),
-  channels: z.array(channelSummarySchema),
+  channels: z.array(channelViewSchema),
 });
 export type MeResponse = z.infer<typeof meResponseSchema>;
 
@@ -34,7 +63,7 @@ export type ChannelDeletion = z.infer<typeof channelDeletionSchema>;
 /** `POST /api/v1/channels/{id}/build`: the build that was started. */
 export const buildStartSchema = z.object({
   channelId: z.string().min(1),
-  runId: z.string().regex(/^[\w-]+$/),
+  runId: runIdSchema,
   mode: z.enum(["build", "refresh"]),
   state: z.literal("queued"),
 });

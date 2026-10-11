@@ -4,8 +4,10 @@ import {
   COLLECTIONS,
   meResponseSchema,
   userDocSchema,
+  type Build,
+  type BuildView,
   type Channel,
-  type ChannelSummary,
+  type ChannelView,
   type MeResponse,
 } from "../schemas";
 import { requireChannel } from "./authz";
@@ -16,7 +18,27 @@ export async function getUserChannelIds(userId: string): Promise<string[]> {
   return snapshot.exists ? userDocSchema.parse(snapshot.data()).channelIds : [];
 }
 
-export function toChannelSummary(channel: Channel): ChannelSummary {
+/** A build as the browser sees it: ISO dates, and no Workflows execution path. */
+export function toBuildView(build: Build): BuildView {
+  return {
+    state: build.state,
+    runId: build.runId,
+    mode: build.mode,
+    stage: build.stage,
+    startedAt: build.startedAt?.toISOString(),
+    finishedAt: build.finishedAt?.toISOString(),
+    error: build.error,
+    eligibleVideos: build.eligibleVideos,
+    usableVideos: build.usableVideos,
+    progress: build.progress && {
+      ...build.progress,
+      updatedAt: build.progress.updatedAt.toISOString(),
+    },
+  };
+}
+
+/** A channel as the browser sees it: never the token ciphertext or scopes. */
+export function toChannelView(channel: Channel): ChannelView {
   return {
     id: channel.id,
     title: channel.title,
@@ -25,7 +47,7 @@ export function toChannelSummary(channel: Channel): ChannelSummary {
     videoCount: channel.videoCount,
     status: channel.status,
     connectedAt: channel.connectedAt.toISOString(),
-    build: channel.build,
+    build: toBuildView(channel.build),
   };
 }
 
@@ -38,10 +60,10 @@ export async function getMe(userId: string): Promise<MeResponse> {
   if (!snapshot.exists) throw new NotFoundError("user");
   const user = userDocSchema.parse(snapshot.data());
 
-  const channels: ChannelSummary[] = [];
+  const channels: ChannelView[] = [];
   for (const channelId of user.channelIds) {
     try {
-      channels.push(toChannelSummary(await requireChannel(userId, channelId)));
+      channels.push(toChannelView(await requireChannel(userId, channelId)));
     } catch (error) {
       if (!(error instanceof NotFoundError)) throw error;
     }

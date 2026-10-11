@@ -1,11 +1,11 @@
-import type { ChannelSummary } from "@soundcheck/core/schemas";
+import type { ChannelView } from "@soundcheck/core/schemas";
 import Image from "next/image";
 import Link from "next/link";
 import { DeleteChannelButton } from "./delete-channel-button";
 
 const numbers = new Intl.NumberFormat("en");
 
-const BUILD_LABEL: Record<ChannelSummary["build"]["state"], string> = {
+const BUILD_LABEL: Record<ChannelView["build"]["state"], string> = {
   not_started: "Not started",
   queued: "Queued",
   running: "Learning how your audiences watch",
@@ -14,7 +14,7 @@ const BUILD_LABEL: Record<ChannelSummary["build"]["state"], string> = {
   failed: "Failed",
 };
 
-export function ChannelCard({ channel }: { channel: ChannelSummary }) {
+export function ChannelCard({ channel }: { channel: ChannelView }) {
   return (
     <article className="flex flex-col gap-6 rounded-[4px] border-2 border-ink bg-surface p-6 sm:flex-row sm:items-center">
       {channel.thumbnailUrl ? (
