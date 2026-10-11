@@ -13,3 +13,5 @@
 !**/.env.example
 .git
 docs
+# Fixtures mode only (development); real analytics stay out of images
+apps/web/fixtures

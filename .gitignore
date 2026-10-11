@@ -45,6 +45,7 @@ __pycache__/
 
 # infra/deploy-pipeline.sh: the images it last built
 infra/.last-images
+infra/.last-web-image
 
 # Written by next dev (Next.js 16) on every run
 apps/web/AGENTS.md

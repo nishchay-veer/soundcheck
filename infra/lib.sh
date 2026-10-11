@@ -60,4 +60,15 @@ grant_bucket() {
   log "gs://$1: $3 -> $2"
 }
 
+# env_yaml <key>...: the named keys of the repo's .env as a Cloud Run env-vars
+# file (YAML, so values with commas survive), on stdout. Unset keys are left out.
+env_yaml() {
+  local file key value
+  file="$(cd "$INFRA_DIR/.." && pwd)/.env"
+  for key in "$@"; do
+    value="$({ grep -E "^${key}=" "$file" || true; } | tail -n1 | cut -d= -f2- | sed -e 's/^"//' -e 's/"$//')"
+    if [[ -n "$value" ]]; then printf '%s: "%s"\n' "$key" "$value"; fi
+  done
+}
+
 log "project ${PROJECT_ID}"

@@ -1,0 +1,19 @@
+# Builds the web app's image from the repository root (its Dockerfile prunes
+# the monorepo with turbo). Fixtures mode is off in every image: the app
+# refuses to start in production with it on. Used by infra/deploy-web.sh.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      [
+        "build",
+        "-f",
+        "apps/web/Dockerfile",
+        "--build-arg",
+        "NEXT_PUBLIC_USE_FIXTURES=false",
+        "-t",
+        "${_IMAGE}",
+        ".",
+      ]
+images: ["${_IMAGE}"]
+options:
+  machineType: E2_HIGHCPU_8

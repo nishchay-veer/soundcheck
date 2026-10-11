@@ -41,10 +41,8 @@ KEYS="GCP_PROJECT_ID GCP_REGION BQ_DATASET BQ_LOCATION GCS_RAW_BUCKET GCS_UPLOAD
   GCS_MEDIA_BUCKET FIRESTORE_DATABASE KMS_KEY_NAME GEMINI_LOCATION GEMINI_MODEL
   GEMINI_FLASH_MODEL GEMINI_VIDEO_MODE GEMINI_PRICE_INPUT_PER_M GEMINI_PRICE_OUTPUT_PER_M
   MIN_VIEWS MIN_TRAIN_VIDEOS"
-for key in $KEYS; do
-  value="$(grep -E "^${key}=" "$ROOT/.env" | tail -n1 | cut -d= -f2- | sed -e 's/^"//' -e 's/"$//')"
-  if [[ -n "$value" ]]; then printf '%s: "%s"\n' "$key" "$value" >>"$ENV_FILE"; fi
-done
+# shellcheck disable=SC2086 # KEYS is a word list
+env_yaml $KEYS >"$ENV_FILE"
 SECRETS="AUTH_GOOGLE_ID=oauth-client-id:latest,AUTH_GOOGLE_SECRET=oauth-client-secret:latest"
 
 # deploy_job <name> <image> <args> <task timeout> <retries> <memory> <cpu> [parallelism]

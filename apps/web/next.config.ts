@@ -25,6 +25,9 @@ loadRootEnv(monorepoRoot);
 const nextConfig: NextConfig = {
   output: "standalone",
   outputFileTracingRoot: monorepoRoot,
+  // Fixtures mode reads these at a runtime path, so the tracer would copy them
+  // into every production build; production never reads them.
+  outputFileTracingExcludes: { "*": ["./fixtures/**"] },
   turbopack: { root: monorepoRoot },
   transpilePackages: ["@soundcheck/core", "@soundcheck/ui"],
   images: {
