@@ -1,4 +1,4 @@
-import { notImplemented, type PipelineCommand } from "./types";
+import { notImplemented, type PipelineCommand } from "../types";
 
 export const publish: PipelineCommand = {
   name: "publish",

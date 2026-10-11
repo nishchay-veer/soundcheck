@@ -16,7 +16,10 @@ export function loadArtifact(value: unknown): ModelArtifact {
 }
 
 /** The frame's columns the model uses, standardized: one row per bin. */
-function standardized(artifact: ModelArtifact, frame: FeatureFrame): Float64Array[] {
+function standardized(
+  artifact: Pick<ModelArtifact, "featureNames" | "mean" | "sd">,
+  frame: FeatureFrame,
+): Float64Array[] {
   const columns = artifact.featureNames.map((name, j) => {
     const values = frameColumn(frame, name);
     const mean = artifact.mean[j] as number;
@@ -42,6 +45,21 @@ function hazardsFor(theta: ArrayLike<number>, rows: readonly Float64Array[]): Fl
 /** The predicted hazard of each bin. */
 export function predictHazard(artifact: ModelArtifact, frame: FeatureFrame): Float64Array {
   return hazardsFor([artifact.alpha, ...artifact.beta], standardized(artifact, frame));
+}
+
+/**
+ * Each feature's part of each bin's logit, beta_j (x_j - mean_j) / sd_j: one
+ * row per bin, in `featureNames` order. Alpha plus a row's sum is the bin's
+ * logit, so the difference between two bins' rows says which features moved
+ * the hazard (Phase 11's drop-off attribution).
+ */
+export function logitTerms(
+  artifact: Pick<ModelArtifact, "featureNames" | "mean" | "sd" | "beta">,
+  frame: FeatureFrame,
+): Float64Array[] {
+  return standardized(artifact, frame).map((z) =>
+    z.map((value, j) => (artifact.beta[j] as number) * value),
+  );
 }
 
 /** Share still watching at the end of each bin: the running product of 1 - hazard. */

@@ -3,7 +3,14 @@ import { describe, expect, it } from "vitest";
 import type { FeatureFrame } from "../features";
 import type { ModelArtifact } from "../schemas";
 import { createRandom, xoshiro128ss } from "./random";
-import { drawCoefficients, loadArtifact, predictHazard, sampleCurves, survival } from "./runtime";
+import {
+  drawCoefficients,
+  loadArtifact,
+  logitTerms,
+  predictHazard,
+  sampleCurves,
+  survival,
+} from "./runtime";
 
 const parity = (name: string): unknown =>
   JSON.parse(
@@ -165,6 +172,21 @@ describe("sampleCurves", () => {
     const frame = parityFrame();
     const missing = { ...frame, columns: frame.columns.map((c) => (c === "energy" ? "other" : c)) };
     expect(() => predictHazard(artifact, missing)).toThrow(/Unknown feature: energy/);
+  });
+});
+
+describe("logitTerms", () => {
+  it("splits each bin's logit into one term per feature", () => {
+    const artifact = loadArtifact(parity("artifact.json"));
+    const frame = parityFrame();
+    const terms = logitTerms(artifact, frame);
+    const hazards = predictHazard(artifact, frame);
+    expect(terms).toHaveLength(100);
+    terms.forEach((row, bin) => {
+      expect(row).toHaveLength(artifact.featureNames.length);
+      const eta = row.reduce((sum, term) => sum + term, artifact.alpha);
+      expect(1 / (1 + Math.exp(-eta))).toBeCloseTo(hazards[bin] as number, 12);
+    });
   });
 });
 
