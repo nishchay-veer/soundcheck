@@ -4,6 +4,7 @@ import { extractBeatsPrompt } from "./extract-beats";
 
 export * from "./baseline-retention";
 export * from "./extract-beats";
+export * from "./narration";
 export { BEAT_EXAMPLES, BEAT_EXAMPLE_FILES } from "./examples";
 
 /** The beat-extraction system instruction with the reviewed examples. */
