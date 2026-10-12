@@ -4,6 +4,27 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Phase 13: Video autopsy screen (Oct 12, 2026)
+
+- **Built:**
+  - `/app/videos`: search, five sorts, each video's biggest drop-off;
+  - `/app/videos/[videoId]`: each audience's curve with the model's band over the beat strip on one D3 time scale, the YouTube player beside it, and a drop panel (a sentence, cause chips with "?" notes, the unexplained rest, links to the audiences sheet);
+  - beat transcript snippets in the video documents (`serving-v3`);
+  - a Popover primitive for notes that open on a tap.
+- **Verified:**
+  - all 3 test videos on the deployed app, identical to fixtures mode;
+  - the fixtures re-export matches Firestore byte for byte;
+  - the smoke test reads the real player's time after a drop-off click (39.3 s);
+  - no overflow at 390 px;
+  - Lighthouse accessibility 100 on three pages.
+- **Next phases must keep:**
+  - the panel's sentence and the "?" notes come from the chips' numbers, not Gemini;
+  - "Unexplained" always shows.
+- **Open:**
+  - narrated end times can be a second off the page's (narrate from rounded times);
+  - Phase 12's stat-card tooltips don't open on a tap;
+  - `d3-array` is unused.
+
 ### Phase 12: Onboarding and audiences screen (Oct 12, 2026)
 
 - **Built,** on the design system, reviewed once on `/styleguide`:
