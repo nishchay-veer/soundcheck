@@ -25,6 +25,7 @@
   --aud-browse: #c9c9c0;
   --beat-opening: #7cc6fe;
   --beat-promotion: #ead7b7;
+  --beat-closing: #e2e2da;
 
   /* shadcn/ui semantic variables, mapped onto the tokens above. */
   --background: var(--bg);
@@ -64,6 +65,7 @@
   --color-aud-browse: var(--aud-browse);
   --color-beat-opening: var(--beat-opening);
   --color-beat-promotion: var(--beat-promotion);
+  --color-beat-closing: var(--beat-closing);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);

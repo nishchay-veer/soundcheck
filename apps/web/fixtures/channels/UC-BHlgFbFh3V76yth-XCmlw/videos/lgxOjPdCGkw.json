@@ -1,8 +1,8 @@
 {
   "channelId": "UC-BHlgFbFh3V76yth-XCmlw",
   "videoId": "lgxOjPdCGkw",
-  "runId": "479ad43f91c74c54b1419bc4fdcad23f",
-  "generatedAt": "2026-10-12T03:09:30.832Z",
+  "runId": "f35f99491671463bad64e8641bd21787",
+  "generatedAt": "2026-10-12T04:04:51.000Z",
   "title": "Because she will always be our side",
   "publishedAt": "2022-05-08T16:00:26.000Z",
   "durationS": 262,
@@ -861,7 +861,8 @@
       "beatType": "performance",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "The creator plays the fingerstyle guitar intro to set up the song."
+      "summary": "The creator plays the fingerstyle guitar intro to set up the song.",
+      "transcriptExcerpt": ""
     },
     {
       "startS": 30,
@@ -869,7 +870,8 @@
       "beatType": "performance",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He sings the opening verses and chorus while playing acoustic guitar."
+      "summary": "He sings the opening verses and chorus while playing acoustic guitar.",
+      "transcriptExcerpt": "Main kabhi batlata nahin par andhere se darta hoon main maa. Yoon toh main dikhlata nahin, teri parwah karta hoon main maa. Tujhe sab hai…"
     },
     {
       "startS": 106,
@@ -877,7 +879,8 @@
       "beatType": "performance",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He performs an instrumental acoustic guitar interlude between verses."
+      "summary": "He performs an instrumental acoustic guitar interlude between verses.",
+      "transcriptExcerpt": ""
     },
     {
       "startS": 141,
@@ -885,7 +888,8 @@
       "beatType": "performance",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He sings the emotional second section and chorus of the song."
+      "summary": "He sings the emotional second section and chorus of the song.",
+      "transcriptExcerpt": "Jab bhi kabhi papa mujhe zor zor se jhhula jhhulate hain maa, meri nazar dhoondhe tujhe, sochoon yehi tu aake thaamegi maa. Unse main yeh…"
     },
     {
       "startS": 215,
@@ -893,7 +897,8 @@
       "beatType": "performance",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He plays the acoustic guitar outro rhythm to conclude the song."
+      "summary": "He plays the acoustic guitar outro rhythm to conclude the song.",
+      "transcriptExcerpt": ""
     },
     {
       "startS": 254,
@@ -901,7 +906,8 @@
       "beatType": "outro",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He pauses, waves goodbye to the camera, and reaches to stop recording."
+      "summary": "He pauses, waves goodbye to the camera, and reaches to stop recording.",
+      "transcriptExcerpt": ""
     }
   ],
   "drops": [

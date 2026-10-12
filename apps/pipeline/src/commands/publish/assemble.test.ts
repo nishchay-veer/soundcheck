@@ -115,6 +115,7 @@ const videoBeats: VideoBeat[] = extraction.beats.map((b) => ({
   visual: "none",
   talkingHeadShare: 5,
   summary: `The ${b.beat_type}.`,
+  transcriptExcerpt: b.transcript,
 }));
 
 function inputs(overrides: Partial<PublishInputs> = {}): PublishInputs {

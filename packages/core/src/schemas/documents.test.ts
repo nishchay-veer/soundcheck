@@ -105,6 +105,7 @@ const video = (overrides: Partial<VideoDoc> = {}): VideoDoc => ({
       visual: "none",
       talkingHeadShare: 5,
       summary: "Opens on the chorus.",
+      transcriptExcerpt: "",
     },
   ],
   drops: [drop()],

@@ -14,6 +14,7 @@ import { KindBadge } from "@/components/kind-badge";
 import { ResultNotice } from "@/components/result-notice";
 import { RetentionChart } from "@/components/retention-chart";
 import { StatCard } from "@/components/stat-card";
+import { BEAT_GROUPS } from "@/lib/beats";
 import { SAMPLE_BEATS, SAMPLE_CARDS, SAMPLE_EFFECTS, SAMPLE_SERIES } from "./samples";
 import { SheetDemo } from "./sheet-demo";
 
@@ -43,9 +44,15 @@ const AUDIENCES = [
 ] as const;
 
 const BEATS = [
-  ["bg-beat-opening", "Openings: cold open, hook, branded intro"],
-  ["bg-beat-promotion", "Promotion: sponsor, self-promo, call to action"],
-  ["bg-surface", "Everything else"],
+  [BEAT_GROUPS.opening.fill, "--beat-opening", "Opening: cold open, hook, branded intro"],
+  [
+    BEAT_GROUPS.promotion.fill,
+    "--beat-promotion",
+    "Promotion: sponsor, self-promo, call to action",
+  ],
+  [BEAT_GROUPS.closing.fill, "--beat-closing", "Closing: recap, outro, end screen"],
+  [BEAT_GROUPS.tangent.fill, "dashed outline", "Tangent"],
+  [BEAT_GROUPS.content.fill, "--surface", "Content: everything else"],
 ] as const;
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -99,8 +106,8 @@ export default function StyleguidePage() {
         </ul>
         <h3 className="font-heading text-xl font-bold">Beats</h3>
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {BEATS.map(([fill, use]) => (
-            <Swatch key={fill} fill={fill} name={fill.replace("bg-", "--")} use={use} />
+          {BEATS.map(([fill, name, use]) => (
+            <Swatch key={name} fill={fill} name={name} use={use} />
           ))}
         </ul>
       </Section>

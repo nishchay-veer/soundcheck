@@ -1,8 +1,8 @@
 {
   "channelId": "UC-BHlgFbFh3V76yth-XCmlw",
   "videoId": "qIKLe-WFUbw",
-  "runId": "479ad43f91c74c54b1419bc4fdcad23f",
-  "generatedAt": "2026-10-12T03:09:30.832Z",
+  "runId": "f35f99491671463bad64e8641bd21787",
+  "generatedAt": "2026-10-12T04:04:51.000Z",
   "title": "GDSC Lead Application Video || Nishchay Veer",
   "publishedAt": "2023-03-26T07:49:18.000Z",
   "durationS": 88,
@@ -861,7 +861,8 @@
       "beatType": "setup",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "Nishchay introduces himself, his college background, and leadership roles in technical societies."
+      "summary": "Nishchay introduces himself, his college background, and leadership roles in technical societies.",
+      "transcriptExcerpt": "Hey everyone at Google, this is Nishchay, a second year CSE undergrad at National Institute of Technology, Jalandhar, and also a core team…"
     },
     {
       "startS": 18,
@@ -869,7 +870,8 @@
       "beatType": "explanation",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He outlines his mentoring experience and vision to connect students with industry professionals."
+      "summary": "He outlines his mentoring experience and vision to connect students with industry professionals.",
+      "transcriptExcerpt": "And this process of conducting over 20 plus workshops and mentored over 100 plus students, guiding them about various technologies like…"
     },
     {
       "startS": 56,
@@ -877,7 +879,8 @@
       "beatType": "explanation",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He details his programming knowledge, leadership experience, and key virtues for the role."
+      "summary": "He details his programming knowledge, leadership experience, and key virtues for the role.",
+      "transcriptExcerpt": "Telling a, telling a little bit about myself, I have a thorough understanding of many programming languages like C, C++, JavaScript, and…"
     },
     {
       "startS": 81,
@@ -885,7 +888,8 @@
       "beatType": "outro",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He concludes with a final thank you and expression of hope to be selected."
+      "summary": "He concludes with a final thank you and expression of hope to be selected.",
+      "transcriptExcerpt": "I'll be honored if I get a chance to serve as the next GDSC Lead at our institute. Thank you so much, Google."
     }
   ],
   "drops": [

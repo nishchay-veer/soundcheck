@@ -233,6 +233,11 @@ describe("publishChannel", () => {
     const page = videoDocSchema.parse(db.docs.get(paths.video(VIDEO)));
     expect(page.drops[0]?.narrative).toMatch(/left fast from \d+:\d\d to \d+:\d\d\./);
     expect(page.drops.some((drop) => drop.attributions[0]?.group === "sponsor")).toBe(true);
+    expect(page.beats.map((beat) => beat.transcriptExcerpt)).toEqual([
+      "Words.",
+      "Words.",
+      "Words.",
+    ]);
     expect(db.docs.has(paths.video("gone1234567"))).toBe(false);
     expect(db.docs.get(`channels/${CHANNEL}/steps/publish`)).toMatchObject({
       rows: { videos: 1, deleted: 1 },

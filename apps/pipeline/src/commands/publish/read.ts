@@ -1,6 +1,7 @@
 import { EXTRACTION_VERSION, FEATURE_VERSION, MODEL_VERSION } from "@soundcheck/core";
 import { latestFittedModels, readChannelRows, readModelArtifact } from "@soundcheck/core/jobs";
 import {
+  TRANSCRIPT_EXCERPT_CHARS,
   evalDetailsSchema,
   videoBeatSchema,
   type EvalDetails,
@@ -47,6 +48,18 @@ export interface PublishInputs {
   /** The latest fitted model per audience. */
   models: Map<TrainingAudience, ModelArtifact>;
   evaluation: HoldoutEvaluation | null;
+}
+
+/**
+ * The start of a beat's transcript for its hover card: whitespace collapsed,
+ * cut at a word boundary with "…" when longer than the excerpt limit.
+ */
+export function transcriptExcerpt(transcript: unknown): string {
+  const text = typeof transcript === "string" ? transcript.replace(/\s+/g, " ").trim() : "";
+  if (text.length <= TRANSCRIPT_EXCERPT_CHARS) return text;
+  const room = text.slice(0, TRANSCRIPT_EXCERPT_CHARS - 1);
+  const space = room.lastIndexOf(" ");
+  return `${(space > TRANSCRIPT_EXCERPT_CHARS / 2 ? room.slice(0, space) : room).trimEnd()}…`;
 }
 
 /** TIMESTAMP and DATE values arrive from the client as `{ value }` objects. */
@@ -150,6 +163,7 @@ export async function readPublishInputs(channelId: string): Promise<PublishInput
       visual: details.visual,
       talkingHeadShare: details.talking_head_share,
       summary: typeof details.summary === "string" ? details.summary : "",
+      transcriptExcerpt: transcriptExcerpt(details.transcript),
     });
     indexed.set(videoId, [
       ...(indexed.get(videoId) ?? []),

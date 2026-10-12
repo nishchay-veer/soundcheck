@@ -132,6 +132,8 @@ export const SAMPLE_BEATS: VideoBeat[] = [
     visual: "none",
     talkingHeadShare: 5,
     summary: "The question.",
+    transcriptExcerpt:
+      "Have you ever wondered why your videos lose half their viewers in the first minute?",
   },
   {
     startS: 8,
@@ -140,6 +142,7 @@ export const SAMPLE_BEATS: VideoBeat[] = [
     visual: "graphics",
     talkingHeadShare: 1,
     summary: "The channel intro.",
+    transcriptExcerpt: "",
   },
   {
     startS: 20,
@@ -148,6 +151,8 @@ export const SAMPLE_BEATS: VideoBeat[] = [
     visual: "none",
     talkingHeadShare: 4,
     summary: "How it works.",
+    transcriptExcerpt:
+      "Here is what actually happens when someone clicks on your video from search.",
   },
   {
     startS: 70,
@@ -156,6 +161,8 @@ export const SAMPLE_BEATS: VideoBeat[] = [
     visual: "b_roll",
     talkingHeadShare: 3,
     summary: "A sponsor read.",
+    transcriptExcerpt:
+      "This video is brought to you by a sponsor whose product I genuinely use every day.",
   },
   {
     startS: 100,
@@ -164,6 +171,8 @@ export const SAMPLE_BEATS: VideoBeat[] = [
     visual: "screen_recording",
     talkingHeadShare: 2,
     summary: "The demo.",
+    transcriptExcerpt:
+      "Let me show you on a real channel, step by step, starting with the retention curve.",
   },
   {
     startS: 170,
@@ -172,6 +181,7 @@ export const SAMPLE_BEATS: VideoBeat[] = [
     visual: "none",
     talkingHeadShare: 5,
     summary: "The answer.",
+    transcriptExcerpt: "So the answer is simple: get to the point before the twenty second mark.",
   },
   {
     startS: 200,
@@ -180,5 +190,6 @@ export const SAMPLE_BEATS: VideoBeat[] = [
     visual: "none",
     talkingHeadShare: 5,
     summary: "Subscribe.",
+    transcriptExcerpt: "If this helped, subscribe for the next one.",
   },
 ];

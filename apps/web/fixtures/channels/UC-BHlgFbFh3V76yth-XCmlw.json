@@ -13,14 +13,14 @@
   },
   "build": {
     "state": "insufficient_data",
-    "runId": "84226aeaeb3e4ec2b6eb40901c0161bf",
-    "mode": "refresh",
+    "runId": "dfb5774246c640a28278355c5bcff9a4",
+    "mode": "build",
     "stage": "ingest",
     "startedAt": {
-      "$date": "2026-10-11T21:33:47.988Z"
+      "$date": "2026-10-12T03:49:02.858Z"
     },
     "finishedAt": {
-      "$date": "2026-10-11T21:36:49.397Z"
+      "$date": "2026-10-12T03:51:28.502Z"
     },
     "eligibleVideos": 3,
     "usableVideos": 3

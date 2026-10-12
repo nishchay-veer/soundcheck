@@ -1,8 +1,8 @@
 {
   "channelId": "UC-BHlgFbFh3V76yth-XCmlw",
   "videoId": "FhcM0zUTVv0",
-  "runId": "479ad43f91c74c54b1419bc4fdcad23f",
-  "generatedAt": "2026-10-12T03:09:30.832Z",
+  "runId": "f35f99491671463bad64e8641bd21787",
+  "generatedAt": "2026-10-12T04:04:51.000Z",
   "title": "Alag Aasmaan - Anuv Jain | Acoustic Version | Nishchay Veer",
   "publishedAt": "2022-05-31T12:32:43.000Z",
   "durationS": 222,
@@ -861,7 +861,8 @@
       "beatType": "performance",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "The creator plays the fingerstyle acoustic guitar intro."
+      "summary": "The creator plays the fingerstyle acoustic guitar intro.",
+      "transcriptExcerpt": ""
     },
     {
       "startS": 10,
@@ -869,7 +870,8 @@
       "beatType": "performance",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He sings the opening verse and chorus accompanied by guitar."
+      "summary": "He sings the opening verse and chorus accompanied by guitar.",
+      "transcriptExcerpt": "Kahi nahi hai ye baatein wahi, phir iss mod par hum mile hain. Na jaane ab milenge hum kabhi, tu ruk ja ek pal yahan pe. Ye narm chaadaron…"
     },
     {
       "startS": 60,
@@ -877,7 +879,8 @@
       "beatType": "performance",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He continues singing the second melodic section with acoustic strumming."
+      "summary": "He continues singing the second melodic section with acoustic strumming.",
+      "transcriptExcerpt": "Ye gaadiyon ki aisi daud sa tera, ye dil daudta hai. Aa jaa rahe ho door tum toh kya, nahi toh dil ka musafir. Toh ek baar phir tu hass ke…"
     },
     {
       "startS": 95,
@@ -885,7 +888,8 @@
       "beatType": "performance",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "An instrumental fingerpicking interlude connects the verses."
+      "summary": "An instrumental fingerpicking interlude connects the verses.",
+      "transcriptExcerpt": ""
     },
     {
       "startS": 110,
@@ -893,7 +897,8 @@
       "beatType": "performance",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He performs the bridge section singing reflective lyrics."
+      "summary": "He performs the bridge section singing reflective lyrics.",
+      "transcriptExcerpt": "Tum ude ja rahe naye aasmaan mein, khidkiyon se dekh dhoop pahadon ko ye chhote se lage. Hain kitne bade jo ho saamne. Door jo hain khade,…"
     },
     {
       "startS": 143,
@@ -901,7 +906,8 @@
       "beatType": "performance",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He sings the emotional climax verse of the song."
+      "summary": "He sings the emotional climax verse of the song.",
+      "transcriptExcerpt": "Khaali ghar tera ye chaabhiyon ki goonj jaise tujhe dara rahi, tu darna nahi, main hoon yahin par. Ab alag aasmaan aur hain zameenein bhi…"
     },
     {
       "startS": 179,
@@ -909,7 +915,8 @@
       "beatType": "performance",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He sings the vocalized outro melody alongside guitar chords."
+      "summary": "He sings the vocalized outro melody alongside guitar chords.",
+      "transcriptExcerpt": "Na na na na na na na na na na na na na na na na na na na na na na na."
     },
     {
       "startS": 204,
@@ -917,7 +924,8 @@
       "beatType": "performance",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He plays the final resolving acoustic guitar chords."
+      "summary": "He plays the final resolving acoustic guitar chords.",
+      "transcriptExcerpt": ""
     },
     {
       "startS": 213,
@@ -925,7 +933,8 @@
       "beatType": "outro",
       "visual": "none",
       "talkingHeadShare": 5,
-      "summary": "He smiles and waves goodbye to the camera."
+      "summary": "He smiles and waves goodbye to the camera.",
+      "transcriptExcerpt": ""
     },
     {
       "startS": 216,
@@ -933,7 +942,8 @@
       "beatType": "end_screen",
       "visual": "graphics",
       "talkingHeadShare": 1,
-      "summary": "A closing text card thanks the viewer and invites likes and subscriptions."
+      "summary": "A closing text card thanks the viewer and invites likes and subscriptions.",
+      "transcriptExcerpt": ""
     }
   ],
   "drops": [

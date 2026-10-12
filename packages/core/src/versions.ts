@@ -14,4 +14,5 @@ export const FEATURE_VERSION = "feat-bf1e3064fa6f";
 export const MODEL_VERSION = "hazard-v2";
 // serving-v1: the Phase 11 serving documents (summary, video index, video pages).
 // serving-v2: audience cards list every simulated effect (Phase 12).
-export const PUBLISH_VERSION = "serving-v2";
+// serving-v3: beats carry a transcript excerpt (Phase 13).
+export const PUBLISH_VERSION = "serving-v3";

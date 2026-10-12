@@ -226,7 +226,10 @@ export type SummaryDoc = z.infer<typeof summaryDocSchema>;
 
 // channels/{id}/videos/{videoId} ---------------------------------------------
 
-/** A beat as a video screen shows it: no transcript. */
+/** The longest transcript excerpt a beat carries. */
+export const TRANSCRIPT_EXCERPT_CHARS = 140;
+
+/** A beat as a video screen shows it: the start of its transcript, not all of it. */
 export const videoBeatSchema = z
   .object({
     startS: seconds,
@@ -236,6 +239,8 @@ export const videoBeatSchema = z
     /** How much of the beat is a person to camera, 1 to 5. */
     talkingHeadShare: z.number().int().min(1).max(5),
     summary: z.string(),
+    /** The first words said in the beat, at most 140 characters; empty when nothing is said. */
+    transcriptExcerpt: z.string().max(TRANSCRIPT_EXCERPT_CHARS),
   })
   .refine((beat) => beat.endS > beat.startS, { message: "A beat must end after it starts" });
 export type VideoBeat = z.infer<typeof videoBeatSchema>;

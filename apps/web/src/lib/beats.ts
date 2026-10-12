@@ -25,12 +25,48 @@ export const BEAT_LABELS: Record<BeatType, string> = {
   other: "Other",
 };
 
-const OPENING: ReadonlySet<BeatType> = new Set(["cold_open", "hook", "intro_branding"]);
-const PROMOTION: ReadonlySet<BeatType> = new Set(["sponsor", "self_promo", "cta"]);
+/** The groups beat blocks are colored by, everywhere a beat strip shows. */
+export type BeatGroup = "opening" | "content" | "promotion" | "closing" | "tangent";
 
-/** A beat block's fill: openings and promotion have their own color; the rest are white. */
+const GROUP_OF: Record<BeatType, BeatGroup> = {
+  cold_open: "opening",
+  hook: "opening",
+  intro_branding: "opening",
+  sponsor: "promotion",
+  self_promo: "promotion",
+  cta: "promotion",
+  recap: "closing",
+  outro: "closing",
+  end_screen: "closing",
+  tangent: "tangent",
+  setup: "content",
+  context: "content",
+  explanation: "content",
+  demonstration: "content",
+  example: "content",
+  story: "content",
+  opinion: "content",
+  performance: "content",
+  payoff: "content",
+  transition: "content",
+  other: "content",
+};
+
+/** Each group's name and look (design system): tangents are white with a dashed outline. */
+export const BEAT_GROUPS: Record<BeatGroup, { label: string; fill: string }> = {
+  opening: { label: "Opening", fill: "bg-beat-opening" },
+  content: { label: "Content", fill: "bg-surface" },
+  promotion: { label: "Promotion", fill: "bg-beat-promotion" },
+  closing: { label: "Closing", fill: "bg-beat-closing" },
+  tangent: {
+    label: "Tangent",
+    fill: "bg-surface outline-2 outline-offset-[-5px] outline-dashed outline-ink",
+  },
+};
+
+export const beatGroup = (type: BeatType): BeatGroup => GROUP_OF[type];
+
+/** A beat block's fill classes, by its group. */
 export function beatFill(type: BeatType): string {
-  if (OPENING.has(type)) return "bg-beat-opening";
-  if (PROMOTION.has(type)) return "bg-beat-promotion";
-  return "bg-surface";
+  return BEAT_GROUPS[GROUP_OF[type]].fill;
 }
