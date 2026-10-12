@@ -10,6 +10,7 @@ import {
   type AudienceCard,
   type Band,
   type Drop,
+  type Effect,
   type MeasuredAudience,
   type ModelArtifact,
   type ModelStamp,
@@ -83,6 +84,8 @@ export function holdoutResults(inputs: Pick<PublishInputs, "evaluation" | "model
   return { evaluation, inflation };
 }
 
+const sentence = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+
 /** A trait as a card shows it, or null unless its interval excludes zero. */
 function traitCard(trait: Trait): TraitCard | null {
   if (!trait.measured || trait.deltaPp === null || trait.ciLow === null || trait.ciHigh === null) {
@@ -91,10 +94,9 @@ function traitCard(trait: Trait): TraitCard | null {
   const [low, high] = [round(trait.ciLow, 2), round(trait.ciHigh, 2)];
   if (!(low > 0 || high < 0)) return null;
   const delta = round(trait.deltaPp, 2);
-  const condition = trait.condition.charAt(0).toUpperCase() + trait.condition.slice(1);
   return {
     feature: trait.feature,
-    statement: `${condition}: ${delta > 0 ? "+" : ""}${delta.toFixed(1)} points still watching at the end`,
+    statement: `${sentence(trait.condition)}: ${delta > 0 ? "+" : ""}${delta.toFixed(1)} points still watching at the end`,
     deltaPp: delta,
     ci: [low, high],
   };
@@ -107,6 +109,25 @@ export function topTraits(traits: readonly Trait[]): TraitCard[] {
     .filter((card): card is TraitCard => card !== null)
     .sort((a, b) => Math.abs(b.deltaPp) - Math.abs(a.deltaPp) || a.feature.localeCompare(b.feature))
     .slice(0, TRAITS);
+}
+
+/**
+ * Every simulated effect for an audience's sheet: measured ones by absolute
+ * size, then those the model never learned, by label.
+ */
+export function effectRows(traits: readonly Trait[]): Effect[] {
+  const rows = traits.map((trait): Effect => {
+    const learned =
+      trait.measured && trait.deltaPp !== null && trait.ciLow !== null && trait.ciHigh !== null;
+    return {
+      feature: trait.feature,
+      label: sentence(trait.condition),
+      deltaPp: learned ? round(trait.deltaPp as number, 2) : null,
+      ci: learned ? [round(trait.ciLow as number, 2), round(trait.ciHigh as number, 2)] : null,
+    };
+  });
+  const size = (effect: Effect) => (effect.deltaPp === null ? -1 : Math.abs(effect.deltaPp));
+  return rows.sort((a, b) => size(b) - size(a) || a.label.localeCompare(b.label));
 }
 
 type CardDraft = Omit<AudienceCard, "description">;
@@ -336,6 +357,7 @@ function audienceCards(inputs: PublishInputs, traits: TraitsResult | null): Card
       avgViewPct:
         per[audience].avpViews > 0 ? round(per[audience].avpSum / per[audience].avpViews, 1) : null,
       traits: model ? topTraits(traitsOf(audience)) : [],
+      effects: model ? effectRows(traitsOf(audience)) : [],
       model: model ? modelStamp(model) : null,
     };
   });
@@ -351,6 +373,7 @@ function audienceCards(inputs: PublishInputs, traits: TraitsResult | null): Card
           watchTimeShare: null,
           avgViewPct: null,
           traits: topTraits(audience.traits),
+          effects: effectRows(audience.traits),
           model: modelStamp(newcomers),
         }))
     : [];

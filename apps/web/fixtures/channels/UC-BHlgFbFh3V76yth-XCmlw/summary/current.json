@@ -1,7 +1,7 @@
 {
   "channelId": "UC-BHlgFbFh3V76yth-XCmlw",
-  "runId": "5d499607f1f54731a1c28c18dbee245b",
-  "generatedAt": "2026-10-11T04:21:19.186Z",
+  "runId": "479ad43f91c74c54b1419bc4fdcad23f",
+  "generatedAt": "2026-10-12T03:09:30.832Z",
   "videosAnalysed": 3,
   "beatsExtracted": 20,
   "evaluation": null,
@@ -15,6 +15,155 @@
       "watchTimeShare": 0.2372,
       "avgViewPct": 46.8,
       "traits": [],
+      "effects": [
+        {
+          "feature": "energy",
+          "label": "One point more energy throughout",
+          "deltaPp": 0.25,
+          "ci": [
+            -1,
+            1.75
+          ]
+        },
+        {
+          "feature": "before_payoff",
+          "label": "The title's promise delivered at 25%",
+          "deltaPp": -0.23,
+          "ci": [
+            -0.88,
+            0.38
+          ]
+        },
+        {
+          "feature": "on_screen_text",
+          "label": "On-screen text throughout",
+          "deltaPp": -0.22,
+          "ci": [
+            -6.83,
+            7.44
+          ]
+        },
+        {
+          "feature": "has_open_loop",
+          "label": "A question opened at the start and answered at 75%",
+          "deltaPp": 0.21,
+          "ci": [
+            -0.78,
+            1.28
+          ]
+        },
+        {
+          "feature": "info_density",
+          "label": "One point denser throughout",
+          "deltaPp": 0.15,
+          "ci": [
+            -0.58,
+            0.94
+          ]
+        },
+        {
+          "feature": "log1p_cuts_per_min",
+          "label": "Twice as many cuts throughout",
+          "deltaPp": -0.05,
+          "ci": [
+            -1.97,
+            2.23
+          ]
+        },
+        {
+          "feature": "knowledge_gap",
+          "label": "One point more assumed knowledge throughout",
+          "deltaPp": -0.04,
+          "ci": [
+            -1.67,
+            1.56
+          ]
+        },
+        {
+          "feature": "speech_wpm",
+          "label": "Speech 20% faster throughout",
+          "deltaPp": 0.03,
+          "ci": [
+            -0.08,
+            0.13
+          ]
+        },
+        {
+          "feature": "log1p_secs_in_current_beat",
+          "label": "Beats half as long",
+          "deltaPp": -0.02,
+          "ci": [
+            -0.43,
+            0.37
+          ]
+        },
+        {
+          "feature": "music_fg",
+          "label": "30 s of foreground music at 50%",
+          "deltaPp": 0,
+          "ci": [
+            -0.01,
+            0
+          ]
+        },
+        {
+          "feature": "static_talking_head_share",
+          "label": "60 s of static talking head at 40%",
+          "deltaPp": 0,
+          "ci": [
+            -0.07,
+            0.06
+          ]
+        },
+        {
+          "feature": "visual_b_roll",
+          "label": "60 s of b-roll at 40%",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "visual_screen_recording",
+          "label": "60 s of screen recording at 40%",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "beat_intro_branding",
+          "label": "A 15 s branded intro at the start",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "beat_cta",
+          "label": "A 15 s call to action at 50%",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "beat_payoff",
+          "label": "A 20 s payoff beat at 75%",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "beat_recap",
+          "label": "A 30 s recap at 70%",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "beat_sponsor",
+          "label": "A 30 s sponsor read at 30%",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "beat_tangent",
+          "label": "A 45 s tangent at 50%",
+          "deltaPp": null,
+          "ci": null
+        }
+      ],
       "description": "Subscribers brought 21 percent of your views, 24 percent of your watch time, and an average view of 46.8 percent.",
       "model": {
         "runId": "81dd634d2b00403f9a393f2d38331415",
@@ -33,6 +182,155 @@
       "watchTimeShare": 0.7628,
       "avgViewPct": 51.3,
       "traits": [],
+      "effects": [
+        {
+          "feature": "on_screen_text",
+          "label": "On-screen text throughout",
+          "deltaPp": -0.76,
+          "ci": [
+            -5.78,
+            6.55
+          ]
+        },
+        {
+          "feature": "energy",
+          "label": "One point more energy throughout",
+          "deltaPp": 0.41,
+          "ci": [
+            -0.99,
+            1.8
+          ]
+        },
+        {
+          "feature": "before_payoff",
+          "label": "The title's promise delivered at 25%",
+          "deltaPp": -0.29,
+          "ci": [
+            -0.73,
+            0.2
+          ]
+        },
+        {
+          "feature": "has_open_loop",
+          "label": "A question opened at the start and answered at 75%",
+          "deltaPp": 0.28,
+          "ci": [
+            -0.75,
+            1.41
+          ]
+        },
+        {
+          "feature": "log1p_cuts_per_min",
+          "label": "Twice as many cuts throughout",
+          "deltaPp": -0.21,
+          "ci": [
+            -2.13,
+            1.79
+          ]
+        },
+        {
+          "feature": "info_density",
+          "label": "One point denser throughout",
+          "deltaPp": 0.2,
+          "ci": [
+            -0.59,
+            1.1
+          ]
+        },
+        {
+          "feature": "knowledge_gap",
+          "label": "One point more assumed knowledge throughout",
+          "deltaPp": 0.16,
+          "ci": [
+            -1.44,
+            2.12
+          ]
+        },
+        {
+          "feature": "log1p_secs_in_current_beat",
+          "label": "Beats half as long",
+          "deltaPp": 0.06,
+          "ci": [
+            -0.35,
+            0.44
+          ]
+        },
+        {
+          "feature": "speech_wpm",
+          "label": "Speech 20% faster throughout",
+          "deltaPp": 0.04,
+          "ci": [
+            -0.07,
+            0.14
+          ]
+        },
+        {
+          "feature": "static_talking_head_share",
+          "label": "60 s of static talking head at 40%",
+          "deltaPp": 0.01,
+          "ci": [
+            -0.07,
+            0.09
+          ]
+        },
+        {
+          "feature": "music_fg",
+          "label": "30 s of foreground music at 50%",
+          "deltaPp": 0,
+          "ci": [
+            -0.01,
+            0.01
+          ]
+        },
+        {
+          "feature": "visual_b_roll",
+          "label": "60 s of b-roll at 40%",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "visual_screen_recording",
+          "label": "60 s of screen recording at 40%",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "beat_intro_branding",
+          "label": "A 15 s branded intro at the start",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "beat_cta",
+          "label": "A 15 s call to action at 50%",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "beat_payoff",
+          "label": "A 20 s payoff beat at 75%",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "beat_recap",
+          "label": "A 30 s recap at 70%",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "beat_sponsor",
+          "label": "A 30 s sponsor read at 30%",
+          "deltaPp": null,
+          "ci": null
+        },
+        {
+          "feature": "beat_tangent",
+          "label": "A 45 s tangent at 50%",
+          "deltaPp": null,
+          "ci": null
+        }
+      ],
       "description": "Newcomers brought 79 percent of your views, 76 percent of your watch time, and an average view of 51.3 percent.",
       "model": {
         "runId": "81dd634d2b00403f9a393f2d38331415",

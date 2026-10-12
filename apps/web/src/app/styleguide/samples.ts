@@ -31,6 +31,17 @@ export const SAMPLE_CARDS: AudienceCard[] = [
         ci: [-3.1, -0.4],
       },
     ],
+    effects: [
+      { feature: "beat_payoff", label: "A 20 s payoff beat at 75%", deltaPp: 3.4, ci: [1.2, 5.6] },
+      {
+        feature: "beat_sponsor",
+        label: "A 30 s sponsor read at 30%",
+        deltaPp: -1.8,
+        ci: [-3.1, -0.4],
+      },
+      { feature: "beat_tangent", label: "A 45 s tangent at 50%", deltaPp: -0.6, ci: [-2.4, 1.1] },
+      { feature: "beat_cta", label: "A 15 s call to action at 50%", deltaPp: null, ci: null },
+    ],
     description: "Subscribers stay for the payoff and forgive a short sponsor read.",
     model: notUsable,
   },
@@ -42,6 +53,15 @@ export const SAMPLE_CARDS: AudienceCard[] = [
     watchTimeShare: 0.62,
     avgViewPct: 38.4,
     traits: [],
+    effects: [
+      {
+        feature: "beat_sponsor",
+        label: "A 30 s sponsor read at 30%",
+        deltaPp: -1.1,
+        ci: [-2.9, 0.6],
+      },
+      { feature: "beat_tangent", label: "A 45 s tangent at 50%", deltaPp: 0.3, ci: [-1.2, 1.9] },
+    ],
     description: "Newcomers bring 69% of your views and watch 38.4% of a video on average.",
     model: notUsable,
   },
@@ -56,6 +76,14 @@ export const SAMPLE_CARDS: AudienceCard[] = [
       {
         feature: "beat_intro_branding",
         statement: "A 15 s branded intro at the start: -4.2 points",
+        deltaPp: -4.2,
+        ci: [-6.9, -1.5],
+      },
+    ],
+    effects: [
+      {
+        feature: "beat_intro_branding",
+        label: "A 15 s branded intro at the start",
         deltaPp: -4.2,
         ci: [-6.9, -1.5],
       },

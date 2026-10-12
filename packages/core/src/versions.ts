@@ -13,4 +13,5 @@ export const FEATURE_VERSION = "feat-bf1e3064fa6f";
 // hazard-v2: the covariance is scaled by the quasi-likelihood dispersion (Phase 08).
 export const MODEL_VERSION = "hazard-v2";
 // serving-v1: the Phase 11 serving documents (summary, video index, video pages).
-export const PUBLISH_VERSION = "serving-v1";
+// serving-v2: audience cards list every simulated effect (Phase 12).
+export const PUBLISH_VERSION = "serving-v2";

@@ -22,6 +22,7 @@ const attribution: DropAttribution = {
   residualShare: 0.292,
 };
 const card: Omit<AudienceCard, "description"> = {
+  effects: [],
   key: "unsubscribed",
   label: "Newcomers",
   kind: "measured",

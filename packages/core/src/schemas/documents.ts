@@ -130,6 +130,31 @@ export const traitCardSchema = z
   });
 export type TraitCard = z.infer<typeof traitCardSchema>;
 
+/**
+ * One simulated effect in an audience's sheet: every scenario the model was
+ * asked about, clear or not, so a creator sees what is unknown as well as what
+ * is known. `deltaPp` and `ci` are null when the model never learned it (its
+ * feature never varied in the training videos).
+ */
+export const effectSchema = z
+  .object({
+    feature: z.string().min(1),
+    label: z.string().min(1),
+    /** Change in the share still watching at the end, in percentage points. */
+    deltaPp: z.number().nullable(),
+    /** Its 90% interval. */
+    ci: z.tuple([z.number(), z.number()]).nullable(),
+  })
+  .refine((effect) => (effect.deltaPp === null) === (effect.ci === null), {
+    message: "An effect has both a value and an interval, or neither",
+    path: ["ci"],
+  })
+  .refine((effect) => effect.ci === null || effect.ci[0] <= effect.ci[1], {
+    message: "An interval runs from low to high",
+    path: ["ci"],
+  });
+export type Effect = z.infer<typeof effectSchema>;
+
 export const audienceCardSchema = z
   .object({
     key: audienceKeySchema,
@@ -143,6 +168,8 @@ export const audienceCardSchema = z
     avgViewPct: z.number().nonnegative().nullable(),
     /** At most 3, by absolute effect. */
     traits: z.array(traitCardSchema).max(3),
+    /** Every simulated effect, clear ones first by size, for the audience's sheet. */
+    effects: z.array(effectSchema),
     description: limitedWords(30),
     /** Null when the audience has no fitted model: its measured numbers still show. */
     model: modelStampSchema.nullable(),
@@ -152,10 +179,13 @@ export const audienceCardSchema = z
       card.kind === (measuredAudienceSchema.safeParse(card.key).success ? "measured" : "estimated"),
     { message: "Subscribers and newcomers are measured; the rest are estimated", path: ["kind"] },
   )
-  .refine((card) => card.model !== null || card.traits.length === 0, {
-    message: "Traits come from a model",
-    path: ["traits"],
-  });
+  .refine(
+    (card) => card.model !== null || (card.traits.length === 0 && card.effects.length === 0),
+    {
+      message: "Traits and effects come from a model",
+      path: ["traits"],
+    },
+  );
 export type AudienceCard = z.infer<typeof audienceCardSchema>;
 
 /**

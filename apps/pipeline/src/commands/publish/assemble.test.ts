@@ -282,14 +282,20 @@ describe("assemble", () => {
         ci: [-3.1, -1.2],
       },
     ]);
+    // The sheet lists every effect: measured ones by size, then those never learned.
+    expect(summary.audiences[0]?.effects).toEqual([
+      { feature: "beat_sponsor", label: "A beat_sponsor edit", deltaPp: -2.04, ci: [-3.1, -1.2] },
+      { feature: "energy", label: "A energy edit", deltaPp: 0.5, ci: [-0.2, 1.2] },
+      { feature: "beat_cta", label: "A beat_cta edit", deltaPp: null, ci: null },
+    ]);
     // The hidden estimated audience gets no card.
     expect(summary.audiences.map((card) => card.key)).not.toContain("search");
     // Without models, the measured numbers stay and the traits go.
     const bare = assemble(inputs({ models: new Map() }), null, OPTIONS);
     const cards = finalize(bare, captions(bare)).summary.audiences;
-    expect(cards.map((card) => [card.model, card.traits])).toEqual([
-      [null, []],
-      [null, []],
+    expect(cards.map((card) => [card.model, card.traits, card.effects])).toEqual([
+      [null, [], []],
+      [null, [], []],
     ]);
   });
 

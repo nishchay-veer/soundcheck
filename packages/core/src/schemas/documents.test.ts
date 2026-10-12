@@ -52,6 +52,16 @@ const card = (overrides: Partial<AudienceCard> = {}): AudienceCard => ({
       ci: [-3.4, -0.6],
     },
   ],
+  effects: [
+    {
+      feature: "beat_sponsor",
+      label: "A 30 s sponsor read at 30%",
+      deltaPp: -2.1,
+      ci: [-3.4, -0.6],
+    },
+    { feature: "energy", label: "Energy one point higher", deltaPp: 0.4, ci: [-0.2, 1.1] },
+    { feature: "beat_cta", label: "A 15 s call to action at 50%", deltaPp: null, ci: null },
+  ],
   description: "Newcomers arrive from search and leave early when the intro runs long.",
   model: notUsable,
   ...overrides,
@@ -209,9 +219,22 @@ describe("serving documents", () => {
     expect(audienceCardSchema.safeParse(card({ description: "word ".repeat(31) })).success).toBe(
       false,
     );
-    // Without a model, the measured numbers still show, but no traits.
-    expect(audienceCardSchema.safeParse(card({ model: null })).success).toBe(false);
-    expect(audienceCardSchema.safeParse(card({ model: null, traits: [] })).success).toBe(true);
+    // Without a model, the measured numbers still show, but no traits or effects.
+    expect(audienceCardSchema.safeParse(card({ model: null, traits: [] })).success).toBe(false);
+    expect(
+      audienceCardSchema.safeParse(card({ model: null, traits: [], effects: [] })).success,
+    ).toBe(true);
+    // Every effect, clear or not; one never learned has neither a value nor an interval.
+    const [first] = card().effects;
+    for (const broken of [
+      { ...first, ci: null },
+      { ...first, deltaPp: null },
+      { ...first, ci: [1, -1] },
+    ]) {
+      expect(audienceCardSchema.safeParse(card({ effects: [broken] as never })).success).toBe(
+        false,
+      );
+    }
   });
 
   it("allows one card per audience in a summary", () => {
