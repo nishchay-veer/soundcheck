@@ -31,10 +31,11 @@ const nextConfig: NextConfig = {
   turbopack: { root: monorepoRoot },
   transpilePackages: ["@soundcheck/core", "@soundcheck/ui"],
   images: {
-    // Channel avatars.
+    // Channel avatars, and video thumbnails.
     remotePatterns: [
       { protocol: "https", hostname: "yt3.ggpht.com" },
       { protocol: "https", hostname: "yt3.googleusercontent.com" },
+      { protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/**" },
     ],
   },
   typescript: {

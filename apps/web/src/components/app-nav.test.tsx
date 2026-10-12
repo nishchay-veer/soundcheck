@@ -16,7 +16,8 @@ describe("AppNav", () => {
     const audiences = screen.getByRole("link", { name: "Audiences" });
     expect(audiences.getAttribute("aria-current")).toBe("page");
     expect(audiences.className).toContain("bg-accent");
-    for (const name of ["Videos", "Soundcheck", "Model"]) {
+    expect(screen.getByRole("link", { name: "Videos" }).getAttribute("href")).toBe("/app/videos");
+    for (const name of ["Soundcheck", "Model"]) {
       expect(screen.queryByRole("link", { name: new RegExp(name) })).toBeNull();
       expect(screen.getByText(name).getAttribute("aria-disabled")).toBe("true");
     }

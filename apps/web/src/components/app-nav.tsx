@@ -12,7 +12,7 @@ import { chooseChannel } from "@/lib/actions";
 /** The app's screens; later phases build the ones marked soon. */
 const ITEMS = [
   { label: "Audiences", href: "/app/audiences" },
-  { label: "Videos", href: null },
+  { label: "Videos", href: "/app/videos" },
   { label: "Soundcheck", href: null },
   { label: "Model", href: null },
 ] as const;
