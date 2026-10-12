@@ -71,9 +71,13 @@ describe("DropPanel", () => {
         "The model links 55% of this drop to the sponsor segment and 15% to its position in the video. It can't explain the other 30%.",
       ),
     ).toBeTruthy();
-    expect(screen.getByRole("link", { name: /Sponsor segment, 55%/ }).getAttribute("href")).toBe(
-      "/app/audiences?audience=unsubscribed&effect=beat_sponsor",
-    );
+    expect(
+      screen
+        .getByRole("link", {
+          name: "Sponsor segment 55% (see this effect on the audiences screen)",
+        })
+        .getAttribute("href"),
+    ).toBe("/app/audiences?audience=unsubscribed&effect=beat_sponsor");
     expect(screen.queryByRole("link", { name: /Position in video/ })).toBeNull();
     expect(screen.getByText("Position in video")).toBeTruthy();
     expect(screen.getByText("Unexplained").parentElement?.textContent).toBe("Unexplained30%");

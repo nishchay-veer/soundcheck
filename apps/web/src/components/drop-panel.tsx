@@ -96,21 +96,24 @@ export function DropPanel({ drop, model }: { drop: Drop | null; model: ModelStam
         <ul className="flex flex-wrap gap-2">
           {drop.attributions.map((attribution) => {
             const href = effectLink(drop, attribution.group);
+            // The spaces keep "Sponsor segment 55% (see …)" apart in the accessible
+            // name; the flex layout ignores them.
             const content = (
               <>
-                {attribution.label}
+                {attribution.label}{" "}
                 <span className="tabular-nums">{sharePercent(attribution.share)}</span>
               </>
             );
             return (
               <li key={attribution.group} className={cn(chip, "bg-surface")}>
                 {href ? (
+                  // Its name starts with what it shows, for voice control.
                   <Link
                     href={href}
                     className={cn(label, "underline-offset-4 hover:underline", FOCUS_RING)}
-                    aria-label={`${attribution.label}, ${sharePercent(attribution.share)}: see this effect on the audiences screen`}
                   >
-                    {content}
+                    {content}{" "}
+                    <span className="sr-only">(see this effect on the audiences screen)</span>
                   </Link>
                 ) : (
                   <span className={label}>{content}</span>
