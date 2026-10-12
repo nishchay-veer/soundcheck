@@ -6,7 +6,7 @@
 
 ## Stack
 
-- Next.js 15 App Router; React Server Components call packages/core data functions directly
+- Next.js 16 App Router; React Server Components call packages/core data functions directly
 - SWR for client polling; Tailwind v4; shadcn/ui (Card, Badge, Progress, Tooltip, Skeleton, Sheet)
 - `lucide-react` icons; `next/font` with Space Grotesk, Inter and JetBrains Mono; Framer Motion for one or two restrained reveals
 - Custom SVG for effect bars; zod schemas from packages/core
@@ -18,18 +18,42 @@ This phase implements docs/plan/design-system.md, before any screen. First: the 
 
 ## Build
 
-1. `/`: one-line value proposition ("Run a soundcheck before you publish"), a Connect YouTube button, and an Explore demo channel button (wired in Phase 17). A short honest note on what data is read and how to delete it.
-2. `/app`: redirects by build state: `not_started` or `running` to `/app/building`; `ready` to `/app/audiences`; `reauth_required` to `/reauth`.
-3. `/app/building`: a stage list (Collecting your videos; Measuring how each audience watched; Watching your videos, n of N; Learning your audiences; Checking our accuracy; Ready). SWR polls `GET /v1/channels/{id}` every 3 s. Expectation copy: this takes a while for large channels; you can close the tab. States for `failed` (stage and a retry button), `insufficient_data` (what is needed and why) and `reauth_required`.
-4. `/app/audiences`, the home screen once ready:
-   - Metric row: videos analysed, audiences found, beats extracted, and model error against the channel average with a tooltip explaining the comparison.
-   - Headline banner from `summary.headline`.
-   - Audience cards: label, kind badge, view share, watch-time share, average view percentage, top 3 traits each with delta and interval, and the description.
-   - Clicking a card opens a Sheet listing all traits as `<EffectBar>` rows: a horizontal bar for the delta and whiskers for the interval, centered on zero, sorted by size.
-5. Navigation: Audiences, Videos, Soundcheck, Model. A channel switcher only if the user has more than one channel.
-6. Components in `src/components/`: `StatCard`, `AudienceCard`, `EffectBar`, `KindBadge`, `BuildProgress`, `IntervalText` (formats `+4.2 pp (2.1 to 6.3)`).
-7. Route handlers under `src/app/api/` wrap the same data functions for client components (there is no `separate API service)`, validate with zod, and return typed JSON. Server components call the same functions directly.
-8. Loading skeletons, empty states and an error boundary per route.
+1. **Design system first:**
+   - the tokens in `globals.css` (plus `--beat-opening` and `--beat-promotion` for beat blocks), the three fonts through `next/font/google`;
+   - shadcn/Radix primitives restyled in `packages/ui`: Button, Card, Badge, Progress, Tooltip, Skeleton, Sheet;
+   - `/styleguide`, with every component in every state, the audience and beat colors, a sample retention chart and a sample beat strip.
+2. **`/`:**
+   - the line "Run a soundcheck before you publish", with Connect YouTube (or Open your channel when signed in);
+   - what Soundcheck reads and how to delete it, in plain words.
+   - The Explore demo button stays hidden until Phase 17 wires it.
+3. **`/app`** redirects by state: `ready` to `/app/audiences`; every other build state (not started, queued, running, failed, `insufficient_data`) to `/app/building`; a channel whose access was revoked to `/reauth`.
+4. **`/app/building`:**
+   - five steps:
+     - collecting your videos and how each audience watched (ingest);
+     - watching your videos, n of N (extract and its load);
+     - learning your audiences (features, train);
+     - checking our accuracy (baseline, evaluate);
+     - publishing your screens.
+   - SWR polls `GET /api/v1/channels/{id}` every 3 s while queued or running, then stops. The current step shows its job's progress and time left.
+   - The states:
+     - not started (Start);
+     - running ("you can close the tab");
+     - failed (the step, the technical detail, Try again);
+     - `insufficient_data` (the minimum, the channel's usable and eligible videos, the eligibility rule, Check again, and See the preview anyway when a summary exists);
+     - ready.
+5. **`/app/audiences`,** the home screen once built, or a preview when the channel has too few videos:
+   - a "Not a result yet" note while the models are not usable, and a preview line when the build is not ready;
+   - the metric row: videos analysed, audiences found, beats extracted, and the model error against the channel average ("Not measured" until a held-out evaluation exists), each with a tooltip where it needs one;
+   - the headline banner;
+   - the audience cards: label, kind badge, view share, watch-time share, average view percentage, the top 3 clear traits with intervals, and the description. Clicking a card opens its Sheet: every simulated effect as an `<EffectBar>` on one scale centered on zero, clear ones first by size.
+   - The cards reveal once in turn (none under reduced motion).
+6. **Navigation:** Audiences, then Videos, Soundcheck and Model marked "Soon"; Channel settings (`/app/settings`, with disconnect); a channel switcher only for users with more than one channel.
+7. **Components** in `src/components/`: `StatCard`, `AudienceCard`, `AudienceGrid`, `EffectBar`, `KindBadge`, `InfoTip`, `IntervalText` (formats `+4.2 pp (2.1 to 6.3)`), `BuildProgress`, `BuildScreen`, `ResultNotice`, `RetentionChart`, `BeatStrip`, `AppNav`.
+8. **No new route handlers:** Phase 11's routes serve the client components, and the server components call the same data functions.
+9. **Every route under `/app`** has a loading skeleton and an error boundary (`retry()`), plus an empty state where data can be missing.
+10. **Tests:**
+    - component tests in jsdom with Testing Library;
+    - a Playwright smoke test in fixtures mode at 390 and 1280 px (`pnpm --filter @soundcheck/web test:e2e`, installed Chrome, not part of `pnpm check`).
 
 ## Do not
 
@@ -38,8 +62,8 @@ This phase implements docs/plan/design-system.md, before any screen. First: the 
 
 ## Done when
 
-- [ ] Full flow works on the deployed web app against the real API
-- [ ] Fixtures mode works offline
-- [ ] Lighthouse accessibility score 90 or above
-- [ ] Checked at 390 px wide
-- [ ] `docs/notes/phase-12.md` written with screenshots
+- [x] Full flow works on the deployed web app against the real API
+- [x] Fixtures mode works offline
+- [x] Lighthouse accessibility score 90 or above
+- [x] Checked at 390 px wide
+- [x] `docs/notes/phase-12.md` written with screenshots

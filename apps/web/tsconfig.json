@@ -2,17 +2,23 @@
   "extends": "@soundcheck/typescript-config/nextjs.json",
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
   "include": [
     "next-env.d.ts",
     "next.config.ts",
     "vitest.config.ts",
+    "e2e/**/*.ts",
+    "playwright.config.ts",
     "scripts/**/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

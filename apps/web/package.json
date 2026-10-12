@@ -10,7 +10,8 @@
     "lint": "eslint --max-warnings 0",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run --project unit",
-    "test:integration": "vitest run --project integration --passWithNoTests"
+    "test:integration": "vitest run --project integration --passWithNoTests",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@soundcheck/core": "workspace:*",

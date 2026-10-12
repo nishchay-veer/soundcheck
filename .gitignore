@@ -50,3 +50,7 @@ infra/.last-web-image
 # Written by next dev (Next.js 16) on every run
 apps/web/AGENTS.md
 apps/web/CLAUDE.md
+
+# Playwright's output
+test-results/
+playwright-report/

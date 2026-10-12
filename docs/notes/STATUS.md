@@ -4,6 +4,27 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Phase 12: Onboarding and audiences screen (Oct 12, 2026)
+
+- **Built,** on the design system, reviewed once on `/styleguide`:
+  - restyled shadcn/Radix primitives and the app's components (stat cards, effect bars with intervals, audience cards, the retention chart and beat strip);
+  - the landing page; `/app` routing by build state; the app bar, with "Soon" for screens to come; channel settings;
+  - the building screen, with live progress polled every 3 s and every state, including "not enough videos" with a preview link;
+  - the audiences screen: the numbers, the headline, the cards, and a sheet with every simulated effect (a new `effects` field, `serving-v2`).
+- **Verified:**
+  - the full flow on the deployed app, including a live Check again build;
+  - fixtures mode with no Google credentials;
+  - Lighthouse accessibility 100 on four pages;
+  - no overflow at 390 px;
+  - a Playwright smoke test;
+  - the Monday refresh ran on schedule.
+- **Real data:** the screens say "Not a result yet" (3 videos; the gate is overridden by Nishchay's decision). Model error reads "Not measured", and no effect is clear.
+- **Next phases must keep:**
+  - "Not a result yet" wherever model numbers show unusable models;
+  - deploy the pipeline before the web app when a document changes;
+  - fix or reword the Vertex AI Experiments deletion gap;
+  - restore `MIN_VIEWS=500` before real creators.
+
 ### Phase 11: Serving layer and API contracts (Oct 11, 2026)
 
 - **Built:**

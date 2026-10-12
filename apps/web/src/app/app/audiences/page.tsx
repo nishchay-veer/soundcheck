@@ -106,7 +106,12 @@ export default async function AudiencesPage() {
           </p>
 
           {summary.audiences.length ? (
-            <AudienceGrid cards={summary.audiences} />
+            <section aria-labelledby="audience-details" className="flex flex-col gap-6">
+              <h2 id="audience-details" className="sr-only">
+                Audience details
+              </h2>
+              <AudienceGrid cards={summary.audiences} />
+            </section>
           ) : (
             <p className="text-lg text-ink-muted">No audience has enough views to describe yet.</p>
           )}
