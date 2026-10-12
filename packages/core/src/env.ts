@@ -136,6 +136,11 @@ export function getClientEnv(): ClientEnv {
   return clientEnv;
 }
 
+/** True in a production build (`next build`, the deployed app), where cookies are Secure. */
+export function isProduction(): boolean {
+  return process.env.NODE_ENV === "production";
+}
+
 /**
  * Fixtures mode (Phase 11): the data functions read saved documents instead of
  * Firestore and a fixed user stands in for sign-in, so screens can be built
@@ -144,7 +149,7 @@ export function getClientEnv(): ClientEnv {
  */
 export function fixturesMode(): boolean {
   if (!getClientEnv().NEXT_PUBLIC_USE_FIXTURES) return false;
-  if (process.env.NODE_ENV === "production") {
+  if (isProduction()) {
     throw new Error("NEXT_PUBLIC_USE_FIXTURES must not be set in production");
   }
   return true;
