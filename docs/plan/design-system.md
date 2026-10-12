@@ -39,7 +39,7 @@ Defined as CSS variables in `apps/web/src/app/globals.css` and exposed through T
 
 ## Components
 
-shadcn/ui primitives are restyled to these rules, not replaced: Button (primary pink, secondary white, ghost underlined text), Card, Badge, Input, Tooltip, Sheet, Progress (a black-bordered bar with a pink fill), Skeleton (cream blocks with black borders, no shimmer).
+shadcn/ui primitives are restyled to these rules, not replaced: Button (primary pink, secondary white, ghost underlined text), Card, Badge, Input, Tooltip, Popover (the tooltip's box, opened by a tap, for notes that must work on a phone), Sheet, Progress (a black-bordered bar with a pink fill), Skeleton (cream blocks with black borders, no shimmer).
 
 ## Charts in the same language
 

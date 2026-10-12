@@ -33,7 +33,16 @@ function modelError(evaluation: SummaryEvaluation | null) {
 }
 
 /** The home screen once a channel is built: who watches, and how each audience watches. */
-export default async function AudiencesPage() {
+export default async function AudiencesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ audience?: string | string[]; effect?: string | string[] }>;
+}) {
+  const query = await searchParams;
+  const focus =
+    typeof query.audience === "string" && typeof query.effect === "string"
+      ? { audience: query.audience, effect: query.effect }
+      : null;
   const userId = await currentUserId();
   if (!userId) redirect("/");
   let channel;
@@ -110,7 +119,7 @@ export default async function AudiencesPage() {
               <h2 id="audience-details" className="sr-only">
                 Audience details
               </h2>
-              <AudienceGrid cards={summary.audiences} />
+              <AudienceGrid cards={summary.audiences} focus={focus} />
             </section>
           ) : (
             <p className="text-lg text-ink-muted">No audience has enough views to describe yet.</p>

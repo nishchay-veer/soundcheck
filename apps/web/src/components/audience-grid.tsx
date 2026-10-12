@@ -11,15 +11,42 @@ import {
 import { FOCUS_RING } from "@soundcheck/ui/lib/styles";
 import { cn } from "@soundcheck/ui/lib/utils";
 import { motion, useReducedMotion } from "motion/react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { effectDomain } from "@/lib/audiences-view";
 import { AudienceCard } from "./audience-card";
 import { EffectBar } from "./effect-bar";
 
-/** One audience's sheet: every simulated effect on one scale, centered on zero. */
-function EffectsSheet({ card }: { card: AudienceCardData }) {
+/** Scrolls a linked effect into view once its sheet has opened. */
+function Highlighted({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    ref.current?.scrollIntoView({ block: "center" });
+  }, []);
+  return (
+    <div ref={ref} aria-current="true" className="-mx-2 rounded-[4px] bg-highlight p-2">
+      {children}
+    </div>
+  );
+}
+
+/**
+ * One audience's sheet: every simulated effect on one scale, centered on
+ * zero. `highlight` marks the effect a link from a drop-off asked for.
+ */
+function EffectsSheet({
+  card,
+  open,
+  onOpenChange,
+  highlight,
+}: {
+  card: AudienceCardData;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  highlight: string | null;
+}) {
   const domain = effectDomain(card.effects);
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
         <button
           type="button"
@@ -48,15 +75,22 @@ function EffectsSheet({ card }: { card: AudienceCardData }) {
           zero. Not learned: it never varied in your videos.
         </p>
         <div className="flex flex-col gap-5">
-          {card.effects.map((effect) => (
-            <EffectBar
-              key={effect.feature}
-              label={effect.label}
-              delta={effect.deltaPp}
-              ci={effect.ci}
-              domain={domain}
-            />
-          ))}
+          {card.effects.map((effect) => {
+            const bar = (
+              <EffectBar
+                key={effect.feature}
+                label={effect.label}
+                delta={effect.deltaPp}
+                ci={effect.ci}
+                domain={domain}
+              />
+            );
+            return effect.feature === highlight ? (
+              <Highlighted key={effect.feature}>{bar}</Highlighted>
+            ) : (
+              bar
+            );
+          })}
         </div>
       </SheetContent>
     </Sheet>
@@ -67,8 +101,20 @@ function EffectsSheet({ card }: { card: AudienceCardData }) {
  * The audience cards, revealed once in turn (the audiences screen's one
  * reveal; none under reduced motion). A card with effects opens its sheet.
  */
-export function AudienceGrid({ cards }: { cards: readonly AudienceCardData[] }) {
+export function AudienceGrid({
+  cards,
+  focus = null,
+}: {
+  cards: readonly AudienceCardData[];
+  /** Opens this audience's sheet at this effect (a link from a video's drop-off). */
+  focus?: { audience: string; effect: string } | null;
+}) {
   const reduce = useReducedMotion();
+  const [open, setOpen] = useState<string | null>(
+    focus && cards.some((card) => card.key === focus.audience && card.effects.length)
+      ? focus.audience
+      : null,
+  );
   return (
     <ul className="grid gap-6 lg:grid-cols-2">
       {cards.map((card, index) => (
@@ -84,7 +130,16 @@ export function AudienceGrid({ cards }: { cards: readonly AudienceCardData[] }) 
           <AudienceCard
             card={card}
             className="w-full"
-            action={card.effects.length ? <EffectsSheet card={card} /> : undefined}
+            action={
+              card.effects.length ? (
+                <EffectsSheet
+                  card={card}
+                  open={open === card.key}
+                  onOpenChange={(next) => setOpen(next ? card.key : null)}
+                  highlight={focus?.audience === card.key ? focus.effect : null}
+                />
+              ) : undefined
+            }
           />
         </motion.li>
       ))}

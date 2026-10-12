@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
 import { Badge } from "./badge";
 import { Card } from "./card";
+import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Progress } from "./progress";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "./sheet";
 import { Skeleton } from "./skeleton";
@@ -57,5 +58,20 @@ describe("restyled primitives", () => {
     await user.click(screen.getByRole("button", { name: "Open" }));
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("opens a popover on click, for notes that must work on a tap, and closes it with Escape", async () => {
+    const user = userEvent.setup();
+    render(
+      <Popover>
+        <PopoverTrigger>What it means</PopoverTrigger>
+        <PopoverContent>A short note.</PopoverContent>
+      </Popover>,
+    );
+    expect(screen.queryByText("A short note.")).toBeNull();
+    await user.click(screen.getByRole("button", { name: "What it means" }));
+    expect(screen.getByRole("dialog").textContent).toBe("A short note.");
+    await user.keyboard("{Escape}");
+    expect(screen.queryByText("A short note.")).toBeNull();
   });
 });
