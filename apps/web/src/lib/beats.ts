@@ -64,6 +64,15 @@ export const BEAT_GROUPS: Record<BeatGroup, { label: string; fill: string }> = {
   },
 };
 
+/** The same looks for SVG: each group's fill color; tangents add a dashed outline. */
+export const BEAT_GROUP_COLOR: Record<BeatGroup, string> = {
+  opening: "var(--beat-opening)",
+  content: "var(--surface)",
+  promotion: "var(--beat-promotion)",
+  closing: "var(--beat-closing)",
+  tangent: "var(--surface)",
+};
+
 export const beatGroup = (type: BeatType): BeatGroup => GROUP_OF[type];
 
 /** A beat block's fill classes, by its group. */

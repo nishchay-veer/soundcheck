@@ -6,16 +6,15 @@ import { Skeleton } from "@soundcheck/ui/components/skeleton";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { AudienceCard } from "@/components/audience-card";
-import { BeatStrip } from "@/components/beat-strip";
 import { EffectBar } from "@/components/effect-bar";
 import { InfoTip } from "@/components/info-tip";
 import { IntervalText } from "@/components/interval-text";
 import { KindBadge } from "@/components/kind-badge";
 import { ResultNotice } from "@/components/result-notice";
-import { RetentionChart } from "@/components/retention-chart";
 import { StatCard } from "@/components/stat-card";
 import { BEAT_GROUPS } from "@/lib/beats";
-import { SAMPLE_BEATS, SAMPLE_CARDS, SAMPLE_EFFECTS, SAMPLE_SERIES } from "./samples";
+import { ChartDemo } from "./chart-demo";
+import { SAMPLE_CARDS, SAMPLE_EFFECTS } from "./samples";
 import { SheetDemo } from "./sheet-demo";
 
 export const metadata: Metadata = {
@@ -221,14 +220,7 @@ export default function StyleguidePage() {
       </Section>
 
       <Section title="Charts">
-        <RetentionChart
-          id="sample"
-          title="Who is still watching"
-          series={SAMPLE_SERIES}
-          durationS={212}
-          drops={[{ binStart: 31, binEnd: 34 }]}
-        />
-        <BeatStrip beats={SAMPLE_BEATS} durationS={212} />
+        <ChartDemo />
       </Section>
     </main>
   );

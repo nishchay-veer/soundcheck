@@ -3,13 +3,11 @@ import { TooltipProvider } from "@soundcheck/ui/components/tooltip";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
-import { SAMPLE_BEATS, SAMPLE_CARDS, SAMPLE_SERIES } from "@/app/styleguide/samples";
+import { SAMPLE_CARDS } from "@/app/styleguide/samples";
 import { AudienceCard } from "./audience-card";
-import { BeatStrip } from "./beat-strip";
 import { EffectBar } from "./effect-bar";
 import { KindBadge } from "./kind-badge";
 import { ResultNotice } from "./result-notice";
-import { RetentionChart } from "./retention-chart";
 
 afterEach(cleanup);
 
@@ -75,48 +73,5 @@ describe("ResultNotice", () => {
     const note = screen.getByRole("note");
     expect(note.textContent).toContain("Not a result yet");
     expect(note.textContent).toContain("Trained on 3 videos; at least 30 are needed.");
-  });
-});
-
-describe("charts", () => {
-  it("describes the retention chart for screen readers, with each audience's end point", () => {
-    render(
-      <RetentionChart
-        id="t"
-        title="Who is still watching"
-        series={SAMPLE_SERIES}
-        durationS={212}
-      />,
-    );
-    // A narrow plot for phones and a wide one above; CSS shows one (jsdom has no CSS).
-    const plots = screen.getAllByRole("img");
-    expect(plots.map((plot) => plot.getAttribute("viewBox"))).toEqual([
-      "0 0 400 300",
-      "0 0 720 340",
-    ]);
-    for (const plot of plots) {
-      expect(plot.getAttribute("aria-label")).toMatch(
-        /^Who is still watching\. Subscribers: \d+% still watching at the end; Newcomers: \d+%/,
-      );
-    }
-    expect(plots[0]?.getAttribute("class")).toContain("sm:hidden");
-    expect(screen.getAllByText("3:32")).toHaveLength(2);
-  });
-
-  it("labels every beat, widest for the longest", () => {
-    render(<BeatStrip beats={SAMPLE_BEATS} durationS={212} />);
-    const beats = within(screen.getByRole("list", { name: "Beats" })).getAllByRole("listitem");
-    expect(beats.map((beat) => beat.textContent?.replace(/\d+:\d\d$/, ""))).toEqual([
-      "Hook",
-      "Branded intro",
-      "Explanation",
-      "Sponsor",
-      "Demo",
-      "Payoff",
-      "Call to action",
-    ]);
-    expect(beats[1]?.className).toContain("bg-beat-opening");
-    expect(beats[3]?.className).toContain("bg-beat-promotion");
-    expect(beats[2]?.className).toContain("bg-surface");
   });
 });

@@ -193,3 +193,10 @@ export const SAMPLE_BEATS: VideoBeat[] = [
     transcriptExcerpt: "If this helped, subscribe for the next one.",
   },
 ];
+
+/** Drop-offs on the sample chart: newcomers' sponsor read, and a smaller one for subscribers. */
+export const SAMPLE_DROPS = [
+  { id: "unsubscribed:31", audience: "unsubscribed" as const, startS: 63.6, endS: 72.1 },
+  { id: "subscribed:31", audience: "subscribed" as const, startS: 63.6, endS: 72.1 },
+  { id: "unsubscribed:2", audience: "unsubscribed" as const, startS: 2.1, endS: 8.5 },
+];
