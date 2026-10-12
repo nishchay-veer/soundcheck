@@ -1,4 +1,5 @@
 import { Card } from "@soundcheck/ui/components/card";
+import { cn } from "@soundcheck/ui/lib/utils";
 import type { ReactNode } from "react";
 import { InfoTip } from "./info-tip";
 
@@ -8,14 +9,16 @@ export function StatCard({
   value,
   detail,
   hint,
+  className,
 }: {
   label: string;
   value: ReactNode;
   detail?: ReactNode;
   hint?: ReactNode;
+  className?: string;
 }) {
   return (
-    <Card className="flex flex-col gap-2 p-5">
+    <Card className={cn("flex min-w-0 flex-col gap-2 p-4 sm:p-5", className)}>
       <div className="flex items-center gap-1.5 text-sm text-ink-muted">
         {label}
         {hint ? <InfoTip label={`About ${label.toLowerCase()}`}>{hint}</InfoTip> : null}
