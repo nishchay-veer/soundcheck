@@ -135,13 +135,39 @@ export function sampleCurves(
   seed = 1,
   inflation = 1,
 ): SurvivalBand {
+  return survivalBand(sampleSurvival(artifact, frame, n, seed, inflation));
+}
+
+/**
+ * The survival curve of each of `n` coefficient draws, for numbers a band
+ * cannot give, such as the spread of each draw's average view percentage.
+ * The same arguments give the same curves as `sampleCurves` summarizes.
+ */
+export function sampleSurvival(
+  artifact: ModelArtifact,
+  frame: FeatureFrame,
+  n = 200,
+  seed = 1,
+  inflation = 1,
+): Float64Array[] {
   const rows = standardized(artifact, frame);
-  const curves = drawCoefficients(artifact, n, seed, inflation).map((theta) =>
+  return drawCoefficients(artifact, n, seed, inflation).map((theta) =>
     survival(hazardsFor(theta, rows)),
   );
+}
+
+/** The 10th, 50th and 90th percentiles of sampled curves, bin by bin. */
+export function survivalBand(curves: readonly Float64Array[]): SurvivalBand {
+  const bins = curves[0]?.length ?? 0;
   const band = (q: number) =>
-    Float64Array.from({ length: frame.rows }, (_, bin) =>
+    Float64Array.from({ length: bins }, (_, bin) =>
       quantile(Float64Array.from(curves, (curve) => curve[bin] as number).sort(), q),
     );
   return { p10: band(0.1), p50: band(0.5), p90: band(0.9) };
+}
+
+/** The 10th, 50th and 90th percentiles of sampled numbers. */
+export function percentiles(values: ArrayLike<number>): { p10: number; p50: number; p90: number } {
+  const sorted = Float64Array.from(values).sort();
+  return { p10: quantile(sorted, 0.1), p50: quantile(sorted, 0.5), p90: quantile(sorted, 0.9) };
 }
