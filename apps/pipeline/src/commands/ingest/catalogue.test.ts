@@ -39,7 +39,7 @@ describe("ingestCatalogue", () => {
       rows.map((row) => [row.video_id, row.content_type, row.duration_s, row.exclusion_reason]),
     ).toEqual([
       ["fixtureVid1", "VIDEO_ON_DEMAND", 88, null],
-      ["fixtureVid2", "SHORTS", 31, "too_short"],
+      ["fixtureVid2", "SHORTS", 31, "unsupported_content_type"],
       ["fixtureVid3", "VIDEO_ON_DEMAND", 222, null],
       ["fixtureVid4", "VIDEO_ON_DEMAND", 262, null],
     ]);
@@ -206,7 +206,7 @@ describe("ingestCatalogue", () => {
       run_id: expect.stringMatching(/^[0-9a-f]{32}$/),
       videos: 4,
       eligible: 3,
-      excluded: { too_short: 1 },
+      excluded: { unsupported_content_type: 1 },
       data_api_units: 2,
       analytics_queries: 1,
     });
@@ -228,7 +228,7 @@ describe("ingestCatalogue", () => {
     expect(rows?.filter((row) => row.eligible)).toEqual([]);
     expect(rows?.map((row) => row.exclusion_reason)).toEqual([
       "too_few_views",
-      "too_short",
+      "unsupported_content_type",
       "too_few_views",
       "too_few_views",
     ]);

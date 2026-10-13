@@ -129,9 +129,9 @@ export function BuildScreen({
             .
           </p>
           <p>
-            A video counts when it is at least a week old, lasts between 1 minute and 3 hours, and
-            has at least {formatCount(minViews)} views; YouTube adds its curve once enough people
-            have watched. When you have more, choose Check again.
+            A video counts when it is not a Short, is at least a week old, lasts between 1 minute
+            and 3 hours, and has at least {formatCount(minViews)} views; YouTube adds its curve once
+            enough people have watched. When you have more, choose Check again.
           </p>
         </Heading>
       );

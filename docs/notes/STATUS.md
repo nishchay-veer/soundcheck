@@ -4,6 +4,17 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Change: Shorts left out of training (Oct 13, 2026)
+
+- **Nishchay's decision,** reversing Phase 03's: Shorts are no longer eligible, whatever their length (`exclusion_reason` `unsupported_content_type`).
+- **Why:** Shorts loop, so their retention starts above 100%, and viewers swipe through them in a feed. The model has no input that marks a Short (Phase 03 and 04 flagged this; Phases 07 and 08 did not handle it), so mixed channels trained one blurred model.
+- **What follows from it:**
+  - Shorts don't count toward the 20 videos, and Gemini no longer watches them;
+  - the building screen says a video counts when it is not a Short;
+  - a Shorts-only channel stops as `insufficient_data`.
+- **Later:** a separate Shorts model, or a Short input to this one.
+- **To reach the cloud:** `deploy-pipeline.sh` (ingest) and `deploy-web.sh` (the screen's text).
+
 ### Change: training minimum lowered to 20 videos (Oct 13, 2026)
 
 - **Nishchay's decision:** `MIN_TRAIN_VIDEOS` is now 20 (was 30), in the code defaults, `.env.example` and the specs. A build with fewer usable videos still stops as `insufficient_data`, and a model trained on fewer is still not usable.

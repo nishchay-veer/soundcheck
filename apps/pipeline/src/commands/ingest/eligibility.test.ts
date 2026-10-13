@@ -14,10 +14,14 @@ const reason = (change: Partial<EligibilityInput>) =>
   exclusionReason({ ...eligible, ...change }, rules);
 
 describe("exclusionReason", () => {
-  it("accepts a settled video on demand, Short or live stream with enough views", () => {
+  it("accepts a settled video on demand or live stream with enough views", () => {
     expect(reason({})).toBeNull();
-    expect(reason({ contentType: "SHORTS", durationS: 75 })).toBeNull();
     expect(reason({ contentType: "LIVE_STREAM", durationS: 7_200 })).toBeNull();
+  });
+
+  it("leaves out Shorts of any length", () => {
+    expect(reason({ contentType: "SHORTS", durationS: 75 })).toBe("unsupported_content_type");
+    expect(reason({ contentType: "SHORTS", durationS: 31 })).toBe("unsupported_content_type");
   });
 
   it.each([
@@ -29,7 +33,7 @@ describe("exclusionReason", () => {
     [{ publishedAt: "2026-09-29T12:00:00.001Z" }, "too_recent"],
     [{ viewCount: 500 }, null],
     [{ viewCount: 499 }, "too_few_views"],
-    [{ contentType: "SHORTS" }, null],
+    [{ contentType: "SHORTS" }, "unsupported_content_type"],
     [{ contentType: "LIVE_STREAM" }, null],
     [{ contentType: "STORY" }, "unsupported_content_type"],
     [{ contentType: "UNSPECIFIED" }, "unsupported_content_type"],
@@ -58,7 +62,7 @@ describe("exclusionReason", () => {
           const publishedAt = new Date(NOW.getTime() - ageDays * 86_400_000).toISOString();
           const passes =
             contentType !== null &&
-            ["VIDEO_ON_DEMAND", "SHORTS", "LIVE_STREAM"].includes(contentType) &&
+            ["VIDEO_ON_DEMAND", "LIVE_STREAM"].includes(contentType) &&
             durationS >= 60 &&
             durationS <= 10_800 &&
             ageDays >= 7 &&

@@ -1,9 +1,12 @@
 import type { ExclusionReason } from "@soundcheck/core/schemas";
 
-/** Content types used for training: videos on demand, Shorts and live streams. */
+/**
+ * Content types used for training: videos on demand and live streams. Shorts
+ * are left out: they loop (retention starts above 100%) and are watched in a
+ * swipe feed, and the model has no input that tells them apart.
+ */
 export const ELIGIBLE_CONTENT_TYPES: ReadonlySet<string> = new Set([
   "VIDEO_ON_DEMAND",
-  "SHORTS",
   "LIVE_STREAM",
 ]);
 export const MIN_DURATION_S = 60;
