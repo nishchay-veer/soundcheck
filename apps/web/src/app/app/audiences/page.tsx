@@ -1,5 +1,7 @@
 import { NotFoundError } from "@soundcheck/core";
 import { getSummary } from "@soundcheck/core/data";
+import { pickServerEnv } from "@soundcheck/core/env";
+import { EVALUATION_SPLIT, heldOutMinimum } from "@soundcheck/core/model";
 import type { SummaryEvaluation } from "@soundcheck/core/schemas";
 import { buttonVariants } from "@soundcheck/ui/components/button";
 import type { Metadata } from "next";
@@ -20,9 +22,12 @@ export const metadata: Metadata = { title: "Audiences · Soundcheck" };
 const MODEL_ERROR_HINT =
   "On videos the model never saw: how far its predicted curves are from the real ones, on average, in percentage points. The channel's average curve is the baseline to beat.";
 
-function modelError(evaluation: SummaryEvaluation | null) {
+function modelError(evaluation: SummaryEvaluation | null, minTrainVideos: number) {
   if (!evaluation) {
-    return { value: "Not measured", detail: "Needs 30 videos or more for a held-out test" };
+    return {
+      value: "Not measured",
+      detail: `Needs ${heldOutMinimum(minTrainVideos)} videos at least ${EVALUATION_SPLIT.minAgeDays} days old for a held-out test`,
+    };
   }
   return {
     value: `${evaluation.modelErrorPp.toFixed(1)} pp`,
@@ -58,7 +63,10 @@ export default async function AudiencesPage({
   if (!summary && channel.build.state !== "ready") redirect("/app/building");
 
   const reasons = summary ? notUsableReasons(summary.audiences) : [];
-  const error = modelError(summary?.evaluation ?? null);
+  const error = modelError(
+    summary?.evaluation ?? null,
+    pickServerEnv(["MIN_TRAIN_VIDEOS"]).MIN_TRAIN_VIDEOS,
+  );
   return (
     <main className="mx-auto flex max-w-[1200px] flex-col gap-8 px-4 py-12 sm:px-6">
       <div className="flex flex-col gap-2">

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { evaluationTestVideos } from "./evaluation";
+import { evaluationTestVideos, heldOutMinimum } from "./evaluation";
 
 const day = (offset: number) =>
   new Date(Date.UTC(2026, 9, 10) - offset * 86_400_000).toISOString().slice(0, 10);
@@ -23,5 +23,17 @@ describe("evaluationTestVideos", () => {
       test: ["v2", "v1", "v0"],
     });
     expect(() => evaluationTestVideos(videos.slice(0, 1), day(0), 30)).toThrow(RangeError);
+  });
+
+  it("names the fewest settled videos a held-out test needs", () => {
+    expect(heldOutMinimum(20)).toBe(26);
+    expect(heldOutMinimum(30)).toBe(38);
+    for (const minTrain of [2, 10, 20, 30, 45]) {
+      const settled = (count: number) =>
+        Array.from({ length: count }, (_, i) => ({ videoId: `v${i}`, published: day(30 + i) }));
+      const least = heldOutMinimum(minTrain);
+      expect(evaluationTestVideos(settled(least), day(0), minTrain).mode).toBe("holdout");
+      expect(evaluationTestVideos(settled(least - 1), day(0), minTrain).mode).toBe("check");
+    }
   });
 });
