@@ -11,9 +11,9 @@ import {
 } from "./documents";
 
 /**
- * Soundchecks (Phases 14 and 15): a new cut, uploaded as a file, linked on
- * YouTube or written as a script, with its predicted curves and suggested
- * edits. The soundcheck job writes two documents under the channel, so
+ * Soundchecks (Phases 14 and 15): a new cut, uploaded as a file or linked on
+ * YouTube, with its predicted curves and suggested edits. (Scripts are left
+ * out for now, by Nishchay's decision.) The soundcheck job writes two documents under the channel, so
  * disconnecting deletes both:
  *
  * - `channels/{channelId}/soundchecks/{id}`: what the screens show;
@@ -41,8 +41,6 @@ export const SOUNDCHECK_LIMITS = {
   /** Shorter cuts would be Shorts, which the models leave out. */
   minDurationS: 60,
   maxDurationS: 60 * 60,
-  /** Roughly an hour of speech. */
-  maxScriptChars: 80_000,
   /** YouTube's own title limit. */
   maxTitleChars: 100,
 } as const;
@@ -129,10 +127,6 @@ export const soundcheckInputSchema = z.discriminatedUnion("kind", [
   }),
   /** A public or unlisted YouTube video; private ones cannot be watched. */
   z.object({ kind: z.literal("youtube"), videoId: videoIdSchema }),
-  z.object({
-    kind: z.literal("script"),
-    text: z.string().trim().min(1).max(SOUNDCHECK_LIMITS.maxScriptChars),
-  }),
 ]);
 export type SoundcheckInput = z.infer<typeof soundcheckInputSchema>;
 export type SoundcheckKind = SoundcheckInput["kind"];
@@ -152,11 +146,10 @@ export const soundcheckStatusSchema = z.enum([
 ]);
 export type SoundcheckStatus = z.infer<typeof soundcheckStatusSchema>;
 
-/** The job's steps: a video is watched, a script is planned. */
+/** The job's steps. */
 export const soundcheckStepSchema = z.enum([
   "checking",
   "watching",
-  "planning",
   "predicting",
   "suggesting",
   "finishing",
@@ -293,11 +286,6 @@ export const soundcheckDocSchema = z
     /** Unknown until the cut is read. */
     durationS: z.number().positive().nullable(),
     beats: z.array(videoBeatSchema).nullable(),
-    /**
-     * A script has no picture, so each beat's picture and sound were drawn from
-     * the channel's own beats of its type; the bands are wider for it.
-     */
-    visualAssumed: z.boolean(),
     prediction: soundcheckPredictionSchema.nullable(),
     edits: z.array(editSchema),
     narrative: z.string().nullable(),
@@ -349,16 +337,6 @@ export const featureBeatInputSchema = z
   .refine((beat) => beat.endS > beat.startS, { message: "A beat must end after it starts" });
 export type FeatureBeatInput = z.infer<typeof featureBeatInputSchema>;
 
-/** A beat's picture and sound, which a script cannot describe. */
-export const visualFeaturesSchema = z.object({
-  talkingHeadShare: rating,
-  visual: visualSchema,
-  cutsPerMin: z.number().nonnegative(),
-  onScreenText: z.boolean(),
-  music: musicSchema,
-});
-export type VisualFeatures = z.infer<typeof visualFeaturesSchema>;
-
 /** Shares of newcomer views by traffic source, each 0 to 1. */
 export const trafficMixSchema = z.object({ search: share, suggested: share, browse: share });
 
@@ -399,11 +377,6 @@ export const soundcheckInputsSchema = z
      * seed (common random numbers), so edits are compared on the same draws.
      */
     seed: z.number().int().nonnegative(),
-    /**
-     * A script's assumed picture and sound: for each beat type, the channel's
-     * own beats to draw from. Null for a video, which was watched.
-     */
-    visualPool: z.partialRecord(beatTypeSchema, z.array(visualFeaturesSchema).min(1)).nullable(),
     createdAt: isoDateTime,
   })
   .refine((inputs) => inputs.beats.every((beat) => beat.endS <= inputs.durationS + 1e-6), {

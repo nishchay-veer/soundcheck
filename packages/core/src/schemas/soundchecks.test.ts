@@ -59,7 +59,6 @@ const awaiting = (): SoundcheckDoc => ({
   error: null,
   durationS: null,
   beats: null,
-  visualAssumed: false,
   prediction: null,
   edits: [],
   narrative: null,
@@ -74,7 +73,7 @@ const ready = (): SoundcheckDoc => ({
   status: "ready",
   title: "How I built a guitar",
   scenario: "search",
-  input: { kind: "script", text: "Hey everyone. Today we build a guitar from scratch." },
+  input: { kind: "youtube", videoId: VIDEO },
   durationS: 240,
   beats: [
     {
@@ -87,7 +86,6 @@ const ready = (): SoundcheckDoc => ({
       transcriptExcerpt: "Hey everyone.",
     },
   ],
-  visualAssumed: true,
   prediction,
   narrative: "Newcomers from search should stay longer than usual.",
 });
@@ -145,7 +143,7 @@ describe("soundcheck links and uploads", () => {
 });
 
 describe("soundcheck documents", () => {
-  it("accept a file awaiting its upload and a finished script", () => {
+  it("accept a file awaiting its upload and a finished link", () => {
     expect(soundcheckDocSchema.parse(awaiting())).toEqual(awaiting());
     expect(soundcheckDocSchema.parse(ready())).toEqual(ready());
   });
@@ -214,17 +212,12 @@ describe("soundcheck documents", () => {
     );
   });
 
-  it("cap scripts and titles", () => {
-    const longScript = {
-      ...ready(),
-      input: { kind: "script", text: "a".repeat(SOUNDCHECK_LIMITS.maxScriptChars + 1) },
-    };
-    expect(soundcheckDocSchema.safeParse(longScript).success).toBe(false);
+  it("cap titles, and know no kinds beyond files and links", () => {
     expect(soundcheckDocSchema.safeParse({ ...ready(), title: "t".repeat(101) }).success).toBe(
       false,
     );
     expect(
-      soundcheckDocSchema.safeParse({ ...ready(), input: { kind: "script", text: "   " } }).success,
+      soundcheckDocSchema.safeParse({ ...ready(), input: { kind: "script", text: "Hi." } }).success,
     ).toBe(false);
   });
 });
@@ -265,11 +258,6 @@ describe("soundcheck inputs", () => {
       },
     },
     seed: 20261013,
-    visualPool: {
-      explanation: [
-        { talkingHeadShare: 4, visual: "b_roll", cutsPerMin: 6, onScreenText: true, music: "none" },
-      ],
-    },
     createdAt: AT,
   });
 
@@ -277,13 +265,10 @@ describe("soundcheck inputs", () => {
     expect(soundcheckInputsSchema.parse(inputs())).toEqual(inputs());
   });
 
-  it("refuse beats past the end, a cut with no model, or an empty pool", () => {
+  it("refuse beats past the end, or a cut with no model", () => {
     expect(
       soundcheckInputsSchema.safeParse({ ...inputs(), beats: [{ ...beat, endS: 300 }] }).success,
     ).toBe(false);
     expect(soundcheckInputsSchema.safeParse({ ...inputs(), models: {} }).success).toBe(false);
-    expect(
-      soundcheckInputsSchema.safeParse({ ...inputs(), visualPool: { explanation: [] } }).success,
-    ).toBe(false);
   });
 });
