@@ -154,7 +154,7 @@ export interface PublishOptions {
  * Totals over all viewers: views, average view duration and YouTube's average
  * view percentage (weighted by views; from the duration if YouTube gave none).
  */
-function videoStats(
+export function videoStats(
   byStatus: Partial<Record<MeasuredAudience, StatusStats>> | undefined,
   durationS: number,
 ) {

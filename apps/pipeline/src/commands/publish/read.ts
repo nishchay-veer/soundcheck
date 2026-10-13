@@ -45,8 +45,9 @@ export interface PublishInputs {
   stats: Map<string, Partial<Record<MeasuredAudience, StatusStats>>>;
   /** The current extraction's beats, with their summaries. */
   beats: Map<string, VideoBeat[]>;
-  /** The latest fitted model per audience. */
+  /** The latest fitted model per audience, and where each artifact is stored. */
   models: Map<TrainingAudience, ModelArtifact>;
+  modelUris: Map<TrainingAudience, string>;
   evaluation: HoldoutEvaluation | null;
 }
 
@@ -178,8 +179,10 @@ export async function readPublishInputs(channelId: string): Promise<PublishInput
   );
 
   const models = new Map<TrainingAudience, ModelArtifact>();
+  const modelUris = new Map<TrainingAudience, string>();
   for (const [audience, model] of fitted) {
     models.set(audience, await readModelArtifact(model.artifactUri));
+    modelUris.set(audience, model.artifactUri);
   }
 
   const holdout = evalRows
@@ -199,5 +202,5 @@ export async function readPublishInputs(channelId: string): Promise<PublishInput
       }
     : null;
 
-  return { features, videos, stats, beats, models, evaluation };
+  return { features, videos, stats, beats, models, modelUris, evaluation };
 }

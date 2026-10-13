@@ -7,6 +7,8 @@ const SEGMENT = /^(?!\.{1,2}$)[\w.-]+$/;
 
 export interface RawResponse {
   channelId: string;
+  /** The raw bucket unless given (soundchecks archive in the uploads bucket). */
+  bucket?: string;
   /** The API and call, e.g. `youtube-videos` or `analytics-stats`. */
   source: string;
   /** What the response covers within the source: a video ID, `page-001`, `batch-003`. */
@@ -39,7 +41,7 @@ export function rawObjectName({
  * re-run overwrites the same object. Returns the `gs://` URI.
  */
 export async function archiveRaw(response: RawResponse): Promise<string> {
-  const bucket = pickServerEnv(["GCS_RAW_BUCKET"]).GCS_RAW_BUCKET;
+  const bucket = response.bucket ?? pickServerEnv(["GCS_RAW_BUCKET"]).GCS_RAW_BUCKET;
   const name = rawObjectName(response);
   await getStorage()
     .bucket(bucket)

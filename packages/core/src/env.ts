@@ -72,6 +72,11 @@ export const jobEnvSchema = z
       .optional(),
     // `refresh` is the weekly update of a ready channel; `build` everything else.
     BUILD_MODE: z.enum(["build", "refresh"]).default("build"),
+    // Set by the `soundcheck` workflow (Phase 14): the soundcheck to run.
+    SOUNDCHECK_ID: z
+      .string()
+      .regex(/^[0-9a-f]{32}$/)
+      .optional(),
   })
   .refine((env) => env.CLOUD_RUN_TASK_INDEX < env.CLOUD_RUN_TASK_COUNT, {
     message: "CLOUD_RUN_TASK_INDEX must be less than CLOUD_RUN_TASK_COUNT",

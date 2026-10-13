@@ -167,6 +167,7 @@ function inputs(overrides: Partial<PublishInputs> = {}): PublishInputs {
     ]),
     beats: new Map([[OLD, videoBeats]]),
     models: new Map((["all", "subscribed", "unsubscribed"] as const).map((a) => [a, artifact(a)])),
+    modelUris: new Map(),
     evaluation: null,
     ...overrides,
   };

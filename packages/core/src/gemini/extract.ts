@@ -55,12 +55,19 @@ export function extractionSettings(): ExtractionSettings {
 
 export const youtubeUrl = (videoId: string): string => `https://www.youtube.com/watch?v=${videoId}`;
 
-/** The prompt, response schema, prompt hash and cache key for one video under these settings. */
-export function extractionRequest(videoId: string, settings: ExtractionSettings) {
+/**
+ * The prompt, response schema, prompt hash and cache key for one video under
+ * these settings. The source is the video's YouTube URL unless given (a
+ * soundcheck's upload is a `gs://` URI).
+ */
+export function extractionRequest(
+  videoId: string,
+  settings: ExtractionSettings,
+  sourceUri = youtubeUrl(videoId),
+) {
   const systemInstruction = beatExtractionPrompt();
   const responseSchema = geminiResponseJsonSchema();
   const hash = promptHash(systemInstruction, responseSchema);
-  const sourceUri = youtubeUrl(videoId);
   const key = extractionCacheKey({
     sourceUri,
     extractionVersion: EXTRACTION_VERSION,
@@ -77,6 +84,8 @@ export interface ExtractionTarget {
   durationS: number;
   /** From `videos.list`; Gemini cannot read private videos from YouTube. */
   privacyStatus: string | null;
+  /** What Gemini watches; the video's YouTube URL by default. */
+  sourceUri?: string;
 }
 
 /** One Gemini call, for `extraction_runs.details`. */
@@ -182,10 +191,12 @@ export interface ExtractOptions {
   /** Default `EXTRACTION_SEED`. */
   seed?: number;
   /**
-   * Where raw answers are archived: `{source}/{label}-w{window}-a{answer}/`.
-   * Defaults to `gemini-beats` and the video ID.
+   * Where raw answers are archived: `{source}/{label}-w{window}-a{answer}/`,
+   * in the raw bucket unless `bucket` names another (soundchecks archive in
+   * the uploads bucket, which deletes after 30 days). Defaults to
+   * `gemini-beats` and the video ID.
    */
-  archive?: { source: string; label: string };
+  archive?: { source: string; label: string; bucket?: string };
   log?: Logger;
 }
 
@@ -202,7 +213,7 @@ export async function extractVideoBeats(
   }: ExtractOptions = {},
 ): Promise<ExtractionOutcome> {
   const { channelId, videoId, durationS } = target;
-  const request = extractionRequest(videoId, settings);
+  const request = extractionRequest(videoId, settings, target.sourceUri);
   const videoLog = childLogger({ channel_id: channelId, video_id: videoId }, log);
   const startedAt = new Date();
   const usage = emptyUsage();
@@ -266,6 +277,7 @@ export async function extractVideoBeats(
       const text = response.text ?? "";
       await archiveRaw({
         channelId,
+        bucket: archive.bucket,
         source: archive.source,
         key: `${archive.label}-w${window.index}-a${answer}`,
         body: { text, usageMetadata: response.usageMetadata, modelVersion: response.modelVersion },

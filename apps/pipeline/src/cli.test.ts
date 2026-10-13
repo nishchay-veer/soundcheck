@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createProgram } from "./cli";
-import { commands } from "./commands";
 
 describe("soundcheck CLI", () => {
   afterEach(() => {
@@ -38,27 +37,19 @@ describe("soundcheck CLI", () => {
     ]);
   });
 
-  it.each(
-    commands
-      .map((command) => command.name)
-      .filter(
-        (name) =>
-          ![
-            "ingest",
-            "extract",
-            "consistency",
-            "features",
-            "traits",
-            "baseline-llm",
-            "stage",
-            "build",
-            "publish",
-          ].includes(name),
-      ),
-  )("%s prints not implemented", async (name) => {
-    const write = vi.spyOn(process.stdout, "write").mockReturnValue(true);
-    await createProgram().parseAsync(["node", "soundcheck", name]);
-    expect(write).toHaveBeenCalledWith(`${name}: not implemented\n`);
+  it("checks a soundcheck's IDs before any work", async () => {
+    expect(
+      await parse("soundcheck", "--channel", "UC-BHlgFbFh3V76yth-XCmlw", "--id", "../x"),
+    ).toMatch(/expected a soundcheck ID/);
+    expect(
+      await parse("soundcheck", "--channel", "nope", "--id", "8f14e45fceea167a5a36dedd4bea2543"),
+    ).toMatch(/expected a channel ID/);
+    vi.stubEnv("CHANNEL_ID", "");
+    vi.stubEnv("SOUNDCHECK_ID", "");
+    await expect(createProgram().parseAsync(["node", "soundcheck", "soundcheck"])).rejects.toThrow(
+      /Pass --channel and --id/,
+    );
+    vi.unstubAllEnvs();
   });
 
   it("has ingest subcommands", () => {
