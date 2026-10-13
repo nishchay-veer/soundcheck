@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import {
   EXTRACTION_VERSION,
+  REDACTED,
   createLogger,
   resetClients,
   resetEnvCache,
@@ -16,7 +17,7 @@ import {
   type SoundcheckDoc,
   type VideoBeats,
 } from "@soundcheck/core/schemas";
-import { FakeFirestore } from "@soundcheck/core/testing";
+import { FakeFirestore, memoryLogger } from "@soundcheck/core/testing";
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import type { ChannelForCut } from "./channel";
 import { formatSoundcheck } from "./index";
@@ -219,6 +220,27 @@ describe("runSoundcheck: a link", () => {
     const inputs = soundcheckInputsSchema.parse(db.docs.get(paths.inputs(ID)));
     expect(inputs).toMatchObject({ durationS: 262, scenario: "recent", seed: 1 });
     expect(JSON.stringify(inputs)).not.toContain("guitars");
+  });
+
+  it("logs what watching cost, readable rather than redacted", async () => {
+    await db.doc(paths.soundcheck(ID)).set(base());
+    const { lines, logger } = memoryLogger();
+    await runSoundcheck({
+      channelId: CHANNEL,
+      soundcheckId: ID,
+      now: () => NOW,
+      log: logger,
+      deps: deps(),
+    });
+    const watched = lines.find((line) => line.message === "watched");
+    expect(watched).toMatchObject({ beats: 2, prompt_token_count: 20_000, cost_usd: 0.02 });
+    expect(lines.map((line) => line.message)).toEqual([
+      "soundcheck started",
+      "checked",
+      "watched",
+      "soundcheck ready",
+    ]);
+    expect(JSON.stringify(lines)).not.toContain(REDACTED);
   });
 
   it("refuses a private video before asking Gemini", async () => {

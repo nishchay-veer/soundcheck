@@ -1,6 +1,7 @@
 import {
   AUDIENCE_LABELS,
   type Percentiles,
+  type Scenario,
   type SoundcheckDoc,
   type SoundcheckKind,
   type SoundcheckPrediction,
@@ -24,6 +25,14 @@ export const STATUS_LABELS: Record<SoundcheckStatus, string> = {
   running: "Running",
   ready: "Ready",
   failed: "Failed",
+};
+
+/** Each scenario as the end of "Predicted with your channel's models, assuming …". */
+export const SCENARIO_ASSUMPTIONS: Record<Scenario, string> = {
+  recent: "the same mix of viewers as your recent videos",
+  search: "most newcomers arrive from search",
+  suggested: "most newcomers arrive from suggested videos",
+  subscribers: "most views come from subscribers",
 };
 
 /** States in which the job has more to do, so the page keeps polling. */

@@ -15,6 +15,7 @@ import useSWR from "swr";
 import { AUDIENCE_COLOR } from "@/lib/audiences";
 import {
   KIND_LABELS,
+  SCENARIO_ASSUMPTIONS,
   durationRange,
   isActive,
   percentRange,
@@ -250,8 +251,8 @@ export function SoundcheckResult({ doc }: { doc: SoundcheckDoc }) {
         ) : null}
       </div>
       <p className="text-sm text-ink-muted">
-        Predicted with your channel&apos;s models for {SCENARIO_LABELS[doc.scenario].toLowerCase()}{" "}
-        traffic. Each range is the middle 80% of 200 simulations.
+        Predicted with your channel&apos;s models, assuming {SCENARIO_ASSUMPTIONS[doc.scenario]}.
+        Each range is the middle 80% of 200 simulations.
       </p>
     </div>
   );

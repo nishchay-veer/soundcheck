@@ -204,6 +204,8 @@ export async function runSoundcheck({
     return { soundcheckId, status: "skipped", reason: claimed.skipped };
   }
   let doc = claimed.doc;
+  // Logged at each step, so a run's time can be split into start-up, Gemini and the rest.
+  runLog.info({ kind: doc.input.kind, scenario: doc.scenario }, "soundcheck started");
   /** Saves a change to the document, validated (rule 3). */
   const save = async (change: Partial<SoundcheckDoc>) => {
     doc = soundcheckDocSchema.parse({ ...doc, ...change, updatedAt: now().toISOString() });
@@ -235,6 +237,7 @@ export async function runSoundcheck({
     }
     if (durationS < SOUNDCHECK_LIMITS.minDurationS) throw new SoundcheckFailure("too_short");
     if (durationS > SOUNDCHECK_LIMITS.maxDurationS) throw new SoundcheckFailure("too_long");
+    runLog.info({ duration_s: durationS }, "checked");
     await save({ durationS, progress: progressAt("watching", "Watching your video") });
 
     // 2. Watching.
@@ -258,7 +261,8 @@ export async function runSoundcheck({
     runLog.info(
       {
         beats: beats.length,
-        tokens: outcome.usage.prompt_tokens,
+        // Not `tokens`: the logger redacts any key ending in token(s).
+        prompt_token_count: outcome.usage.prompt_tokens,
         cost_usd: outcome.usage.cost_usd,
       },
       "watched",

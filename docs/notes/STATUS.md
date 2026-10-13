@@ -4,6 +4,24 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Phase 14: Soundcheck upload and prediction (Oct 13, 2026)
+
+- **Built:**
+  - soundchecks of an uploaded file (up to 2 GB, chunked, resumable) or a public or unlisted YouTube link: `/app/soundcheck`, `/new` and `/[id]`, with the four "Expected traffic" scenarios;
+  - `job-soundcheck`: checks the cut (ffprobe, or YouTube's data, which refuses private links), Gemini watches it, each audience's model predicts it (`predictCut`: bands and average view as ranges, both audiences weighted, better than N% of the newest 20 videos);
+  - the API routes, the `soundcheck` workflow and the Eventarc trigger `soundcheck-upload`;
+  - `channels/{id}/soundchecks/{id}` and its `inputs/current` (the cut as the model reads it) for Phase 15.
+  - Scripts are left out, by Nishchay's decision.
+- **Verified live:**
+  - a 67 s upload went from upload to result in 2 min 38 s (mostly the job starting);
+  - a private link and a too-short file each ended with the right message;
+  - the probe showed unlisted links work and private ones cannot.
+- **To do:** a ready unlisted link of at least a minute; a 10-minute cut timed against the 6-minute target.
+- **Next phases must keep:**
+  - "Not a result yet" on soundchecks too;
+  - no Gemini or BigQuery on a request path (Phase 15's simulate route reads `inputs/current`);
+  - soundchecks under the channel.
+
 ### Change: Shorts left out of training (Oct 13, 2026)
 
 - **Nishchay's decision,** reversing Phase 03's: Shorts are no longer eligible, whatever their length (`exclusion_reason` `unsupported_content_type`).
