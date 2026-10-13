@@ -129,7 +129,12 @@ export function channelContext(
   };
 }
 
-const opensLoop = (beat: FeatureBeat) => beat.opens_loop !== null && beat.opens_loop.trim() !== "";
+/** Whether a beat raises a question or promise the video answers later. */
+export const opensLoop = (beat: Pick<FeatureBeat, "opens_loop">) =>
+  beat.opens_loop !== null && beat.opens_loop.trim() !== "";
+
+/** Whether anything is said in a beat; a beat with no speech counts as silence. */
+export const speaks = (beat: Pick<FeatureBeat, "transcript">) => beat.transcript.trim() !== "";
 
 /**
  * The feature frame of one video for one audience: 100 rows by
@@ -181,7 +186,7 @@ export function buildBins(
       if (beat.on_screen_text) add("on_screen_text", weight);
       if (beat.music === "background") add("music_bg", weight);
       if (beat.music === "foreground") add("music_fg", weight);
-      if (beat.transcript.trim() === "") add("silence", weight);
+      if (!speaks(beat)) add("silence", weight);
       add("energy", weight * beat.energy);
       add("assumed_knowledge", weight * beat.assumed_knowledge);
       add("info_density", weight * beat.info_density);

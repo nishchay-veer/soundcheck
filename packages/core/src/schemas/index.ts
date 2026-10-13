@@ -9,5 +9,6 @@ export * from "./firestore";
 export * from "./health";
 export * from "./model-artifact";
 export * from "./session";
+export * from "./soundchecks";
 export * from "./users";
 export * from "./youtube";

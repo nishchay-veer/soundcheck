@@ -169,7 +169,9 @@ describe("estimatedAudiences", () => {
     expect(browse?.reasons).toEqual([
       "its share varies by 0.05 across videos; at least 0.08 is needed",
     ]);
-  });
+    // 600 sampled predictions: under a second alone, but over the 5 s default
+    // when `pnpm check` runs every package's tests at once.
+  }, 20_000);
 
   it("hides every source with too few training videos", () => {
     const few = { ...newcomers, trainVideoIds: ["v1", "v2", "v3"] };

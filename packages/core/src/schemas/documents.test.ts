@@ -8,7 +8,6 @@ import {
   dropSchema,
   modelStampSchema,
   servingPaths,
-  soundcheckDocSchema,
   summaryDocSchema,
   videoAudienceSchema,
   videoDocSchema,
@@ -145,38 +144,6 @@ describe("serving documents", () => {
             inSample: true,
           },
         ],
-      }).success,
-    ).toBe(true);
-    expect(
-      soundcheckDocSchema.safeParse({
-        channelId: CHANNEL,
-        status: "ready",
-        input: { kind: "video", uri: "gs://uploads/UC/cut.mp4", title: "New cut", scenario: null },
-        durationS: 240,
-        beats: [],
-        prediction: {
-          audiences: { unsubscribed: band() },
-          avdS: { p10: 80, p50: 96, p90: 110 },
-          avp: { p10: 33, p50: 40, p90: 46 },
-        },
-        percentileVsChannel: 62,
-        edits: [
-          {
-            editId: "e1",
-            op: "trim",
-            beatIndex: 2,
-            params: { startS: 30, endS: 41 },
-            label: "Trim the intro",
-            rationale: "Newcomers leave during long intros.",
-            deltaAvpPp: { p10: 0.4, p50: 1.6, p90: 2.9 },
-            deltaAvdS: { p10: 1, p50: 4, p90: 7 },
-            audienceDriver: "unsubscribed",
-          },
-        ],
-        narrative: null,
-        visualAssumed: false,
-        createdAt: AT,
-        updatedAt: AT,
       }).success,
     ).toBe(true);
   });

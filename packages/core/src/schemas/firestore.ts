@@ -10,7 +10,7 @@ export const COLLECTIONS = {
   summary: "summary",
   index: "index",
   videos: "videos",
-  /** Top level: new cuts (Phases 14 and 15). */
+  /** Under `channels/{channelId}`: new cuts (Phases 14 and 15), so disconnecting deletes them. */
   soundchecks: "soundchecks",
 } as const;
 
@@ -26,6 +26,19 @@ export const servingPaths = (channelId: string) => {
     videoIndex: `${channel}/${COLLECTIONS.index}/videos`,
     videos: `${channel}/${COLLECTIONS.videos}`,
     video: (videoId: string) => `${channel}/${COLLECTIONS.videos}/${videoId}`,
+  };
+};
+
+/**
+ * Where a channel's soundchecks live: each one's document, and beneath it the
+ * cut as the model reads it (`inputs/current`), which the edit simulator reads.
+ */
+export const soundcheckPaths = (channelId: string) => {
+  const soundchecks = `${COLLECTIONS.channels}/${channelId}/${COLLECTIONS.soundchecks}`;
+  return {
+    soundchecks,
+    soundcheck: (soundcheckId: string) => `${soundchecks}/${soundcheckId}`,
+    inputs: (soundcheckId: string) => `${soundchecks}/${soundcheckId}/inputs/current`,
   };
 };
 
