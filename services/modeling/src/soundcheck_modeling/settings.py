@@ -32,7 +32,7 @@ class Settings:
     region: str = "us-central1"
     raw_bucket: str = ""
     # A model trained on fewer videos than this is never shown or shipped.
-    min_train_videos: int = 30
+    min_train_videos: int = 20
     firestore_database: str = "(default)"
     # Set on Cloud Run jobs by the channel_build workflow (Phase 10).
     channel_id: str | None = None
@@ -53,7 +53,7 @@ def load_settings(environ: dict[str, str] | None = None) -> Settings:
     project = env.get("GCP_PROJECT_ID", "").strip()
     if not project:
         raise RuntimeError("GCP_PROJECT_ID is not set (locally: uv run --env-file ../../.env ...)")
-    minimum = env.get("MIN_TRAIN_VIDEOS", "").strip() or "30"
+    minimum = env.get("MIN_TRAIN_VIDEOS", "").strip() or "20"
     mode = env.get("BUILD_MODE", "").strip() or "build"
     if mode not in ("build", "refresh"):
         raise RuntimeError(f"BUILD_MODE must be build or refresh, got {mode!r}")

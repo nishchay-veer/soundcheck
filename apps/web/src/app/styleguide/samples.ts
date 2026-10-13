@@ -5,7 +5,7 @@ import type { AudienceCard, VideoBeat } from "@soundcheck/core/schemas";
 const notUsable = {
   runId: "sample",
   usable: false,
-  unusableReasons: ["trained on 3 videos; at least 30 are needed"],
+  unusableReasons: ["trained on 3 videos; at least 20 are needed"],
   trainedVideos: 3,
 };
 

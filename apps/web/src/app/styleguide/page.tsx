@@ -211,7 +211,7 @@ export default function StyleguidePage() {
       </Section>
 
       <Section title="Audiences">
-        <ResultNotice reasons={["trained on 3 videos; at least 30 are needed"]} />
+        <ResultNotice reasons={["trained on 3 videos; at least 20 are needed"]} />
         <div className="grid gap-6 lg:grid-cols-3">
           {SAMPLE_CARDS.map((card) => (
             <AudienceCard key={card.key} card={card} />

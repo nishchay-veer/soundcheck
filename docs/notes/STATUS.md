@@ -4,6 +4,14 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Change: training minimum lowered to 20 videos (Oct 13, 2026)
+
+- **Nishchay's decision:** `MIN_TRAIN_VIDEOS` is now 20 (was 30), in the code defaults, `.env.example` and the specs. A build with fewer usable videos still stops as `insufficient_data`, and a model trained on fewer is still not usable.
+- **What follows from it:**
+  - a held-out test now needs 26 settled videos (6 tested, 20 for training), not 38;
+  - estimated audiences keep their own rule of 30 videos (`ESTIMATED_AUDIENCE_RULE`).
+- **To reach the cloud:** `deploy-workflows.sh` (the build's stop rule), `deploy-pipeline.sh` and `deploy-web.sh`, all reading `.env`. Saved models and documents still say "at least 30" until the channel is rebuilt; `docs/model-card.md` updates on the next evaluation.
+
 ### Phase 13: Video autopsy screen (Oct 12, 2026)
 
 - **Built:**

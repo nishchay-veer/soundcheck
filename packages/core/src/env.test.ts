@@ -52,7 +52,7 @@ describe("server env", () => {
       FIRESTORE_DATABASE: "(default)",
       GEMINI_LOCATION: "global",
       MIN_VIEWS: 500,
-      MIN_TRAIN_VIDEOS: 30,
+      MIN_TRAIN_VIDEOS: 20,
       NEXT_PUBLIC_USE_FIXTURES: false,
     });
     expect(env.DEMO_CHANNEL_ID).toBeUndefined();
