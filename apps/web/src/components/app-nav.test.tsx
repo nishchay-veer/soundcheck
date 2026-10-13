@@ -17,10 +17,11 @@ describe("AppNav", () => {
     expect(audiences.getAttribute("aria-current")).toBe("page");
     expect(audiences.className).toContain("bg-accent");
     expect(screen.getByRole("link", { name: "Videos" }).getAttribute("href")).toBe("/app/videos");
-    for (const name of ["Soundcheck", "Model"]) {
-      expect(screen.queryByRole("link", { name: new RegExp(name) })).toBeNull();
-      expect(screen.getByText(name).getAttribute("aria-disabled")).toBe("true");
-    }
+    expect(screen.getByRole("link", { name: "Soundcheck" }).getAttribute("href")).toBe(
+      "/app/soundcheck",
+    );
+    expect(screen.queryByRole("link", { name: /Model/ })).toBeNull();
+    expect(screen.getByText("Model").getAttribute("aria-disabled")).toBe("true");
     expect(screen.getByRole("link", { name: "Channel" }).getAttribute("href")).toBe(
       "/app/settings",
     );

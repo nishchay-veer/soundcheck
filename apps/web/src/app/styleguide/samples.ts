@@ -1,4 +1,4 @@
-import type { AudienceCard, VideoBeat } from "@soundcheck/core/schemas";
+import type { AudienceCard, SoundcheckDoc, VideoBeat } from "@soundcheck/core/schemas";
 
 /** Made-up data for the style guide: never a real channel's. */
 
@@ -200,3 +200,57 @@ export const SAMPLE_DROPS = [
   { id: "subscribed:31", audience: "subscribed" as const, startS: 63.6, endS: 72.1 },
   { id: "unsubscribed:2", audience: "unsubscribed" as const, startS: 2.1, endS: 8.5 },
 ];
+
+const predicted = (low: number[], middle: number[], high: number[]) => ({
+  p10: low,
+  p50: middle,
+  p90: high,
+});
+
+/** A finished soundcheck of an uploaded cut, 3:32 long. */
+export const SAMPLE_SOUNDCHECK: SoundcheckDoc = {
+  soundcheckId: "0123456789abcdef0123456789abcdef",
+  channelId: "UCaBcDeFgHiJkLmNoPqRsTuV",
+  status: "ready",
+  title: "How I built a guitar in a weekend",
+  scenario: "search",
+  input: {
+    kind: "file",
+    fileName: "guitar rough cut v3.mov",
+    contentType: "video/quicktime",
+    sizeBytes: 912_000_000,
+    uri: "gs://sample-uploads/UCaBcDeFgHiJkLmNoPqRsTuV/0123456789abcdef0123456789abcdef/source.mov",
+  },
+  progress: { step: "finishing", message: "Done", done: 4, total: 4 },
+  error: null,
+  durationS: 212,
+  beats: SAMPLE_BEATS,
+  prediction: {
+    audiences: {
+      subscribed: {
+        band: predicted(curve(0.86, 0.008, 0), curve(0.9, 0.006, 0), curve(0.93, 0.004, 0)),
+        avdS: { p10: 98, p50: 112, p90: 125 },
+        avp: { p10: 46.2, p50: 52.8, p90: 59 },
+        model: notUsable,
+      },
+      unsubscribed: {
+        band: predicted(curve(0.7, 0.013, 0), curve(0.76, 0.011, 0), curve(0.8, 0.009, 0)),
+        avdS: { p10: 61, p50: 74, p90: 88 },
+        avp: { p10: 28.8, p50: 34.9, p90: 41.5 },
+        model: notUsable,
+      },
+    },
+    weights: { subscribed: 0.2, unsubscribed: 0.8 },
+    avdS: { p10: 70, p50: 82, p90: 95 },
+    avp: { p10: 33, p50: 38.5, p90: 44.9 },
+    percentileVsChannel: 66.7,
+    comparedVideos: 3,
+  },
+  edits: [],
+  narrative:
+    "Subscribers should watch about 53% of this cut (46 to 59%), and newcomers about 35% (29 to 42%). That is better than 67% of your 3 recent videos.",
+  extractionVersion: "beats-v3",
+  featureVersion: "sample",
+  createdAt: "2026-10-13T09:00:00.000Z",
+  updatedAt: "2026-10-13T09:04:00.000Z",
+};

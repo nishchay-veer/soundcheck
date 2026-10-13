@@ -8,7 +8,14 @@ import { resetClients, setClientOverride } from "../gcp";
 import { deleteChannel } from "./delete-channel";
 import { startChannelBuild } from "./build";
 import { getSummary } from "./screens";
-import { FIXTURE_USER_ID, fixturePath, fromFixture, readDocument, toFixture } from "./store";
+import {
+  FIXTURE_USER_ID,
+  fixturePath,
+  fromFixture,
+  readCollection,
+  readDocument,
+  toFixture,
+} from "./store";
 
 const CHANNEL = "UC-BHlgFbFh3V76yth-XCmlw";
 
@@ -94,6 +101,20 @@ describe("fixtures mode", () => {
     await rm(dir, { recursive: true, force: true });
   });
 
+  it("lists a collection's saved files, newest first, and nothing when there are none", async () => {
+    const path = `channels/${CHANNEL}/soundchecks`;
+    await save(`${path}/aaa`, { createdAt: "2026-10-13T08:00:00.000Z", n: 1 });
+    await save(`${path}/bbb`, { createdAt: "2026-10-13T09:00:00.000Z", n: 2 });
+    await save(`${path}/aaa/inputs/current`, { createdAt: "2026-10-14T00:00:00.000Z", n: 3 });
+    expect(await readCollection(path, { orderBy: "createdAt", limit: 5 })).toEqual([
+      { createdAt: "2026-10-13T09:00:00.000Z", n: 2 },
+      { createdAt: "2026-10-13T08:00:00.000Z", n: 1 },
+    ]);
+    expect(await readCollection(path, { orderBy: "createdAt", limit: 1 })).toHaveLength(1);
+    expect(
+      await readCollection(`channels/${CHANNEL}/missing`, { orderBy: "createdAt", limit: 5 }),
+    ).toEqual([]);
+  });
   it("reads the saved documents for the fixture user, without Firestore", async () => {
     expect(fixturesMode()).toBe(true);
     expect((await getSummary(FIXTURE_USER_ID, CHANNEL))?.headline).toBe("A headline.");

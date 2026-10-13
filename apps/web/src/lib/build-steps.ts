@@ -20,7 +20,8 @@ export const BUILD_STEPS = [
 export type StepStatus = "done" | "current" | "waiting" | "failed" | "skipped";
 
 export interface StepView {
-  key: (typeof BUILD_STEPS)[number]["key"];
+  /** A build step's key, or a soundcheck's (Phase 14 reuses the list). */
+  key: string;
   label: string;
   status: StepStatus;
   /** How far the current step has got, when its job reports it. */

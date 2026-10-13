@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { fixturesMode, pickServerEnv } from "../env";
 import { FixturesModeError } from "../errors";
@@ -64,6 +64,38 @@ export async function readDocument(path: string): Promise<unknown> {
     if ((error as { code?: unknown }).code === "ENOENT") return undefined;
     throw error;
   }
+}
+
+/**
+ * The documents directly in a collection, ordered by one field (newest first
+ * for a date), at most `limit`. In fixtures mode, the collection's saved
+ * files, ordered the same way; none when there are none.
+ */
+export async function readCollection(
+  path: string,
+  { orderBy, limit }: { orderBy: string; limit: number },
+): Promise<unknown[]> {
+  if (!fixturesMode()) {
+    const snapshot = await getFirestore()
+      .collection(path)
+      .orderBy(orderBy, "desc")
+      .limit(limit)
+      .get();
+    return snapshot.docs.map((doc) => doc.data());
+  }
+  const directory = fixturePath(`${path}/x`).slice(0, -"/x.json".length);
+  let names: string[];
+  try {
+    names = (await readdir(directory)).filter((name) => name.endsWith(".json"));
+  } catch (error) {
+    if ((error as { code?: unknown }).code === "ENOENT") return [];
+    throw error;
+  }
+  const documents = await Promise.all(
+    names.map(async (name) => fromFixture(await readFile(join(directory, name), "utf8"))),
+  );
+  const key = (document: unknown) => String((document as Record<string, unknown>)[orderBy] ?? "");
+  return documents.sort((a, b) => key(b).localeCompare(key(a))).slice(0, limit);
 }
 
 /** Refuses a write in fixtures mode, which must never touch real data. */

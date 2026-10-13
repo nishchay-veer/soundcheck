@@ -27,7 +27,7 @@ import {
 } from "../schemas";
 import { EXTRACTION_VERSION, FEATURE_VERSION } from "../versions";
 import { requireChannel } from "./authz";
-import { readDocument, refuseInFixturesMode } from "./store";
+import { readCollection, readDocument, refuseInFixturesMode } from "./store";
 
 /**
  * Soundchecks on the request path (Phase 14). Creating one writes its
@@ -226,6 +226,22 @@ export async function createSoundcheck(
   }
   soundcheckLog.info({ kind: "youtube" }, "soundcheck queued");
   return { soundcheckId, status: doc.status, upload: null };
+}
+
+/** How many soundchecks the list shows, newest first. */
+export const SOUNDCHECK_LIST_LIMIT = 30;
+
+/** A channel's soundchecks, newest first; someone else's channel is a 404. */
+export async function listSoundchecks(userId: string, channelId: string): Promise<SoundcheckDoc[]> {
+  if (!channelIdSchema.safeParse(channelId).success) throw new NotFoundError("channel");
+  const [, documents] = await Promise.all([
+    requireChannel(userId, channelId),
+    readCollection(soundcheckPaths(channelId).soundchecks, {
+      orderBy: "createdAt",
+      limit: SOUNDCHECK_LIST_LIMIT,
+    }),
+  ]);
+  return documents.map((document) => soundcheckDocSchema.parse(document));
 }
 
 /** One soundcheck of a channel the user owns; a malformed ID or a missing one is a 404. */

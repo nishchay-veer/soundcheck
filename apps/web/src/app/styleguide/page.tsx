@@ -11,10 +11,11 @@ import { InfoTip } from "@/components/info-tip";
 import { IntervalText } from "@/components/interval-text";
 import { KindBadge } from "@/components/kind-badge";
 import { ResultNotice } from "@/components/result-notice";
+import { SoundcheckResult } from "@/components/soundcheck-view";
 import { StatCard } from "@/components/stat-card";
 import { BEAT_GROUPS } from "@/lib/beats";
 import { ChartDemo } from "./chart-demo";
-import { SAMPLE_CARDS, SAMPLE_EFFECTS } from "./samples";
+import { SAMPLE_CARDS, SAMPLE_EFFECTS, SAMPLE_SOUNDCHECK } from "./samples";
 import { SheetDemo } from "./sheet-demo";
 
 export const metadata: Metadata = {
@@ -221,6 +222,10 @@ export default function StyleguidePage() {
 
       <Section title="Charts">
         <ChartDemo />
+      </Section>
+
+      <Section title="Soundcheck result">
+        <SoundcheckResult doc={SAMPLE_SOUNDCHECK} />
       </Section>
     </main>
   );

@@ -23,6 +23,7 @@ import {
 import {
   createSoundcheck,
   getSoundcheck,
+  listSoundchecks,
   openUploadSession,
   soundcheckWorkflow,
   type UploadSessionRequest,
@@ -177,6 +178,22 @@ describe("soundchecks on the request path", () => {
     resetEnvCache();
     await expect(create(link())).rejects.toBeInstanceOf(FixturesModeError);
     expect(executions.created).toEqual([]);
+  });
+
+  it("lists a channel's soundchecks newest first, for its owner only", async () => {
+    const first = await create(link());
+    const second = await createSoundcheck(ME, CHANNEL, file(), {
+      origin: ORIGIN,
+      now: new Date(NOW.getTime() + 60_000),
+      log: quiet,
+      openUpload,
+    });
+    const listed = await listSoundchecks(ME, CHANNEL);
+    expect(listed.map((doc) => doc.soundcheckId)).toEqual([
+      second.soundcheckId,
+      first.soundcheckId,
+    ]);
+    await expect(listSoundchecks(OTHER, CHANNEL)).rejects.toBeInstanceOf(NotFoundError);
   });
 
   it("reads a soundcheck back for its owner only", async () => {

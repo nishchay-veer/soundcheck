@@ -58,12 +58,46 @@ export class FakeCollection {
     return new FakeDocRef(this.db, `${this.path}/${id}`);
   }
 
+  /** Orders the collection's documents by one field, as a query would. */
+  orderBy(field: string, direction: "asc" | "desc" = "asc"): FakeQuery {
+    return new FakeQuery(this, field, direction);
+  }
+
   /** The documents directly in this collection (not in its subcollections). */
   async listDocuments(): Promise<FakeDocRef[]> {
     const prefix = `${this.path}/`;
     return [...this.db.docs.keys()]
       .filter((path) => path.startsWith(prefix) && !path.slice(prefix.length).includes("/"))
       .map((path) => new FakeDocRef(this.db, path));
+  }
+}
+
+/** `orderBy(field).limit(n).get()`: enough of a query for listing a collection. */
+export class FakeQuery {
+  private count = Number.POSITIVE_INFINITY;
+
+  constructor(
+    private readonly collection: FakeCollection,
+    private readonly field: string,
+    private readonly direction: "asc" | "desc",
+  ) {}
+
+  limit(count: number): this {
+    this.count = count;
+    return this;
+  }
+
+  async get() {
+    const snapshots = await Promise.all(
+      (await this.collection.listDocuments()).map((ref) => ref.get()),
+    );
+    const value = (snapshot: (typeof snapshots)[number]) =>
+      String((snapshot.data() as Data | undefined)?.[this.field] ?? "");
+    const docs = snapshots
+      .filter((snapshot) => snapshot.exists)
+      .sort((a, b) => value(a).localeCompare(value(b)) * (this.direction === "desc" ? -1 : 1))
+      .slice(0, this.count);
+    return { docs, empty: docs.length === 0, size: docs.length };
   }
 }
 

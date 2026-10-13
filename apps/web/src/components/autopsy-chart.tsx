@@ -34,6 +34,7 @@ export function AutopsyChart({
   onSelectDrop,
   onSeek,
   playheadS,
+  predicted = false,
 }: {
   id: string;
   title: string;
@@ -45,11 +46,14 @@ export function AutopsyChart({
   onSelectDrop: (id: string) => void;
   onSeek: (seconds: number) => void;
   playheadS?: number | null;
+  /** A soundcheck's chart: predicted bands only, always shown (Phase 14). */
+  predicted?: boolean;
 }) {
   const [ref, measured] = useResizeObserver<HTMLDivElement>(CHART.minWidth);
   const scales = useMemo(() => chartScales(measured, durationS), [measured, durationS]);
   const [shown, setShown] = useState<Shown>("both");
-  const [showModel, setShowModel] = useState(true);
+  const [showModelChoice, setShowModel] = useState(true);
+  const showModel = predicted || showModelChoice;
   const [hovered, setHovered] = useState<string | null>(null);
 
   const keys = series.map((s) => s.key);
@@ -74,9 +78,14 @@ export function AutopsyChart({
   }
 
   const summary = visible
-    .filter((s) => s.actual)
-    .map(
-      (s) => `${s.label}: ${Math.round((s.actual?.at(-1) ?? 0) * 100)}% still watching at the end`,
+    .flatMap((s) =>
+      s.actual
+        ? [`${s.label}: ${Math.round((s.actual.at(-1) ?? 0) * 100)}% still watching at the end`]
+        : s.band
+          ? [
+              `${s.label}: about ${Math.round((s.band.p50.at(-1) ?? 0) * 100)}% predicted to be still watching at the end`,
+            ]
+          : [],
     )
     .join("; ");
   const options: { value: Shown; label: string }[] = [
@@ -115,7 +124,7 @@ export function AutopsyChart({
             ))}
           </div>
         ) : null}
-        {hasModel ? (
+        {hasModel && !predicted ? (
           <button
             type="button"
             aria-pressed={showModel}
@@ -131,7 +140,9 @@ export function AutopsyChart({
         ref={ref}
         tabIndex={0}
         role="group"
-        aria-label={`${title}. Left and right arrow keys move between drop-offs.`}
+        aria-label={
+          drops.length ? `${title}. Left and right arrow keys move between drop-offs.` : title
+        }
         onKeyDown={step}
         className={cn("overflow-x-auto rounded-[4px] border-2 border-ink bg-surface", FOCUS_RING)}
       >

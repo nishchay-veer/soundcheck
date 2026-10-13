@@ -13,7 +13,7 @@ import { chooseChannel } from "@/lib/actions";
 const ITEMS = [
   { label: "Audiences", href: "/app/audiences" },
   { label: "Videos", href: "/app/videos" },
-  { label: "Soundcheck", href: null },
+  { label: "Soundcheck", href: "/app/soundcheck" },
   { label: "Model", href: null },
 ] as const;
 
