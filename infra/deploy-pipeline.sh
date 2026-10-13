@@ -64,6 +64,7 @@ deploy_job job-extract-load "$PIPELINE_IMAGE" "stage,extract-load" 1800s 1 1Gi 1
 deploy_job job-features "$PIPELINE_IMAGE" "stage,features" 1800s 1 2Gi 1
 deploy_job job-baseline "$PIPELINE_IMAGE" "stage,baseline" 3600s 1 1Gi 1
 deploy_job job-publish "$PIPELINE_IMAGE" "stage,publish" 900s 1 1Gi 1
+deploy_job job-soundcheck "$PIPELINE_IMAGE" "soundcheck" 1800s 1 1Gi 1
 deploy_job job-train "$MODELING_IMAGE" "stage,train" 3600s 1 4Gi 2
 deploy_job job-evaluate "$MODELING_IMAGE" "stage,evaluate" 3600s 1 4Gi 2
-log "deployed 8 jobs in $REGION"
+log "deployed 9 jobs in $REGION"

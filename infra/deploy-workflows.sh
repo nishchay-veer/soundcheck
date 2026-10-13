@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# Deploys the channel_build and weekly_refresh workflows (Phase 10), running as
-# sa-workflows. MIN_TRAIN_VIDEOS comes from the repo's .env (20 if unset).
-# Then set WORKFLOW_CHANNEL_BUILD=channel_build in .env so builds can start.
+# Deploys the channel_build and weekly_refresh workflows (Phase 10) and the
+# soundcheck workflow (Phase 14), running as sa-workflows. MIN_TRAIN_VIDEOS
+# comes from the repo's .env (20 if unset). Then set
+# WORKFLOW_CHANNEL_BUILD=channel_build and WORKFLOW_SOUNDCHECK=soundcheck in
+# .env so builds and soundchecks can start.
 # Safe to re-run.
 # shellcheck source=lib.sh
 source "$(dirname "$0")/lib.sh"
@@ -21,4 +23,9 @@ gcloud workflows deploy weekly_refresh --project="$PROJECT_ID" --location="$REGI
   --service-account="$(sa_email sa-workflows)" \
   --set-env-vars="CHANNEL_BUILD_WORKFLOW=channel_build" --quiet >/dev/null
 log "workflow weekly_refresh"
-log "set WORKFLOW_CHANNEL_BUILD=channel_build in .env"
+
+gcloud workflows deploy soundcheck --project="$PROJECT_ID" --location="$REGION" \
+  --source="$INFRA_DIR/workflows/soundcheck.yaml" \
+  --service-account="$(sa_email sa-workflows)" --quiet >/dev/null
+log "workflow soundcheck"
+log "set WORKFLOW_CHANNEL_BUILD=channel_build and WORKFLOW_SOUNDCHECK=soundcheck in .env"

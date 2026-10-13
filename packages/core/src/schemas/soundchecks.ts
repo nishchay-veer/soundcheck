@@ -310,6 +310,41 @@ export const soundcheckDocSchema = z
   });
 export type SoundcheckDoc = z.infer<typeof soundcheckDocSchema>;
 
+// POST /api/v1/channels/{id}/soundchecks ---------------------------------------
+
+/** The browser uploads in chunks of this size: 8 MiB, a multiple of Cloud Storage's 256 KiB. */
+export const UPLOAD_CHUNK_BYTES = 8 * 1024 * 1024;
+
+const createBase = {
+  title: z.string().trim().max(SOUNDCHECK_LIMITS.maxTitleChars).default(""),
+  scenario: scenarioSchema.default("recent"),
+};
+
+/**
+ * A new soundcheck, as the browser asks for it. The file's type and size and
+ * the link are checked by `createSoundcheck`, which answers each with its own
+ * error and message.
+ */
+export const soundcheckCreateSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("file"),
+    fileName: z.string().min(1).max(255),
+    contentType: z.string().max(255),
+    sizeBytes: z.number().int().positive(),
+    ...createBase,
+  }),
+  z.object({ kind: z.literal("youtube"), link: z.string().min(1).max(2048), ...createBase }),
+]);
+export type SoundcheckCreate = z.infer<typeof soundcheckCreateSchema>;
+
+export const soundcheckCreatedSchema = z.object({
+  soundcheckId: soundcheckIdSchema,
+  status: soundcheckStatusSchema,
+  /** For a file: the resumable upload session the browser sends its chunks to. */
+  upload: z.object({ sessionUrl: z.url(), chunkBytes: z.number().int().positive() }).nullable(),
+});
+export type SoundcheckCreated = z.infer<typeof soundcheckCreatedSchema>;
+
 // channels/{channelId}/soundchecks/{id}/inputs/current -------------------------
 
 /**

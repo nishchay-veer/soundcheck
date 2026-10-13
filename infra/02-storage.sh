@@ -28,13 +28,14 @@ gcloud storage buckets update "gs://$UPLOADS_BUCKET" \
   --lifecycle-file="$INFRA_DIR/storage/uploads-lifecycle.json" >/dev/null
 log "gs://$UPLOADS_BUCKET: delete objects after 30 days"
 
-# The browser PUTs uploads straight to a signed URL.
+# The browser PUTs uploads in chunks straight to a resumable session (Phase
+# 14) and reads `Range` back to know how much arrived.
 origins='"http://localhost:3000"'
 if [[ -n "${WEB_ORIGIN:-}" ]]; then origins="$origins, \"$WEB_ORIGIN\""; fi
 cors_file="$(mktemp)"
 trap 'rm -f "$cors_file"' EXIT
 cat >"$cors_file" <<JSON
-[{"origin": [$origins], "method": ["PUT"], "responseHeader": ["Content-Type"], "maxAgeSeconds": 3600}]
+[{"origin": [$origins], "method": ["PUT"], "responseHeader": ["Content-Type", "Content-Range", "Range"], "maxAgeSeconds": 3600}]
 JSON
 gcloud storage buckets update "gs://$UPLOADS_BUCKET" --cors-file="$cors_file" >/dev/null
 log "gs://$UPLOADS_BUCKET: CORS PUT from $origins"

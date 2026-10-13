@@ -72,3 +72,30 @@ export class FixturesModeError extends Error {
     this.name = "FixturesModeError";
   }
 }
+
+/** WORKFLOW_SOUNDCHECK is not set, so soundchecks cannot start (503). */
+export class SoundcheckNotConfiguredError extends Error {
+  constructor() {
+    super("Soundchecks are not configured: set WORKFLOW_SOUNDCHECK");
+    this.name = "SoundcheckNotConfiguredError";
+  }
+}
+
+/** The channel has published nothing yet, so there is no model to predict with (409). */
+export class NotBuiltError extends Error {
+  constructor(readonly channelId: string) {
+    super(`Channel ${channelId} has no published build yet`);
+    this.name = "NotBuiltError";
+  }
+}
+
+/** A new soundcheck the request itself rules out: the file's type or size, or the link. */
+export class SoundcheckRejectedError extends Error {
+  constructor(
+    readonly code: "unsupported_type" | "too_large" | "invalid_link",
+    message: string,
+  ) {
+    super(message);
+    this.name = "SoundcheckRejectedError";
+  }
+}

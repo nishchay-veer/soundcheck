@@ -1,0 +1,97 @@
+# soundcheck (Phase 14): runs job-soundcheck for one new cut.
+#
+# Started two ways:
+# - by the API for a YouTube link: {channel_id, soundcheck_id};
+# - by Eventarc when an upload finishes: a Cloud Storage "finalized" event,
+#   whose object `{channel}/{soundcheck}/source.{ext}` names the soundcheck.
+#   Eventarc cannot filter the bucket by prefix, so any other object (such as
+#   a probe's sample) is ignored here.
+#
+# The job claims the soundcheck and writes its progress, then its result or a
+# failure the creator can act on. If the job itself fails (a crash or a
+# timeout, after Cloud Run's own retry), a soundcheck it left "running" is
+# marked failed here, so its page stops waiting.
+#
+# Deployed by infra/deploy-workflows.sh, running as sa-workflows.
+
+main:
+  params: [args]
+  steps:
+    - init:
+        assign:
+          - project: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
+          - region: ${sys.get_env("GOOGLE_CLOUD_LOCATION")}
+          - run_id: ${sys.get_env("GOOGLE_CLOUD_WORKFLOW_EXECUTION_ID")}
+          - object: ${default(map.get(args, ["data", "name"]), "")}
+          - channel: ${default(map.get(args, "channel_id"), "")}
+          - soundcheck: ${default(map.get(args, "soundcheck_id"), "")}
+    - from_upload:
+        switch:
+          - condition: ${soundcheck == "" and text.match_regex(object, "^UC[A-Za-z0-9_-]{22}/[0-9a-f]{32}/source[.](mp4|mov|webm)$")}
+            next: name_from_object
+        next: check
+    - name_from_object:
+        assign:
+          - parts: ${text.split(object, "/")}
+          - channel: ${parts[0]}
+          - soundcheck: ${parts[1]}
+    - check:
+        switch:
+          - condition: ${soundcheck == ""}
+            return: '${"ignored: " + object}'
+    - run:
+        try:
+          call: googleapis.run.v2.projects.locations.jobs.run
+          args:
+            name: ${"projects/" + project + "/locations/" + region + "/jobs/job-soundcheck"}
+            body:
+              overrides:
+                containerOverrides:
+                  - env:
+                      - name: CHANNEL_ID
+                        value: ${channel}
+                      - name: SOUNDCHECK_ID
+                        value: ${soundcheck}
+                      - name: RUN_ID
+                        value: ${run_id}
+            connector_params:
+              timeout: 3600
+        except:
+          as: failure
+          steps:
+            - read:
+                try:
+                  call: googleapis.firestore.v1.projects.databases.documents.get
+                  args:
+                    name: ${"projects/" + project + "/databases/(default)/documents/channels/" + channel + "/soundchecks/" + soundcheck}
+                  result: current
+                except:
+                  as: unreadable
+                  steps:
+                    - give_up_unread:
+                        raise: ${failure}
+            - still_running:
+                switch:
+                  - condition: ${map.get(current, ["fields", "status", "stringValue"]) == "running"}
+                    next: mark_failed
+                next: give_up
+            - mark_failed:
+                call: googleapis.firestore.v1.projects.databases.documents.patch
+                args:
+                  name: ${current.name}
+                  updateMask:
+                    fieldPaths: ["status", "error", "updatedAt"]
+                  body:
+                    fields:
+                      status: { stringValue: "failed" }
+                      error:
+                        mapValue:
+                          fields:
+                            code: { stringValue: "internal" }
+                            message:
+                              { stringValue: "Something went wrong on our side. Please try again." }
+                      updatedAt: { stringValue: "${time.format(sys.now())}" }
+            - give_up:
+                raise: ${failure}
+    - done:
+        return: '${"done: " + soundcheck}'
