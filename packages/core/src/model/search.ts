@@ -24,10 +24,10 @@ import { logitTerms } from "./runtime";
 
 /**
  * Searching for edits that help a cut (Phase 15): every single edit is
- * simulated on the soundcheck's draws, then edits are taken greedily, one at
- * a time, while the next one's whole interval of gain stays above zero. An
- * edit whose interval crosses zero is never recommended; it is shown as
- * uncertain. Labels and reasons come from templates and the model's own
+ * simulated on the soundcheck's draws, then edits whose own interval of gain
+ * is above zero are taken greedily, one at a time, while the next one's whole
+ * interval of gain on top of those taken stays above zero. An edit whose own
+ * interval crosses zero is never recommended; it is shown as uncertain. Labels and reasons come from templates and the model's own
  * numbers, never from Gemini.
  */
 
@@ -327,10 +327,12 @@ export function searchEdits(
     return { baseline, edits: best.map((t) => own(t.edit, false)), together: null };
   }
 
-  // Greedy: the best next edit, judged on top of those taken, whose whole interval of gain is above zero.
+  // Greedy, among the edits sure on their own: the best next one, judged on top of those taken,
+  // whose whole interval of gain is above zero.
+  const sure = new Set(tried.filter((t) => gain(t.change).p10 > 0).map((t) => editId(t.edit)));
   const taken: CutEdit[] = [];
   let current = baseline;
-  let options = tried;
+  let options = tried.filter((t) => sure.has(editId(t.edit)));
   while (taken.length < SEARCH.maxEdits) {
     const next = options
       .filter((t) => gain(t.change).p10 > 0)
@@ -342,6 +344,7 @@ export function searchEdits(
     options = candidates
       .filter(
         (edit) =>
+          sure.has(editId(edit)) &&
           !edited.has(edit.beat) &&
           !(edit.op === "move" && taken.some((t) => t.op === "remove" && t.beat === edit.to)),
       )

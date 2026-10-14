@@ -160,7 +160,7 @@ describe("searchEdits", () => {
     expect(together?.avdS.delta.p50).toBeGreaterThan(0);
   });
 
-  it("recommends at most five edits, on different beats, whose sum gains for sure", () => {
+  it("recommends at most five edits, each sure on its own and on different beats, whose sum gains for sure", () => {
     const { edits, together } = search();
     const recommended = edits.filter((edit) => edit.recommended);
     expect(recommended.length).toBeGreaterThan(0);
@@ -168,7 +168,8 @@ describe("searchEdits", () => {
     // Recommended first, then the others.
     expect(edits.slice(0, recommended.length).every((edit) => edit.recommended)).toBe(true);
     expect(new Set(recommended.map((edit) => edit.edit.beat)).size).toBe(recommended.length);
-    expect(recommended[0]?.sure).toBe(true);
+    // Each is sure on its own, so a recommended edit never reads as uncertain.
+    expect(recommended.every((edit) => edit.sure)).toBe(true);
     expect(together?.avdS.delta.p10).toBeGreaterThan(0);
     expect(edits.filter((edit) => !edit.recommended).length).toBeLessThanOrEqual(SEARCH.topSingles);
   });
