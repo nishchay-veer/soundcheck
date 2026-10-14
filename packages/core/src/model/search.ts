@@ -230,11 +230,14 @@ export interface ScoredEdit {
 
 export interface EditSearch {
   baseline: SimulatedCut;
-  /** The best single edits by median gain, best first; only edits whose median gain is positive. */
-  singles: ScoredEdit[];
-  /** Taken greedily, each judged against the cut with the ones before it; none while the model is not usable. */
-  recommended: ScoredEdit[];
-  /** The recommended edits together, against the cut as it is. */
+  /**
+   * The edits to show: the recommended ones first, in the order taken, then
+   * the best other single edits whose median gain is positive (at most
+   * `topSingles` of those). Each carries its own effect against the cut as it
+   * is, which reads simply; `together` is the recommended set's.
+   */
+  edits: (ScoredEdit & { recommended: boolean })[];
+  /** The recommended edits together, against the cut as it is; null when none is. */
   together: { avdS: CutComparison; avp: CutComparison } | null;
 }
 
@@ -312,26 +315,29 @@ export function searchEdits(
   });
   const gain = (change: { avdS: CutComparison; avp: CutComparison }) =>
     change[objective === "avd" ? "avdS" : "avp"].delta;
-  const singles = tried
+  const best = tried
     .filter((t) => gain(t.change).p50 > 0)
     .sort((a, b) => gain(b.change).p50 - gain(a.change).p50)
-    .slice(0, SEARCH.topSingles)
-    .map((t) => describe(t.edit, t.edited, t.change));
-  if (!usable) return { baseline, singles, recommended: [], together: null };
+    .slice(0, SEARCH.topSingles);
+  const own = (edit: CutEdit, recommended: boolean) => {
+    const single = tried.find((t) => editId(t.edit) === editId(edit)) as (typeof tried)[number];
+    return { ...describe(single.edit, single.edited, single.change), recommended };
+  };
+  if (!usable) {
+    return { baseline, edits: best.map((t) => own(t.edit, false)), together: null };
+  }
 
-  // Greedy: the best next edit whose whole interval of gain is above zero.
-  const recommended: ScoredEdit[] = [];
+  // Greedy: the best next edit, judged on top of those taken, whose whole interval of gain is above zero.
   const taken: CutEdit[] = [];
   let current = baseline;
   let options = tried;
   while (taken.length < SEARCH.maxEdits) {
-    const best = options
+    const next = options
       .filter((t) => gain(t.change).p10 > 0)
       .sort((a, b) => gain(b.change).p50 - gain(a.change).p50)[0];
-    if (!best) break;
-    taken.push(best.edit);
-    recommended.push(describe(best.edit, best.edited, best.change));
-    current = best.simulated;
+    if (!next) break;
+    taken.push(next.edit);
+    current = next.simulated;
     const edited = new Set(taken.map((edit) => edit.beat));
     options = candidates
       .filter(
@@ -340,14 +346,17 @@ export function searchEdits(
           !(edit.op === "move" && taken.some((t) => t.op === "remove" && t.beat === edit.to)),
       )
       .map((edit) => {
-        const { edited: next, simulated } = run([...taken, edit]);
-        return { edit, edited: next, simulated, change: judge(current, simulated) };
+        const { edited: after, simulated } = run([...taken, edit]);
+        return { edit, edited: after, simulated, change: judge(current, simulated) };
       });
   }
+  const takenIds = new Set(taken.map(editId));
   return {
     baseline,
-    singles,
-    recommended,
-    together: recommended.length ? judge(baseline, current) : null,
+    edits: [
+      ...taken.map((edit) => own(edit, true)),
+      ...best.filter((t) => !takenIds.has(editId(t.edit))).map((t) => own(t.edit, false)),
+    ],
+    together: taken.length ? judge(baseline, current) : null,
   };
 }

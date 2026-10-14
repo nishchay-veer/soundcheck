@@ -8,7 +8,7 @@ import {
 } from "@soundcheck/core/schemas";
 import { describe, expect, it } from "vitest";
 import type { ChannelModel } from "./channel";
-import { displayBeats, inputsDoc, narrative, predictionDoc } from "./result";
+import { displayBeats, editsDoc, effectDoc, inputsDoc, narrative, predictionDoc } from "./result";
 
 const newcomers = loadArtifact(
   JSON.parse(
@@ -169,5 +169,46 @@ describe("a soundcheck's result", () => {
       inflation: 1.3,
     });
     expect(inputs.channel).toEqual(newcomers.channelContext);
+  });
+
+  it("stores edits rounded, with their own effect, driver and recommendation", () => {
+    const comparison = (p50: number) => ({
+      delta: { p10: p50 - 1.23456, p50, p90: p50 + 1.23456 },
+      byAudience: {},
+      driver: "unsubscribed" as const,
+    });
+    const [stored] = editsDoc([
+      {
+        id: "remove-2",
+        edit: { op: "remove", beat: 2 },
+        startS: 80.0049,
+        endS: 130,
+        avdS: comparison(9.512),
+        avp: comparison(3.2049),
+        sure: true,
+        label: "Cut the tangent at 1:20 (50 s)",
+        rationale:
+          "Newcomers are predicted to leave faster during it, mostly because of the tangent.",
+        recommended: true,
+      },
+    ]);
+    expect(stored).toEqual({
+      editId: "remove-2",
+      edit: { op: "remove", beat: 2 },
+      startS: 80,
+      endS: 130,
+      label: "Cut the tangent at 1:20 (50 s)",
+      rationale:
+        "Newcomers are predicted to leave faster during it, mostly because of the tangent.",
+      deltaAvdS: { p10: 8.3, p50: 9.5, p90: 10.7 },
+      deltaAvpPp: { p10: 1.97, p50: 3.2, p90: 4.44 },
+      audienceDriver: "unsubscribed",
+      recommended: true,
+    });
+    expect(effectDoc(null)).toBeNull();
+    expect(effectDoc({ avdS: comparison(12.44), avp: comparison(5.123) })).toEqual({
+      deltaAvdS: { p10: 11.2, p50: 12.4, p90: 13.7 },
+      deltaAvpPp: { p10: 3.89, p50: 5.12, p90: 6.36 },
+    });
   });
 });

@@ -139,16 +139,17 @@ describe("searchEdits", () => {
     searchEdits(sampler, artifacts, { video: cut, durationS: 240 }, mix, { objective, usable });
 
   it("finds the edits that keep viewers longest, with labels and reasons from the model's numbers", () => {
-    const { singles, recommended, together } = search();
+    const { edits, together } = search();
     // Moving the payoff ahead of the tangent keeps more viewers for longer, and loses no time...
-    expect(singles[0]).toMatchObject({
+    expect(edits[0]).toMatchObject({
       id: "move-4-to-1",
       label: "Move the payoff at 2:40 to 0:20",
       rationale: "Delivering the payoff sooner cuts how long viewers wait for it.",
       sure: true,
+      recommended: true,
     });
     // ...while cutting the tangent helps too, but takes its 50 s with it.
-    expect(singles.find((edit) => edit.id === "remove-2")).toMatchObject({
+    expect(edits.find((edit) => edit.id === "remove-2")).toMatchObject({
       label: "Cut the tangent at 1:20 (50 s)",
       rationale:
         "Newcomers are predicted to leave faster during it, mostly because of the tangent.",
@@ -156,36 +157,36 @@ describe("searchEdits", () => {
       startS: 80,
       endS: 130,
     });
-    expect(singles.length).toBeLessThanOrEqual(SEARCH.topSingles);
-    expect(recommended[0]?.id).toBe("move-4-to-1");
     expect(together?.avdS.delta.p50).toBeGreaterThan(0);
+  });
+
+  it("recommends at most five edits, on different beats, whose sum gains for sure", () => {
+    const { edits, together } = search();
+    const recommended = edits.filter((edit) => edit.recommended);
+    expect(recommended.length).toBeGreaterThan(0);
+    expect(recommended.length).toBeLessThanOrEqual(SEARCH.maxEdits);
+    // Recommended first, then the others.
+    expect(edits.slice(0, recommended.length).every((edit) => edit.recommended)).toBe(true);
+    expect(new Set(recommended.map((edit) => edit.edit.beat)).size).toBe(recommended.length);
+    expect(recommended[0]?.sure).toBe(true);
+    expect(together?.avdS.delta.p10).toBeGreaterThan(0);
+    expect(edits.filter((edit) => !edit.recommended).length).toBeLessThanOrEqual(SEARCH.topSingles);
   });
 
   it("judges by seconds watched by default, which merely shortening the cut does not raise", () => {
     const seconds = search();
     const share = search(true, "avp");
     // By share of the cut, cutting the tangent wins, and cutting the outro "helps"...
-    expect(share.singles[0]?.id).toBe("remove-2");
-    expect(share.singles.some((edit) => edit.id === "remove-5")).toBe(true);
+    expect(share.edits[0]?.id).toBe("remove-2");
+    expect(share.edits.some((edit) => edit.id === "remove-5")).toBe(true);
     // ...but cutting the outro loses seconds watched, so it is not listed by default.
-    expect(seconds.singles.some((edit) => edit.id === "remove-5")).toBe(false);
-  });
-
-  it("recommends only edits whose whole interval of gain is above zero, at most five", () => {
-    const { recommended } = search();
-    expect(recommended.length).toBeLessThanOrEqual(SEARCH.maxEdits);
-    for (const edit of recommended) {
-      expect(edit.sure).toBe(true);
-      expect(edit.avdS.delta.p10).toBeGreaterThan(0);
-    }
-    // No beat is edited twice.
-    expect(new Set(recommended.map((edit) => edit.edit.beat)).size).toBe(recommended.length);
+    expect(seconds.edits.some((edit) => edit.id === "remove-5")).toBe(false);
   });
 
   it("lists edits but recommends none while the model is not usable", () => {
-    const { singles, recommended, together } = search(false);
-    expect(singles.length).toBeGreaterThan(0);
-    expect(recommended).toEqual([]);
+    const { edits, together } = search(false);
+    expect(edits.length).toBeGreaterThan(0);
+    expect(edits.some((edit) => edit.recommended)).toBe(false);
     expect(together).toBeNull();
   });
 
@@ -194,10 +195,10 @@ describe("searchEdits", () => {
   });
 
   it("ranks by the objective it is asked for", () => {
-    const share = search(true, "avp");
-    for (let i = 1; i < share.singles.length; i += 1) {
-      expect(share.singles[i - 1]?.avp.delta.p50).toBeGreaterThanOrEqual(
-        share.singles[i]?.avp.delta.p50 ?? -Infinity,
+    const { edits } = search(false, "avp");
+    for (let i = 1; i < edits.length; i += 1) {
+      expect(edits[i - 1]?.avp.delta.p50).toBeGreaterThanOrEqual(
+        edits[i]?.avp.delta.p50 ?? -Infinity,
       );
     }
   });

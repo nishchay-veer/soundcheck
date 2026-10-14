@@ -49,11 +49,12 @@ const STEPS: readonly { key: SoundcheckStep; label: string }[] = [
   { key: "checking", label: "Checking your video" },
   { key: "watching", label: "Watching it" },
   { key: "predicting", label: "Predicting how each audience will watch" },
+  { key: "suggesting", label: "Looking for edits" },
   { key: "finishing", label: "Writing it up" },
 ];
 
 /**
- * The job's four steps, each done, current, waiting or failed. The current
+ * The job's five steps, each done, current, waiting or failed. The current
  * step shows the job's own message ("Found 23 beats…"), and before the job
  * starts every step waits.
  */

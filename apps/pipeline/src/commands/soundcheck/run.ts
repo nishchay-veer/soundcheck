@@ -8,14 +8,18 @@ import {
 } from "@soundcheck/core";
 import {
   extractVideoBeats,
+  titleChapters,
   type ExtractOptions,
   type ExtractionOutcome,
   type ExtractionTarget,
 } from "@soundcheck/core/gemini";
 import { archiveRaw } from "@soundcheck/core/jobs";
 import {
+  CUT_DRAWS,
+  cutSampler,
   predictCut,
   recentAudienceMix,
+  searchEdits,
   scenarioAudienceMix,
   type CutModel,
 } from "@soundcheck/core/model";
@@ -38,7 +42,7 @@ import {
 } from "@soundcheck/core/youtube";
 import { readChannelForCut, type ChannelForCut } from "./channel";
 import { probeUpload, type ProbedFile } from "./probe";
-import { displayBeats, inputsDoc, narrative, predictionDoc } from "./result";
+import { displayBeats, editsDoc, effectDoc, inputsDoc, narrative, predictionDoc } from "./result";
 
 /**
  * `soundcheck` (Phase 14, run as `job-soundcheck`): predicts one new cut.
@@ -64,8 +68,14 @@ export const SOUNDCHECK_STEP = "soundcheck";
 export const SOUNDCHECK_SEED = 1;
 /** A run that has not touched its soundcheck for this long has died. */
 export const STALE_AFTER_MS = 20 * 60_000;
-/** The steps a soundcheck goes through, for the progress bar (Phase 15 adds "suggesting"). */
-const STEPS: readonly SoundcheckStep[] = ["checking", "watching", "predicting", "finishing"];
+/** The steps a soundcheck goes through, for the progress bar. */
+const STEPS: readonly SoundcheckStep[] = [
+  "checking",
+  "watching",
+  "predicting",
+  "suggesting",
+  "finishing",
+];
 const MEASURED = measuredAudienceSchema.options;
 
 /** What the creator reads for each failure. */
@@ -107,6 +117,7 @@ export interface SoundcheckDeps {
   ) => Promise<LinkedVideo | null>;
   extract: (target: ExtractionTarget, options: ExtractOptions) => Promise<ExtractionOutcome>;
   readChannel: (channelId: string) => Promise<ChannelForCut>;
+  chapters: typeof titleChapters;
 }
 
 /** The video through the channel's own credentials, which also see its unlisted and private ones. */
@@ -133,6 +144,7 @@ const defaultDeps: SoundcheckDeps = {
   lookupVideo,
   extract: extractVideoBeats,
   readChannel: readChannelForCut,
+  chapters: titleChapters,
 };
 
 export type SoundcheckRunResult =
@@ -296,8 +308,43 @@ export async function runSoundcheck({
       seed: SOUNDCHECK_SEED,
     });
     const prediction = predictionDoc(predicted, channel.models, channel.recentAvp);
+    await save({
+      progress: progressAt("suggesting", "Trying edits that could keep viewers longer"),
+    });
 
-    // 4. Finishing.
+    // 4. Suggesting: edits on the prediction's own draws, and chapter titles.
+    const usable = Object.values(prediction.audiences).every((audience) => audience.model.usable);
+    const search = searchEdits(
+      cutSampler(models, { seed: SOUNDCHECK_SEED, draws: CUT_DRAWS }),
+      Object.fromEntries(Object.entries(models).map(([key, model]) => [key, model.artifact])),
+      { video: extraction, durationS },
+      audienceMix,
+      { usable },
+    );
+    const chapters = await deps.chapters(
+      {
+        channelId,
+        soundcheckId,
+        beats: extraction.beats.map((beat) => ({
+          startS: beat.start_s,
+          endS: beat.end_s,
+          type: beat.beat_type,
+          summary: beat.summary,
+        })),
+        videoSummary: extraction.video_summary,
+      },
+      { log: runLog },
+    );
+    runLog.info(
+      {
+        edits: search.edits.length,
+        recommended: search.edits.filter((edit) => edit.recommended).length,
+        chapters: chapters?.length ?? 0,
+      },
+      "suggested",
+    );
+
+    // 5. Finishing.
     const finishedAt = now().toISOString();
     const inputs = soundcheckInputsSchema.parse(
       inputsDoc({
@@ -317,6 +364,9 @@ export async function runSoundcheck({
       ...doc,
       status: "ready",
       prediction,
+      edits: editsDoc(search.edits),
+      recommendedEffect: effectDoc(search.together),
+      chapters,
       narrative: narrative(prediction),
       extractionVersion: EXTRACTION_VERSION,
       progress: progressAt("finishing", "Done", true),

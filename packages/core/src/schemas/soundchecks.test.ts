@@ -61,6 +61,8 @@ const awaiting = (): SoundcheckDoc => ({
   beats: null,
   prediction: null,
   edits: [],
+  recommendedEffect: null,
+  chapters: null,
   narrative: null,
   extractionVersion: "beats-v3",
   featureVersion: "f1",
@@ -219,6 +221,71 @@ describe("soundcheck documents", () => {
     expect(
       soundcheckDocSchema.safeParse({ ...ready(), input: { kind: "script", text: "Hi." } }).success,
     ).toBe(false);
+  });
+});
+
+describe("soundcheck edits and chapters", () => {
+  const edit = {
+    editId: "remove-0",
+    edit: { op: "remove" as const, beat: 0 },
+    startS: 0,
+    endS: 240,
+    label: "Cut the hook at 0:00 (240 s)",
+    rationale: "Newcomers are predicted to leave faster during it.",
+    deltaAvdS: percentiles(4),
+    deltaAvpPp: percentiles(2),
+    audienceDriver: "unsubscribed" as const,
+    recommended: true,
+  };
+
+  it("load a Phase 14 document, which has neither, with none", () => {
+    const older: Record<string, unknown> = { ...ready() };
+    delete older.recommendedEffect;
+    delete older.chapters;
+    expect(soundcheckDocSchema.parse(older)).toMatchObject({
+      recommendedEffect: null,
+      chapters: null,
+    });
+  });
+
+  it("accept edits on the cut's beats, each once, with their own effect", () => {
+    const doc = {
+      ...ready(),
+      edits: [edit],
+      recommendedEffect: { deltaAvdS: percentiles(4), deltaAvpPp: percentiles(2) },
+      chapters: [{ firstBeat: 0, title: "Why the bridge failed" }],
+    };
+    expect(soundcheckDocSchema.parse(doc)).toEqual(doc);
+    expect(soundcheckDocSchema.safeParse({ ...doc, edits: [edit, edit] }).success).toBe(false);
+    expect(
+      soundcheckDocSchema.safeParse({
+        ...doc,
+        edits: [{ ...edit, edit: { op: "remove", beat: 1 }, editId: "remove-1" }],
+      }).success,
+    ).toBe(false);
+    expect(
+      soundcheckDocSchema.safeParse({ ...doc, edits: [{ ...edit, editId: "cut-0" }] }).success,
+    ).toBe(false);
+    expect(
+      soundcheckDocSchema.safeParse({
+        ...doc,
+        edits: [{ ...edit, edit: { op: "trim", beat: 0, keep: 1 } }],
+      }).success,
+    ).toBe(false);
+  });
+
+  it("need chapters from beat 0, going forward, with short titles", () => {
+    const withChapters = (chapters: unknown) =>
+      soundcheckDocSchema.safeParse({ ...ready(), chapters }).success;
+    expect(withChapters([{ firstBeat: 1, title: "Late start" }])).toBe(false);
+    expect(withChapters([{ firstBeat: 0, title: "One two three four five six" }])).toBe(false);
+    expect(
+      withChapters([
+        { firstBeat: 0, title: "Fine" },
+        { firstBeat: 0, title: "Again" },
+      ]),
+    ).toBe(false);
+    expect(withChapters([{ firstBeat: 0, title: "Fine" }])).toBe(true);
   });
 });
 

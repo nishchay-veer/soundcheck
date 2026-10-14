@@ -130,6 +130,10 @@ function deps(overrides: Partial<{ [K in keyof SoundcheckDeps]: Mock<SoundcheckD
     lookupVideo: vi.fn(async () => ({ durationS: 262, privacyStatus: "unlisted" })),
     extract: vi.fn(async (target: ExtractionTarget) => outcome("extracted", target)),
     readChannel: vi.fn(async () => channel),
+    chapters: vi.fn(async () => [
+      { firstBeat: 0, title: "The opening song" },
+      { firstBeat: 1, title: "The full cover" },
+    ]),
     ...overrides,
   };
 }
@@ -147,6 +151,8 @@ const base = (): SoundcheckDoc => ({
   beats: null,
   prediction: null,
   edits: [],
+  recommendedEffect: null,
+  chapters: null,
   narrative: null,
   extractionVersion: EXTRACTION_VERSION,
   featureVersion: "f1",
@@ -210,12 +216,31 @@ describe("runSoundcheck: a link", () => {
       status: "ready",
       error: null,
       durationS: 262,
-      progress: { step: "finishing", message: "Done", done: 4, total: 4 },
+      progress: { step: "finishing", message: "Done", done: 5, total: 5 },
     });
     expect(doc.beats).toHaveLength(2);
     expect(doc.prediction?.audiences.unsubscribed?.model.usable).toBe(false);
     expect(doc.prediction?.comparedVideos).toBe(3);
     expect(doc.narrative).toMatch(/^Subscribers should watch about \d+% of this cut/);
+    // Nothing is recommended while the models are not usable. (On these two plain beats,
+    // no edit gains seconds watched at all, so none is even listed.)
+    expect(doc.edits.some((edit) => edit.recommended)).toBe(false);
+    expect(doc.recommendedEffect).toBeNull();
+    expect(doc.chapters).toEqual([
+      { firstBeat: 0, title: "The opening song" },
+      { firstBeat: 1, title: "The full cover" },
+    ]);
+    expect(d.chapters).toHaveBeenCalledWith(
+      expect.objectContaining({
+        soundcheckId: ID,
+        videoSummary: "A cover.",
+        beats: [
+          { startS: 0, endS: 30, type: "explanation", summary: "Playing the guitar." },
+          { startS: 30, endS: 262, type: "explanation", summary: "Playing the guitar." },
+        ],
+      }),
+      expect.anything(),
+    );
 
     const inputs = soundcheckInputsSchema.parse(db.docs.get(paths.inputs(ID)));
     expect(inputs).toMatchObject({ durationS: 262, scenario: "recent", seed: 1 });
@@ -238,9 +263,18 @@ describe("runSoundcheck: a link", () => {
       "soundcheck started",
       "checked",
       "watched",
+      "suggested",
       "soundcheck ready",
     ]);
     expect(JSON.stringify(lines)).not.toContain(REDACTED);
+  });
+
+  it("finishes without chapters when Gemini gives none", async () => {
+    await db.doc(paths.soundcheck(ID)).set(base());
+    expect(await run(deps({ chapters: vi.fn(async () => null) }))).toMatchObject({
+      status: "ready",
+    });
+    expect(stored().chapters).toBeNull();
   });
 
   it("refuses a private video before asking Gemini", async () => {

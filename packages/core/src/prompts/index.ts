@@ -3,6 +3,7 @@ import { BEAT_EXAMPLES } from "./examples";
 import { extractBeatsPrompt } from "./extract-beats";
 
 export * from "./baseline-retention";
+export * from "./chapters";
 export * from "./extract-beats";
 export * from "./narration";
 export { BEAT_EXAMPLES, BEAT_EXAMPLE_FILES } from "./examples";

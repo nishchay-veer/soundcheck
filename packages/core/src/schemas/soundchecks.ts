@@ -2,8 +2,8 @@ import { z } from "zod";
 import { beatTypeSchema, musicSchema, videoFormatSchema, visualSchema } from "./beats";
 import { channelIdSchema } from "./channels";
 import {
-  audienceKeySchema,
   bandSchema,
+  measuredAudienceSchema,
   modelStampSchema,
   percentilesSchema,
   videoBeatSchema,
@@ -251,24 +251,60 @@ export const soundcheckPredictionSchema = z
 export type SoundcheckPrediction = z.infer<typeof soundcheckPredictionSchema>;
 
 /**
- * One suggested edit to a new cut, simulated on the cut's beats. `params`
- * hold the op's numbers (seconds, a target index); Phase 15 tightens them.
+ * An edit to a cut (Phase 15), naming beats by their index in the cut as
+ * extracted: remove a beat, keep the first `keep` of it, or move it to just
+ * before beat `to` (the beat count moves it to the end).
  */
+export const cutEditSchema = z.discriminatedUnion("op", [
+  z.object({ op: z.literal("remove"), beat: z.number().int().nonnegative() }),
+  z.object({
+    op: z.literal("trim"),
+    beat: z.number().int().nonnegative(),
+    keep: z.number().gt(0).lt(1),
+  }),
+  z.object({
+    op: z.literal("move"),
+    beat: z.number().int().nonnegative(),
+    to: z.number().int().nonnegative(),
+  }),
+]);
+export type CutEditInput = z.infer<typeof cutEditSchema>;
+
+/** One edit the soundcheck suggests, with its own effect against the cut as it is. */
 export const editSchema = z.object({
-  editId: z.string().min(1),
-  op: z.enum(["remove", "trim", "move"]),
-  beatIndex: z.number().int().nonnegative(),
-  params: z.record(z.string(), z.number()),
+  /** `remove-3`, `trim-5`, `move-3-to-7`. */
+  editId: z.string().regex(/^(?:(?:remove|trim)-\d+|move-\d+-to-\d+)$/),
+  edit: cutEditSchema,
+  /** Where its beat is in the cut as it was uploaded or linked. */
+  startS: seconds,
+  endS: seconds,
   label: z.string().min(1),
   rationale: z.string().min(1),
-  /** Change in average view percentage, in percentage points. */
-  deltaAvpPp: percentilesSchema,
   /** Change in average view duration, in seconds. */
   deltaAvdS: percentilesSchema,
+  /** Change in average view percentage, in percentage points. */
+  deltaAvpPp: percentilesSchema,
   /** The audience the change mostly comes from. */
-  audienceDriver: audienceKeySchema,
+  audienceDriver: measuredAudienceSchema,
+  /**
+   * One of the edits recommended together: each, taken in turn, raised
+   * seconds watched with its whole interval above zero. None while the
+   * model is not usable.
+   */
+  recommended: z.boolean(),
 });
 export type Edit = z.infer<typeof editSchema>;
+
+/** A chapter of the cut, from its first beat; titles come from Gemini at job time. */
+export const chapterSchema = z.object({
+  firstBeat: z.number().int().nonnegative(),
+  title: z
+    .string()
+    .min(1)
+    .max(60)
+    .refine((title) => title.trim().split(/\s+/).length <= 5, { message: "At most 5 words" }),
+});
+export type Chapter = z.infer<typeof chapterSchema>;
 
 // channels/{channelId}/soundchecks/{id} ----------------------------------------
 
@@ -287,7 +323,15 @@ export const soundcheckDocSchema = z
     durationS: z.number().positive().nullable(),
     beats: z.array(videoBeatSchema).nullable(),
     prediction: soundcheckPredictionSchema.nullable(),
+    /** Recommended first, in the order taken, then the best other single edits. */
     edits: z.array(editSchema),
+    /** The recommended edits together, against the cut as it is (Phase 15); none before. */
+    recommendedEffect: z
+      .object({ deltaAvdS: percentilesSchema, deltaAvpPp: percentilesSchema })
+      .nullable()
+      .default(null),
+    /** The cut's chapters, in order (Phase 15); none when Gemini gave none, or before. */
+    chapters: z.array(chapterSchema).nullable().default(null),
     narrative: z.string().nullable(),
     extractionVersion: z.string().min(1),
     featureVersion: z.string().min(1),
@@ -303,6 +347,23 @@ export const soundcheckDocSchema = z
       doc.status !== "ready" ||
       (doc.prediction !== null && doc.beats !== null && doc.durationS !== null),
     { message: "A ready soundcheck has its length, beats and prediction", path: ["prediction"] },
+  )
+  .refine(
+    (doc) =>
+      !doc.chapters ||
+      (doc.chapters[0]?.firstBeat === 0 &&
+        doc.chapters.every(
+          (chapter, i) =>
+            i === 0 || chapter.firstBeat > (doc.chapters?.[i - 1]?.firstBeat ?? Infinity),
+        ) &&
+        doc.chapters.every((chapter) => chapter.firstBeat < (doc.beats?.length ?? 0))),
+    { message: "Chapters start at beat 0 and go forward through the beats", path: ["chapters"] },
+  )
+  .refine(
+    (doc) =>
+      doc.edits.every(({ edit }) => edit.beat < (doc.beats?.length ?? 0)) &&
+      new Set(doc.edits.map((edit) => edit.editId)).size === doc.edits.length,
+    { message: "Each edit once, on a beat of the cut", path: ["edits"] },
   )
   .refine((doc) => doc.status !== "awaiting_upload" || doc.input.kind === "file", {
     message: "Only a file waits for an upload",

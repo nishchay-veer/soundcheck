@@ -28,7 +28,7 @@ const doc = (overrides: Partial<SoundcheckDoc>): SoundcheckDoc =>
 const running = (step: "watching" | "predicting", message: string) =>
   doc({
     status: "running",
-    progress: { step, message, done: step === "watching" ? 1 : 2, total: 4 },
+    progress: { step, message, done: step === "watching" ? 1 : 2, total: 5 },
     prediction: null,
     narrative: null,
   });

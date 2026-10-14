@@ -10,41 +10,38 @@ import {
   unusableReasons,
 } from "./soundcheck";
 
-const progress = (step: "checking" | "watching" | "predicting" | "finishing", message = "…") => ({
-  step,
-  message,
-  done: 0,
-  total: 4,
-});
+const progress = (
+  step: "checking" | "watching" | "predicting" | "suggesting" | "finishing",
+  message = "…",
+) => ({ step, message, done: 0, total: 5 });
 const statuses = (doc: Parameters<typeof soundcheckSteps>[0]) =>
   soundcheckSteps(doc).map((step) => step.status);
 
 describe("soundcheck steps", () => {
   it("follow the job: done before its step, current at it, waiting after", () => {
-    expect(statuses({ status: "queued", progress: null })).toEqual([
-      "waiting",
-      "waiting",
-      "waiting",
-      "waiting",
-    ]);
+    expect(statuses({ status: "queued", progress: null })).toEqual(Array(5).fill("waiting"));
     const steps = soundcheckSteps({
       status: "running",
       progress: progress("predicting", "Found 7 beats. Predicting how your audiences will watch"),
     });
-    expect(steps.map((step) => step.status)).toEqual(["done", "done", "current", "waiting"]);
+    expect(steps.map((step) => step.status)).toEqual([
+      "done",
+      "done",
+      "current",
+      "waiting",
+      "waiting",
+    ]);
     expect(steps[2]?.message).toBe("Found 7 beats. Predicting how your audiences will watch");
     expect(statuses({ status: "failed", progress: progress("watching") })).toEqual([
       "done",
       "failed",
       "waiting",
       "waiting",
+      "waiting",
     ]);
-    expect(statuses({ status: "ready", progress: progress("finishing") })).toEqual([
-      "done",
-      "done",
-      "done",
-      "done",
-    ]);
+    expect(statuses({ status: "ready", progress: progress("finishing") })).toEqual(
+      Array(5).fill("done"),
+    );
   });
 
   it("keep polling only while the job has work left", () => {

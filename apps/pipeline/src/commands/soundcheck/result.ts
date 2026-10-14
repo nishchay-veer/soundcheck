@@ -1,7 +1,14 @@
 import { toFeatureBeatInput } from "@soundcheck/core/features";
-import { percentileAmong, type AudienceMix, type CutPrediction } from "@soundcheck/core/model";
+import {
+  percentileAmong,
+  type AudienceMix,
+  type CutComparison,
+  type CutPrediction,
+  type EditSearch,
+} from "@soundcheck/core/model";
 import {
   AUDIENCE_LABELS,
+  type Edit,
   measuredAudienceSchema,
   type MeasuredAudience,
   type Percentiles,
@@ -81,6 +88,31 @@ export function predictionDoc(
     percentileVsChannel: percentile === null ? null : round(percentile, 1),
     comparedVideos: percentile === null ? 0 : recentAvp.length,
   };
+}
+
+/** The search's edits as stored: seconds to 0.1, points to 0.01, times to 0.01 s. */
+export function editsDoc(edits: EditSearch["edits"]): Edit[] {
+  return edits.map((edit) => ({
+    editId: edit.id,
+    edit: edit.edit,
+    startS: round(edit.startS, 2),
+    endS: round(edit.endS, 2),
+    label: edit.label,
+    rationale: edit.rationale,
+    deltaAvdS: spread(edit.avdS.delta, 1),
+    deltaAvpPp: spread(edit.avp.delta, 2),
+    audienceDriver: edit.avdS.driver,
+    recommended: edit.recommended,
+  }));
+}
+
+/** The recommended edits' effect together, as stored; null when none is recommended. */
+export function effectDoc(
+  together: { avdS: CutComparison; avp: CutComparison } | null,
+): { deltaAvdS: Percentiles; deltaAvpPp: Percentiles } | null {
+  return together
+    ? { deltaAvdS: spread(together.avdS.delta, 1), deltaAvpPp: spread(together.avp.delta, 2) }
+    : null;
 }
 
 /**
