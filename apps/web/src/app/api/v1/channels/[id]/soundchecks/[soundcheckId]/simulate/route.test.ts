@@ -59,7 +59,6 @@ describe("POST /api/v1/channels/[id]/soundchecks/[soundcheckId]/simulate", () =>
     expect(await response.json()).toEqual(simulation);
     expect(simulateSoundcheck).toHaveBeenCalledWith(USER, CHANNEL_ID, ID, {
       edits: [{ op: "remove", beat: 2 }],
-      objective: "avd",
     });
   });
 

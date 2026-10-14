@@ -123,7 +123,7 @@ describe("simulateSoundcheck", () => {
     edits: Parameters<typeof simulateSoundcheck>[3]["edits"] = [],
     userId = ME,
     id = ID,
-  ) => simulateSoundcheck(userId, CHANNEL, id, { edits, objective: "avd" });
+  ) => simulateSoundcheck(userId, CHANNEL, id, { edits });
 
   beforeEach(async () => {
     resetSimulationCache();
@@ -230,7 +230,6 @@ describe("simulateSoundcheck", () => {
     await save("storage/test-raw/models/new.json", model("unsubscribed", 2));
     const result = await simulateSoundcheck(FIXTURE_USER_ID, CHANNEL, ID, {
       edits: [{ op: "remove", beat: 2 }],
-      objective: "avd",
     });
     expect(result.durationS).toBe(190);
   });

@@ -411,10 +411,12 @@ export type SoundcheckCreated = z.infer<typeof soundcheckCreatedSchema>;
 /** At most this many edits are simulated together. */
 export const MAX_SIMULATED_EDITS = 30;
 
-/** Edits to try on a soundcheck's cut; the objective is what the page ranks by. */
+/**
+ * Edits to try on a soundcheck's cut. The answer has the change in both
+ * seconds and percentage points, so the page switches objective without asking.
+ */
 export const simulateRequestSchema = z.object({
   edits: z.array(cutEditSchema).max(MAX_SIMULATED_EDITS),
-  objective: z.enum(["avd", "avp"]).default("avd"),
 });
 export type SimulateRequest = z.infer<typeof simulateRequestSchema>;
 
