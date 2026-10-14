@@ -52,6 +52,19 @@ export function fixturePath(path: string): string {
   return join(resolve(pickServerEnv(["FIXTURES_DIR"]).FIXTURES_DIR), ...segments) + ".json";
 }
 
+/**
+ * The fixture file of a Cloud Storage object, `gs://bucket/a/b.json`:
+ * `FIXTURES_DIR/storage/bucket/a/b.json`, every segment checked.
+ */
+export function fixtureObjectPath(uri: string): string {
+  const match = /^gs:\/\/([^/]+)\/(.+)$/.exec(uri);
+  const segments = match ? [match[1] as string, ...(match[2] as string).split("/")] : [];
+  if (!segments.length || !segments.every((segment) => /^(?!\.{1,2}$)[\w.-]+$/.test(segment))) {
+    throw new RangeError(`Not a Cloud Storage object: ${uri}`);
+  }
+  return join(resolve(pickServerEnv(["FIXTURES_DIR"]).FIXTURES_DIR), "storage", ...segments);
+}
+
 /** A document's data, or undefined when it does not exist. */
 export async function readDocument(path: string): Promise<unknown> {
   if (!fixturesMode()) {

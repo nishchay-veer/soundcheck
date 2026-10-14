@@ -36,6 +36,7 @@
     "@googleapis/youtubeanalytics": "11.0.1",
     "@googleapis/youtubereporting": "11.0.1",
     "google-auth-library": "11.1.0",
+    "lru-cache": "11.5.3",
     "ml-matrix": "6.15.0",
     "p-limit": "7.3.3",
     "p-retry": "8.0.1",

@@ -99,3 +99,19 @@ export class SoundcheckRejectedError extends Error {
     this.name = "SoundcheckRejectedError";
   }
 }
+
+/** Edits that cannot be applied together (a beat edited twice, a beat that does not exist): 400. */
+export class InvalidEditsError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidEditsError";
+  }
+}
+
+/** The soundcheck has no prediction to simulate on yet: 409. */
+export class SoundcheckNotReadyError extends Error {
+  constructor(readonly soundcheckId: string) {
+    super(`Soundcheck ${soundcheckId} is not ready`);
+    this.name = "SoundcheckNotReadyError";
+  }
+}

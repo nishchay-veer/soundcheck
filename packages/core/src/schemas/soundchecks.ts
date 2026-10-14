@@ -406,6 +406,50 @@ export const soundcheckCreatedSchema = z.object({
 });
 export type SoundcheckCreated = z.infer<typeof soundcheckCreatedSchema>;
 
+// POST /api/v1/channels/{id}/soundchecks/{soundcheckId}/simulate --------------
+
+/** At most this many edits are simulated together. */
+export const MAX_SIMULATED_EDITS = 30;
+
+/** Edits to try on a soundcheck's cut; the objective is what the page ranks by. */
+export const simulateRequestSchema = z.object({
+  edits: z.array(cutEditSchema).max(MAX_SIMULATED_EDITS),
+  objective: z.enum(["avd", "avp"]).default("avd"),
+});
+export type SimulateRequest = z.infer<typeof simulateRequestSchema>;
+
+/** A beat of the edited cut, and where it was in the cut as it is. */
+export const simulatedSpanSchema = z.object({
+  beat: z.number().int().nonnegative(),
+  startS: seconds,
+  endS: seconds,
+  fromS: seconds,
+  toS: seconds,
+  edit: z.enum(["remove", "trim", "move"]).nullable(),
+});
+export type SimulatedSpan = z.infer<typeof simulatedSpanSchema>;
+
+/** The edited cut, predicted on the soundcheck's own draws. */
+export const simulationSchema = z.object({
+  durationS: z.number().positive(),
+  audiences: z.object({
+    subscribed: z
+      .object({ band: bandSchema, avdS: percentilesSchema, avp: percentilesSchema })
+      .optional(),
+    unsubscribed: z
+      .object({ band: bandSchema, avdS: percentilesSchema, avp: percentilesSchema })
+      .optional(),
+  }),
+  /** Both audiences, weighted as the soundcheck was. */
+  avdS: percentilesSchema,
+  avp: percentilesSchema,
+  /** The change against the cut as it is, draw by draw. */
+  delta: z.object({ avdS: percentilesSchema, avpPp: percentilesSchema }),
+  /** The edited cut's beats, in their new order; removed beats are left out. */
+  spans: z.array(simulatedSpanSchema),
+});
+export type Simulation = z.infer<typeof simulationSchema>;
+
 // channels/{channelId}/soundchecks/{id}/inputs/current -------------------------
 
 /**
