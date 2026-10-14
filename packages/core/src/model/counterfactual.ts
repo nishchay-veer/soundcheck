@@ -153,6 +153,14 @@ interface AudienceDraws {
   /** Draw by draw, then feature by feature: beta / sd. */
   slopes: Float64Array;
   channel: NonNullable<CutModel["artifact"]["channelContext"]>;
+  /**
+   * Which bins this audience's draws read: audiences whose models were fitted
+   * against the same channel numbers share one, built with the scenario's
+   * mix, which only the newcomer model's mix columns read.
+   */
+  frameKey: string;
+  /** Whether a mix in the frame would change what this model reads (only newcomers'). */
+  readsMix: boolean;
 }
 
 /** The same draws for every cut of a soundcheck: common random numbers. */
@@ -196,11 +204,15 @@ export function cutSampler(
       }
       intercepts[draw] = intercept;
     });
+    const readsMix = artifact.featureNames.some((name) => /^(mix|ix)_/.test(name));
     audiences[audience] = {
       columns: Int32Array.from(artifact.featureNames, (name) => featureIndex(name)),
       intercepts,
       slopes,
       channel: artifact.channelContext,
+      // A model that reads the mix outside the newcomers would need bins without it.
+      frameKey: `${JSON.stringify(artifact.channelContext)}|${readsMix && audience !== "unsubscribed" ? "no mix" : "mix"}`,
+      readsMix,
     };
   }
   if (!Object.keys(audiences).length) {
@@ -225,43 +237,50 @@ export function simulateCut(
   { bands = false }: { bands?: boolean } = {},
 ): SimulatedCut {
   const result: SimulatedCut = { durationS: cut.durationS, avp: {}, bands: {} };
+  // One set of bins per channel context: building them is a third of a cut's cost.
+  const frames = new Map<string, ReturnType<typeof buildBins>>();
   for (const audience of MEASURED) {
     const draws = sampler.audiences[audience];
     if (!draws) continue;
-    const frame = buildBins(
-      cut.video,
-      cut.durationS,
-      draws.channel,
-      audience === "unsubscribed" ? mix : null,
-    );
+    let frame = frames.get(draws.frameKey);
+    if (!frame) {
+      const withMix = audience === "unsubscribed" || !draws.readsMix;
+      frame = buildBins(cut.video, cut.durationS, draws.channel, withMix ? mix : null);
+      frames.set(draws.frameKey, frame);
+    }
     const width = draws.columns.length;
-    // Each bin's non-zero features: most columns are zero in any one bin.
-    const rows = Array.from({ length: frame.rows }, (_, bin) => {
-      const at: number[] = [];
-      const values: number[] = [];
-      draws.columns.forEach((column, j) => {
-        const value = frame.values[column * frame.rows + bin] as number;
+    const bins = frame.rows;
+    // Each bin's non-zero features, stored flat: most columns are zero in any one bin.
+    const rowStart = new Int32Array(bins + 1);
+    const at: number[] = [];
+    const values: number[] = [];
+    for (let bin = 0; bin < bins; bin += 1) {
+      for (let j = 0; j < width; j += 1) {
+        const value = frame.values[(draws.columns[j] as number) * bins + bin] as number;
         if (value !== 0) {
           at.push(j);
           values.push(value);
         }
-      });
-      return { at, values };
-    });
+      }
+      rowStart[bin + 1] = at.length;
+    }
+    const columns = Int32Array.from(at);
+    const entries = Float64Array.from(values);
     const avps = new Float64Array(sampler.draws);
     const curves: Float64Array[] = [];
     for (let draw = 0; draw < sampler.draws; draw += 1) {
       const base = draw * width;
-      const curve = new Float64Array(frame.rows);
+      const intercept = draws.intercepts[draw] as number;
+      const curve = new Float64Array(bins);
       let still = 1;
-      rows.forEach(({ at, values }, bin) => {
-        let eta = draws.intercepts[draw] as number;
-        for (let k = 0; k < at.length; k += 1) {
-          eta += (draws.slopes[base + (at[k] as number)] as number) * (values[k] as number);
+      for (let bin = 0; bin < bins; bin += 1) {
+        let eta = intercept;
+        for (let k = rowStart[bin] as number; k < (rowStart[bin + 1] as number); k += 1) {
+          eta += (draws.slopes[base + (columns[k] as number)] as number) * (entries[k] as number);
         }
         still *= 1 - 1 / (1 + Math.exp(-eta));
         curve[bin] = still;
-      });
+      }
       avps[draw] = averageViewPct(curve);
       if (bands) curves.push(curve);
     }
