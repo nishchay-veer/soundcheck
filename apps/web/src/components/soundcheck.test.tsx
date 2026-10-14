@@ -60,7 +60,8 @@ describe("SoundcheckForm", () => {
     const fetch = api(201, { soundcheckId: ID, status: "queued", upload: null });
     render(<SoundcheckForm channelId={CHANNEL} />);
     await user.click(screen.getByRole("radio", { name: "YouTube link" }));
-    await user.type(screen.getByLabelText(/YouTube link/), "https://vimeo.com/1");
+    await user.click(screen.getByLabelText(/YouTube link/));
+    await user.paste("https://vimeo.com/1");
     await user.click(screen.getByRole("button", { name: "Run soundcheck" }));
     expect((await screen.findByRole("alert")).textContent).toMatch(
       /isn't a link to a YouTube video/,
@@ -68,8 +69,10 @@ describe("SoundcheckForm", () => {
     expect(fetch).not.toHaveBeenCalled();
 
     await user.clear(screen.getByLabelText(/YouTube link/));
-    await user.type(screen.getByLabelText(/YouTube link/), "https://youtu.be/lgxOjPdCGkw");
-    await user.type(screen.getByLabelText(/Working title/), "New cover");
+    await user.click(screen.getByLabelText(/YouTube link/));
+    await user.paste("https://youtu.be/lgxOjPdCGkw");
+    await user.click(screen.getByLabelText(/Working title/));
+    await user.paste("New cover");
     await user.selectOptions(screen.getByLabelText(/Expected traffic/), "Mostly suggested");
     await user.click(screen.getByRole("button", { name: "Run soundcheck" }));
     await vi.waitFor(() => expect(push).toHaveBeenCalledWith(`/app/soundcheck/${ID}`));
@@ -132,7 +135,8 @@ describe("SoundcheckForm", () => {
     api(409, { error: "not_built" });
     render(<SoundcheckForm channelId={CHANNEL} />);
     await user.click(screen.getByRole("radio", { name: "YouTube link" }));
-    await user.type(screen.getByLabelText(/YouTube link/), "https://youtu.be/lgxOjPdCGkw");
+    await user.click(screen.getByLabelText(/YouTube link/));
+    await user.paste("https://youtu.be/lgxOjPdCGkw");
     await user.click(screen.getByRole("button", { name: "Run soundcheck" }));
     expect((await screen.findByRole("alert")).textContent).toMatch(/first build hasn't finished/);
     expect(push).not.toHaveBeenCalled();
