@@ -1,4 +1,4 @@
-import type { AudienceCard, SoundcheckDoc, VideoBeat } from "@soundcheck/core/schemas";
+import type { AudienceCard, Edit, SoundcheckDoc, VideoBeat } from "@soundcheck/core/schemas";
 
 /** Made-up data for the style guide: never a real channel's. */
 
@@ -207,6 +207,31 @@ const predicted = (low: number[], middle: number[], high: number[]) => ({
   p90: high,
 });
 
+/** A suggested edit for the sample soundcheck. */
+function sampleEdit(
+  editId: string,
+  edit: Edit["edit"],
+  startS: number,
+  endS: number,
+  label: string,
+  rationale: string,
+  seconds: [number, number, number],
+  points: [number, number, number],
+): Edit {
+  return {
+    editId,
+    edit,
+    startS,
+    endS,
+    label,
+    rationale,
+    deltaAvdS: { p10: seconds[0], p50: seconds[1], p90: seconds[2] },
+    deltaAvpPp: { p10: points[0], p50: points[1], p90: points[2] },
+    audienceDriver: "unsubscribed",
+    recommended: false,
+  };
+}
+
 /** A finished soundcheck of an uploaded cut, 3:32 long. */
 export const SAMPLE_SOUNDCHECK: SoundcheckDoc = {
   soundcheckId: "0123456789abcdef0123456789abcdef",
@@ -246,9 +271,54 @@ export const SAMPLE_SOUNDCHECK: SoundcheckDoc = {
     percentileVsChannel: 66.7,
     comparedVideos: 3,
   },
-  edits: [],
+  edits: [
+    sampleEdit(
+      "move-3-to-5",
+      { op: "move", beat: 3, to: 5 },
+      70,
+      100,
+      "Move the sponsor read at 1:10 to 2:20",
+      "Later in the video, it reaches viewers who are already hooked.",
+      [3.1, 6.4, 9.8],
+      [1.4, 3, 4.6],
+    ),
+    sampleEdit(
+      "move-5-to-2",
+      { op: "move", beat: 5, to: 2 },
+      170,
+      200,
+      "Move the payoff at 2:50 to 0:20",
+      "Delivering the payoff sooner cuts how long viewers wait for it.",
+      [2, 4.4, 7.1],
+      [0.9, 2.1, 3.3],
+    ),
+    sampleEdit(
+      "trim-2",
+      { op: "trim", beat: 2, keep: 0.5 },
+      20,
+      70,
+      "Trim the explanation at 0:20 to 25 s",
+      "Newcomers leave faster the longer it runs, mostly because of its pace.",
+      [-1.2, 2.1, 5],
+      [1.1, 3.4, 5.6],
+    ),
+    sampleEdit(
+      "remove-6",
+      { op: "remove", beat: 6 },
+      200,
+      212,
+      "Cut the call to action at 3:20 (12 s)",
+      "Newcomers are predicted to leave a little faster during it.",
+      [-0.8, 0.6, 2.1],
+      [0.4, 1.2, 2],
+    ),
+  ],
   recommendedEffect: null,
-  chapters: null,
+  chapters: [
+    { firstBeat: 0, title: "Will it play in tune?" },
+    { firstBeat: 2, title: "Shaping the neck" },
+    { firstBeat: 4, title: "The first chords" },
+  ],
   narrative:
     "Subscribers should watch about 53% of this cut (46 to 59%), and newcomers about 35% (29 to 42%). That is better than 67% of your 3 recent videos.",
   extractionVersion: "beats-v3",

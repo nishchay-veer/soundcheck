@@ -153,6 +153,7 @@ export function RetentionChart({
             p.band && p.median ? (
               <g key={`${p.key}-model`} pointerEvents="none">
                 <path
+                  className="transition-[d] duration-300 ease-out motion-reduce:transition-none"
                   d={p.band}
                   fill={AUDIENCE_COLOR[p.key]}
                   fillOpacity="0.35"
@@ -160,6 +161,7 @@ export function RetentionChart({
                   strokeWidth="1"
                 />
                 <path
+                  className="transition-[d] duration-300 ease-out motion-reduce:transition-none"
                   d={p.median}
                   fill="none"
                   stroke="var(--ink)"
@@ -174,6 +176,7 @@ export function RetentionChart({
         p.actual ? (
           <g key={`${p.key}-actual`} pointerEvents="none" data-curve={p.key}>
             <path
+              className="transition-[d] duration-300 ease-out motion-reduce:transition-none"
               d={p.actual}
               fill="none"
               stroke="var(--ink)"
@@ -182,6 +185,7 @@ export function RetentionChart({
               strokeLinecap="round"
             />
             <path
+              className="transition-[d] duration-300 ease-out motion-reduce:transition-none"
               d={p.actual}
               fill="none"
               stroke={AUDIENCE_COLOR[p.key]}

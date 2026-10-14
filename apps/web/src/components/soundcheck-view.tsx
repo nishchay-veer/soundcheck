@@ -3,16 +3,18 @@
 import {
   AUDIENCE_LABELS,
   SCENARIO_LABELS,
+  simulationSchema,
   soundcheckDocSchema,
+  type Edit,
   type SoundcheckDoc,
 } from "@soundcheck/core/schemas";
 import { Badge } from "@soundcheck/ui/components/badge";
 import { buttonVariants } from "@soundcheck/ui/components/button";
-import { cn } from "@soundcheck/ui/lib/utils";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import useSWR from "swr";
 import { AUDIENCE_COLOR } from "@/lib/audiences";
+import { marksFor, toEdited, toOriginal, type Objective } from "@/lib/edits";
 import {
   KIND_LABELS,
   SCENARIO_ASSUMPTIONS,
@@ -25,14 +27,20 @@ import {
   unusableReasons,
 } from "@/lib/soundcheck";
 import { formatClock } from "@/lib/format";
+import { useDebounced } from "@/lib/use-debounced";
 import { AutopsyChart } from "./autopsy-chart";
 import { BuildProgress } from "./build-progress";
+import { CutExports } from "./cut-exports";
+import { CutStrip } from "./cut-strip";
+import { EditPanel } from "./edit-panel";
 import { ResultNotice } from "./result-notice";
 import { StatCard } from "./stat-card";
 import { YouTubePlayer, type PlayerHandle } from "./youtube-player";
 
 /** While the job runs, the page asks for news this often. */
 export const SOUNDCHECK_POLL_MS = 2_000;
+/** Edits are simulated once the ticks have been still this long. */
+export const EDIT_DEBOUNCE_MS = 250;
 
 const date = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
@@ -144,18 +152,104 @@ function Failed({ doc }: { doc: SoundcheckDoc }) {
   );
 }
 
-/** The prediction: totals with ranges, each audience, and the curves over the beats. */
+const SIMULATE_FAILED = "These edits could not be simulated. Please try again.";
+/** What a failed simulation says, by status. */
+const SIMULATE_ERRORS: Partial<Record<number, string>> = {
+  400: "These edits can't go together. Untick one and try again.",
+  409: "This soundcheck isn't ready for edits yet. Reload the page in a minute.",
+};
+
+async function simulate(url: string, edits: readonly Edit["edit"][]) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ edits }),
+  });
+  if (!response.ok) throw new Error(SIMULATE_ERRORS[response.status] ?? SIMULATE_FAILED);
+  return simulationSchema.parse(await response.json());
+}
+
+/**
+ * The prediction: totals with ranges, each audience, the curves over the
+ * beats, and the suggested edits. Ticking edits simulates them together
+ * (250 ms after the last change); the totals, audiences, curves and chapters
+ * then describe the edited cut.
+ */
 export function SoundcheckResult({ doc }: { doc: SoundcheckDoc }) {
   const player = useRef<PlayerHandle>(null);
   const [playhead, setPlayhead] = useState<number | null>(null);
   const prediction = doc.prediction;
-  if (!prediction || !doc.durationS) return null;
-  const reasons = unusableReasons(prediction);
+  const reasons = prediction ? unusableReasons(prediction) : [];
+  const usable = reasons.length === 0;
+  const [objective, setObjective] = useState<Objective>("avd");
+  const [ticked, setTicked] = useState<ReadonlySet<string>>(
+    () =>
+      new Set(
+        usable ? doc.edits.filter((edit) => edit.recommended).map((edit) => edit.editId) : [],
+      ),
+  );
+  const settled = useDebounced(ticked, EDIT_DEBOUNCE_MS);
+  const ids = [...settled].sort();
+  const url = `/api/v1/channels/${doc.channelId}/soundchecks/${doc.soundcheckId}/simulate`;
+  // The answer has both objectives' numbers, so switching objective asks for nothing.
+  const { data, error, isLoading } = useSWR(
+    ids.length ? [url, ids.join(",")] : null,
+    ([key]) =>
+      simulate(
+        key,
+        doc.edits.filter((edit) => ids.includes(edit.editId)).map((edit) => edit.edit),
+      ),
+    { keepPreviousData: true, revalidateOnFocus: false },
+  );
+  if (!prediction || !doc.durationS || !doc.beats) return null;
+  const beats = doc.beats;
+  const simulation = ids.length && ticked.size ? (data ?? null) : null;
+  const chosen = doc.edits.filter((edit) => ticked.has(edit.editId));
   const linked = doc.input.kind === "youtube" ? doc.input.videoId : null;
+
+  // The chart shows the edited cut; the player plays the cut as it is.
+  const shown = simulation
+    ? {
+        durationS: simulation.durationS,
+        series: (["subscribed", "unsubscribed"] as const).flatMap((key) => {
+          const audience = simulation.audiences[key];
+          return audience
+            ? [{ key, label: AUDIENCE_LABELS[key], actual: null, band: audience.band }]
+            : [];
+        }),
+        beats: simulation.spans.flatMap((span) => {
+          const beat = beats[span.beat];
+          return beat ? [{ ...beat, startS: span.startS, endS: span.endS }] : [];
+        }),
+        avdS: simulation.avdS,
+        avp: simulation.avp,
+        audiences: simulation.audiences,
+      }
+    : {
+        durationS: doc.durationS,
+        series: predictedSeries(prediction),
+        beats,
+        avdS: prediction.avdS,
+        avp: prediction.avp,
+        audiences: prediction.audiences,
+      };
   const seek = (seconds: number) => {
+    const original = simulation ? toOriginal(simulation.spans, seconds) : seconds;
+    if (original === null) return;
     setPlayhead(seconds);
-    player.current?.seekTo(seconds);
+    player.current?.seekTo(original);
   };
+  const follow = (seconds: number) =>
+    setPlayhead(simulation ? toEdited(simulation.spans, seconds) : seconds);
+  const toggle = (editId: string) =>
+    setTicked((current) => {
+      const next = new Set(current);
+      if (!next.delete(editId)) next.add(editId);
+      return next;
+    });
+  const withEdits = chosen.length
+    ? ` with ${chosen.length} edit${chosen.length === 1 ? "" : "s"}`
+    : "";
 
   return (
     <div className="flex flex-col gap-8">
@@ -163,14 +257,34 @@ export function SoundcheckResult({ doc }: { doc: SoundcheckDoc }) {
 
       <section aria-label="Prediction" className="grid gap-3 sm:grid-cols-3 sm:gap-4">
         <StatCard
-          label="Predicted average view"
-          value={formatClock(prediction.avdS.p50)}
-          detail={`${formatClock(prediction.avdS.p10)} to ${formatClock(prediction.avdS.p90)}`}
+          label={`Predicted average view${withEdits}`}
+          value={formatClock(shown.avdS.p50)}
+          detail={
+            <>
+              {formatClock(shown.avdS.p10)} to {formatClock(shown.avdS.p90)}
+              {simulation ? (
+                <span className="block">
+                  As it is: {formatClock(prediction.avdS.p50)} ({formatClock(prediction.avdS.p10)}{" "}
+                  to {formatClock(prediction.avdS.p90)})
+                </span>
+              ) : null}
+            </>
+          }
         />
         <StatCard
-          label="Of the cut"
-          value={`${Math.round(prediction.avp.p50)}%`}
-          detail={`${Math.round(prediction.avp.p10)} to ${Math.round(prediction.avp.p90)}%`}
+          label={`Of the cut${withEdits}`}
+          value={`${Math.round(shown.avp.p50)}%`}
+          detail={
+            <>
+              {Math.round(shown.avp.p10)} to {Math.round(shown.avp.p90)}% of{" "}
+              {formatClock(shown.durationS)}
+              {simulation ? (
+                <span className="block">
+                  As it is: {Math.round(prediction.avp.p50)}% of {formatClock(doc.durationS)}
+                </span>
+              ) : null}
+            </>
+          }
         />
         <StatCard
           label="Your recent videos"
@@ -181,21 +295,23 @@ export function SoundcheckResult({ doc }: { doc: SoundcheckDoc }) {
           }
           detail={
             prediction.comparedVideos
-              ? `of your ${prediction.comparedVideos} recent video${prediction.comparedVideos === 1 ? "" : "s"}, by average view`
+              ? `of your ${prediction.comparedVideos} recent video${prediction.comparedVideos === 1 ? "" : "s"}, by average view (the cut as it is)`
               : "No recent videos to compare with"
           }
         />
       </section>
 
-      {doc.narrative ? <p className="max-w-3xl text-lg">{doc.narrative}</p> : null}
+      {doc.narrative && !chosen.length ? (
+        <p className="max-w-3xl text-lg">{doc.narrative}</p>
+      ) : null}
 
       <section aria-labelledby="audiences-title" className="flex flex-col gap-3">
         <h2 id="audiences-title" className="font-heading text-[28px] font-bold tracking-tight">
-          Each audience
+          Each audience{withEdits}
         </h2>
         <ul className="grid gap-3 sm:grid-cols-2 sm:gap-4">
           {(["subscribed", "unsubscribed"] as const).map((key) => {
-            const audience = prediction.audiences[key];
+            const audience = shown.audiences[key];
             if (!audience) return null;
             return (
               <li
@@ -221,38 +337,66 @@ export function SoundcheckResult({ doc }: { doc: SoundcheckDoc }) {
         </ul>
       </section>
 
-      {/* The player sits beside the chart on a desktop; an upload has none, so the chart is full width. */}
-      <div
-        className={cn(
-          "grid grid-cols-[minmax(0,1fr)] gap-6",
-          linked && "lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start",
-        )}
-      >
-        <AutopsyChart
-          id={`soundcheck-${doc.soundcheckId}`}
-          title="Who is predicted to still be watching"
-          durationS={doc.durationS}
-          series={predictedSeries(prediction)}
-          beats={doc.beats ?? []}
-          drops={[]}
-          selectedDropId={null}
-          onSelectDrop={() => undefined}
-          onSeek={seek}
-          playheadS={playhead}
-          predicted
-        />
-        {linked ? (
-          <YouTubePlayer
-            ref={player}
-            videoId={linked}
-            title={soundcheckTitle(doc)}
-            onTime={setPlayhead}
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
+        <div className="flex flex-col gap-6">
+          <AutopsyChart
+            id={`soundcheck-${doc.soundcheckId}`}
+            title={`Who is predicted to still be watching${withEdits}`}
+            durationS={shown.durationS}
+            series={shown.series}
+            beats={shown.beats}
+            drops={[]}
+            selectedDropId={null}
+            onSelectDrop={() => undefined}
+            onSeek={seek}
+            playheadS={playhead}
+            predicted
           />
-        ) : null}
+          {chosen.length ? (
+            <CutStrip
+              beats={beats}
+              durationS={doc.durationS}
+              marks={marksFor(chosen)}
+              onSeek={(seconds) => player.current?.seekTo(seconds)}
+            />
+          ) : null}
+        </div>
+        <div className="flex flex-col gap-6">
+          {linked ? (
+            <YouTubePlayer
+              ref={player}
+              videoId={linked}
+              title={soundcheckTitle(doc)}
+              onTime={follow}
+            />
+          ) : null}
+          <EditPanel
+            edits={doc.edits}
+            objective={objective}
+            onObjective={setObjective}
+            ticked={ticked}
+            onToggle={toggle}
+            usable={usable}
+            together={simulation?.delta ?? null}
+            pending={isLoading || settled !== ticked}
+            error={error ? (error as Error).message : null}
+          />
+        </div>
       </div>
+
+      <CutExports
+        title={soundcheckTitle(doc)}
+        edits={chosen}
+        beats={beats}
+        durationS={doc.durationS}
+        chapters={doc.chapters}
+        spans={simulation?.spans ?? null}
+        editedDurationS={simulation?.durationS ?? doc.durationS}
+      />
+
       <p className="text-sm text-ink-muted">
         Predicted with your channel&apos;s models, assuming {SCENARIO_ASSUMPTIONS[doc.scenario]}.
-        Each range is the middle 80% of 200 simulations.
+        Each range is the middle 80% of 200 simulations, and edits are compared on the same ones.
       </p>
     </div>
   );

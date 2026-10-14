@@ -15,6 +15,7 @@ import { SoundcheckResult } from "@/components/soundcheck-view";
 import { StatCard } from "@/components/stat-card";
 import { BEAT_GROUPS } from "@/lib/beats";
 import { ChartDemo } from "./chart-demo";
+import { EditDemo } from "./edit-demo";
 import { SAMPLE_CARDS, SAMPLE_EFFECTS, SAMPLE_SOUNDCHECK } from "./samples";
 import { SheetDemo } from "./sheet-demo";
 
@@ -222,6 +223,10 @@ export default function StyleguidePage() {
 
       <Section title="Charts">
         <ChartDemo />
+      </Section>
+
+      <Section title="Edits">
+        <EditDemo />
       </Section>
 
       <Section title="Soundcheck result">
