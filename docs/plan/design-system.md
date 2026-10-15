@@ -48,4 +48,4 @@ shadcn/ui primitives are restyled to these rules, not replaced: Button (primary 
 - The predicted median is a 2px dashed black line; the 10th to 90th percentile band is the audience color at 35% opacity with a black outline.
 - Drop windows are `--negative` at 15% opacity with black diagonal hatching.
 - Beat blocks are flat fills by group with 2px black borders and black labels inside; removed or trimmed beats in the edit view are hatched; moved beats get a black arrow.
-- Effect bars are flat black-bordered bars from a black zero line, with black interval whiskers.
+- Effects on the audiences screen are plain words, not bars: grouped by what they say (keeps viewers, loses viewers, no clear effect yet, not in the videos yet), each clear one with a green or red arrow and chip border, what was tried, and how many of every 100 viewers stay to the end with a range.

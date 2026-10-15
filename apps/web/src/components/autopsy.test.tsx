@@ -139,9 +139,9 @@ describe("AudienceGrid deep link", () => {
         />
       </TooltipProvider>,
     );
-    const sheet = screen.getByRole("dialog", { name: "Subscribers: every effect" });
+    const sheet = screen.getByRole("dialog", { name: "Subscribers: what keeps them watching" });
     const highlighted = sheet.querySelector('[aria-current="true"]') as HTMLElement;
-    expect(within(highlighted).getByText("A 30 s sponsor read at 30%")).toBeTruthy();
+    expect(within(highlighted).getByText("Sponsor reads")).toBeTruthy();
     expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
   });
 
@@ -153,7 +153,7 @@ describe("AudienceGrid deep link", () => {
     );
     expect(screen.queryByRole("dialog")).toBeNull();
     await userEvent.click(
-      screen.getAllByRole("button", { name: /See every effect/ })[0] as HTMLElement,
+      screen.getAllByRole("button", { name: "See what keeps them watching" })[0] as HTMLElement,
     );
     expect(screen.getByRole("dialog").querySelector('[aria-current="true"]')).toBeNull();
   });

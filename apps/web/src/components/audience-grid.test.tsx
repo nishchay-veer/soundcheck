@@ -16,26 +16,48 @@ const show = (cards = SAMPLE_CARDS) =>
   );
 
 describe("AudienceGrid", () => {
-  it("opens a card's sheet with every effect, clear or not", async () => {
+  it("opens a card's sheet with its effects in plain words, grouped by what they say", async () => {
     show();
-    await userEvent.click(screen.getByRole("button", { name: "See every effect (4)" }));
-    const sheet = screen.getByRole("dialog", { name: "Subscribers: every effect" });
+    await userEvent.click(
+      screen.getAllByRole("button", { name: "See what keeps them watching" })[0] as HTMLElement,
+    );
+    const sheet = screen.getByRole("dialog", { name: "Subscribers: what keeps them watching" });
     expect(within(sheet).getByText(/Not a result yet: trained on 3 videos/)).toBeTruthy();
-    for (const label of [
-      "A 20 s payoff beat at 75%",
-      "A 30 s sponsor read at 30%",
-      "A 45 s tangent at 50%",
-      "A 15 s call to action at 50%",
-    ]) {
-      expect(within(sheet).getByText(label)).toBeTruthy();
-    }
-    expect(within(sheet).getAllByText("Can't tell yet")).toHaveLength(1);
-    expect(within(sheet).getByText("Not learned: it never varies in your videos")).toBeTruthy();
+    const group = (title: RegExp) =>
+      within(sheet).getByRole("heading", { name: title }).closest("section") as HTMLElement;
+
+    const keeps = group(/^Keeps them watching$/);
+    expect(within(keeps).getByText("Payoff moments")).toBeTruthy();
+    expect(within(keeps).getByText("Keeps viewers")).toBeTruthy();
+    expect(within(keeps).getByText("Adding a 20-second payoff 75% of the way in")).toBeTruthy();
+    expect(
+      within(keeps).getByText(
+        "About 3 more of every 100 viewers stay to the end (between 1 and 6).",
+      ),
+    ).toBeTruthy();
+    const leaves = group(/^Makes them leave$/);
+    expect(within(leaves).getByText("Sponsor reads")).toBeTruthy();
+    expect(within(leaves).getByText("Loses viewers")).toBeTruthy();
+    expect(within(group(/^No clear effect yet \(1\)$/)).getByText("Tangents")).toBeTruthy();
+    expect(
+      within(group(/^Not in your videos yet \(1\)$/)).getByText("Calls to action"),
+    ).toBeTruthy();
+    // No statistics vocabulary.
+    expect(sheet.textContent).not.toMatch(/\bpp\b|interval|percentage points/);
+    expect(within(sheet).queryByText(/^Nothing clear yet/)).toBeNull();
+  });
+
+  it("says plainly when nothing is clear yet", async () => {
+    show([SAMPLE_CARDS[1] as never]);
+    await userEvent.click(screen.getByRole("button", { name: "See what keeps them watching" }));
+    const sheet = screen.getByRole("dialog", { name: "Newcomers: what keeps them watching" });
+    expect(within(sheet).getByText("Nothing clear yet.")).toBeTruthy();
+    expect(within(sheet).queryByRole("heading", { name: "Keeps them watching" })).toBeNull();
   });
 
   it("does not open a sheet for a card without effects", () => {
     show([{ ...SAMPLE_CARDS[1], effects: [], model: null, traits: [] } as never]);
-    expect(screen.queryByRole("button", { name: /See every effect/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /See what keeps them watching/ })).toBeNull();
   });
 
   it("never says cohort", () => {

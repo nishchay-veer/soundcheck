@@ -93,13 +93,6 @@ export const SAMPLE_CARDS: AudienceCard[] = [
   },
 ];
 
-export const SAMPLE_EFFECTS = [
-  { label: "A 20 s payoff beat at 75%", delta: 3.4, ci: [1.2, 5.6] as const },
-  { label: "A 30 s sponsor read at 30%", delta: -1.8, ci: [-3.1, -0.4] as const },
-  { label: "A 45 s tangent at 50%", delta: -0.6, ci: [-2.4, 1.1] as const },
-  { label: "A 15 s call to action at 50%", delta: null, ci: null },
-];
-
 /** A falling curve with a drop at bins 31 to 34, and a band around a smoother median. */
 function curve(start: number, decay: number, drop: number): number[] {
   let still = start;

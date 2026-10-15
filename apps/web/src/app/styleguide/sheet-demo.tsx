@@ -8,32 +8,22 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@soundcheck/ui/components/sheet";
-import { EffectBar } from "@/components/effect-bar";
-import { SAMPLE_EFFECTS } from "./samples";
+import { EffectList } from "@/components/effect-list";
+import { SAMPLE_CARDS } from "./samples";
 
 export function SheetDemo() {
-  const domain = Math.max(...SAMPLE_EFFECTS.flatMap((e) => (e.ci ? e.ci.map(Math.abs) : [])));
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="secondary">Open a sheet</Button>
       </SheetTrigger>
       <SheetContent>
-        <SheetTitle>Subscribers: every effect</SheetTitle>
+        <SheetTitle>Newcomers: what keeps them watching</SheetTitle>
         <SheetDescription>
-          Change in viewers still watching at the end, with a 90% interval. Sample data.
+          Soundcheck tried small changes to a typical video of yours, and predicted how many of
+          every 100 viewers would still be watching at the end. Sample data.
         </SheetDescription>
-        <div className="flex flex-col gap-5">
-          {SAMPLE_EFFECTS.map((effect) => (
-            <EffectBar
-              key={effect.label}
-              label={effect.label}
-              delta={effect.delta}
-              ci={effect.ci}
-              domain={domain}
-            />
-          ))}
-        </div>
+        <EffectList effects={SAMPLE_CARDS[1]?.effects ?? []} />
       </SheetContent>
     </Sheet>
   );

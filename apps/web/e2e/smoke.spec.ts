@@ -47,13 +47,11 @@ test("from the landing page to an audience's effects", async ({ page }, info) =>
   await expect(page.locator("main")).not.toContainText(/cohort/i);
   await check(page, "audiences", info);
 
-  await page
-    .getByRole("button", { name: /See every effect/ })
-    .first()
-    .click();
-  const sheet = page.getByRole("dialog", { name: "Subscribers: every effect" });
+  await page.getByRole("button", { name: "See what keeps them watching" }).first().click();
+  const sheet = page.getByRole("dialog", { name: "Subscribers: what keeps them watching" });
   await expect(sheet).toBeVisible();
-  await expect(sheet.getByText("Can't tell yet").first()).toBeVisible();
+  await expect(sheet.getByText("Nothing clear yet.")).toBeVisible();
+  await expect(sheet.getByRole("heading", { name: /^No clear effect yet/ })).toBeVisible();
   await check(page, "sheet", info);
   await page.keyboard.press("Escape");
   await expect(sheet).toBeHidden();
@@ -109,8 +107,8 @@ test("from the videos list to why a drop-off happened", async ({ page }, info) =
     })
     .click();
   await expect(page).toHaveURL(/\/app\/audiences\?audience=unsubscribed&effect=beat_payoff$/);
-  const sheet = page.getByRole("dialog", { name: "Newcomers: every effect" });
+  const sheet = page.getByRole("dialog", { name: "Newcomers: what keeps them watching" });
   await expect(sheet).toBeVisible();
-  await expect(sheet.locator('[aria-current="true"]')).toContainText("payoff beat");
+  await expect(sheet.locator('[aria-current="true"]')).toHaveText("Payoff moments");
   await check(page, "linked-effect", info);
 });

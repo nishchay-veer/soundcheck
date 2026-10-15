@@ -6,9 +6,8 @@ import { Skeleton } from "@soundcheck/ui/components/skeleton";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { AudienceCard } from "@/components/audience-card";
-import { EffectBar } from "@/components/effect-bar";
+import { EffectList } from "@/components/effect-list";
 import { InfoTip } from "@/components/info-tip";
-import { IntervalText } from "@/components/interval-text";
 import { KindBadge } from "@/components/kind-badge";
 import { ResultNotice } from "@/components/result-notice";
 import { SoundcheckResult } from "@/components/soundcheck-view";
@@ -16,7 +15,7 @@ import { StatCard } from "@/components/stat-card";
 import { BEAT_GROUPS } from "@/lib/beats";
 import { ChartDemo } from "./chart-demo";
 import { EditDemo } from "./edit-demo";
-import { SAMPLE_CARDS, SAMPLE_EFFECTS, SAMPLE_SOUNDCHECK } from "./samples";
+import { SAMPLE_CARDS, SAMPLE_SOUNDCHECK } from "./samples";
 import { SheetDemo } from "./sheet-demo";
 
 export const metadata: Metadata = {
@@ -82,7 +81,6 @@ function Swatch({ fill, name, use }: { fill: string; name: string; use: string }
 
 /** Every component in every state, so the look is reviewed once (docs/plan/design-system.md). */
 export default function StyleguidePage() {
-  const domain = Math.max(...SAMPLE_EFFECTS.flatMap((e) => (e.ci ? e.ci.map(Math.abs) : [])));
   return (
     <main className="mx-auto flex max-w-[1200px] flex-col px-4 py-12 sm:px-6">
       <h1 className="pb-4 font-heading text-[40px] leading-tight font-bold tracking-tight">
@@ -185,27 +183,15 @@ export default function StyleguidePage() {
           <StatCard
             label="Model error"
             value="Not measured"
-            detail="Needs a held-out test"
+            detail="Soundcheck checks its accuracy once you have 26 videos at least 14 days old"
             hint="How far predicted curves are from real ones on videos the model never saw, against the channel's average curve."
           />
         </div>
-        <p className="flex flex-col gap-1">
-          <IntervalText delta={4.2} ci={[2.1, 6.3]} />
-          <IntervalText delta={-2.1} ci={[-3.4, -0.6]} />
-        </p>
       </Section>
 
       <Section title="Effects">
-        <div className="flex max-w-3xl flex-col gap-5">
-          {SAMPLE_EFFECTS.map((effect) => (
-            <EffectBar
-              key={effect.label}
-              label={effect.label}
-              delta={effect.delta}
-              ci={effect.ci}
-              domain={domain}
-            />
-          ))}
+        <div className="max-w-2xl">
+          <EffectList effects={SAMPLE_CARDS[0]?.effects ?? []} />
         </div>
         <div>
           <SheetDemo />

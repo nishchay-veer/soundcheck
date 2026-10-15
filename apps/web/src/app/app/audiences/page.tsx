@@ -26,7 +26,7 @@ function modelError(evaluation: SummaryEvaluation | null, minTrainVideos: number
   if (!evaluation) {
     return {
       value: "Not measured",
-      detail: `Needs ${heldOutMinimum(minTrainVideos)} videos at least ${EVALUATION_SPLIT.minAgeDays} days old for a held-out test`,
+      detail: `Soundcheck checks its accuracy once you have ${heldOutMinimum(minTrainVideos)} videos at least ${EVALUATION_SPLIT.minAgeDays} days old`,
     };
   }
   return {

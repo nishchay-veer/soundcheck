@@ -1,6 +1,6 @@
 import type { AudienceCard } from "@soundcheck/core/schemas";
 import { describe, expect, it } from "vitest";
-import { effectDomain, notUsableReasons } from "./audiences-view";
+import { notUsableReasons } from "./audiences-view";
 
 const card = (model: AudienceCard["model"]) => ({ model }) as AudienceCard;
 const notUsable = {
@@ -18,15 +18,5 @@ describe("audiences view", () => {
     expect(notUsableReasons([card({ ...notUsable, usable: true, unusableReasons: [] })])).toEqual(
       [],
     );
-  });
-
-  it("scales a sheet to its widest interval, never below 1 point", () => {
-    expect(
-      effectDomain([
-        { feature: "a", label: "A", deltaPp: -1.2, ci: [-4.6, 0.3] },
-        { feature: "b", label: "B", deltaPp: null, ci: null },
-      ]),
-    ).toBe(4.6);
-    expect(effectDomain([{ feature: "c", label: "C", deltaPp: 0.01, ci: [-0.02, 0.05] }])).toBe(1);
   });
 });

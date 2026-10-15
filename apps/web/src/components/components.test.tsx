@@ -5,7 +5,6 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
 import { SAMPLE_CARDS } from "@/app/styleguide/samples";
 import { AudienceCard } from "./audience-card";
-import { EffectBar } from "./effect-bar";
 import { KindBadge } from "./kind-badge";
 import { ResultNotice } from "./result-notice";
 
@@ -13,24 +12,8 @@ afterEach(cleanup);
 
 const withTooltips = (node: React.ReactNode) => render(<TooltipProvider>{node}</TooltipProvider>);
 
-describe("EffectBar", () => {
-  it("shows a clear effect with its interval, and says when the interval crosses zero", () => {
-    render(
-      <>
-        <EffectBar label="Payoff" delta={3.4} ci={[1.2, 5.6]} domain={6} />
-        <EffectBar label="Tangent" delta={-0.6} ci={[-2.4, 1.1]} domain={6} />
-        <EffectBar label="Call to action" delta={null} ci={null} domain={6} />
-      </>,
-    );
-    expect(screen.getByText("+3.4 pp (1.2 to 5.6)")).toBeTruthy();
-    expect(screen.getByText("−0.6 pp (−2.4 to 1.1)")).toBeTruthy();
-    expect(screen.getAllByText("Can't tell yet")).toHaveLength(1);
-    expect(screen.getByText("Not learned: it never varies in your videos")).toBeTruthy();
-  });
-});
-
 describe("AudienceCard", () => {
-  it("shows the shares, the average view and the top traits with intervals", () => {
+  it("shows the shares, the average view and what makes a difference, in plain words", () => {
     withTooltips(<AudienceCard card={SAMPLE_CARDS[0] as never} />);
     const card = screen
       .getByRole("heading", { name: "Subscribers" })
@@ -38,8 +21,14 @@ describe("AudienceCard", () => {
     expect(within(card).getByText("31%")).toBeTruthy();
     expect(within(card).getByText("38%")).toBeTruthy();
     expect(within(card).getByText("52.1%")).toBeTruthy();
-    expect(within(card).getByText("A 20 s payoff beat at 75%")).toBeTruthy();
-    expect(within(card).getByText("+3.4 pp (1.2 to 5.6)")).toBeTruthy();
+    const traits = within(card)
+      .getAllByRole("listitem")
+      .map((item) => item.textContent);
+    expect(traits).toEqual([
+      "Payoff moments: about 3 more in 100 stay",
+      "Sponsor reads: about 2 fewer in 100 stay",
+    ]);
+    expect(within(card).queryByText(/pp|interval/)).toBeNull();
     expect(within(card).getByText("Measured")).toBeTruthy();
   });
 
@@ -50,7 +39,7 @@ describe("AudienceCard", () => {
         <AudienceCard card={SAMPLE_CARDS[2] as never} />
       </>,
     );
-    expect(screen.getByText(/No clear traits yet/)).toBeTruthy();
+    expect(screen.getByText(/^Nothing clear yet\. With more videos/)).toBeTruthy();
     expect(screen.getAllByText("Not reported")).toHaveLength(2);
   });
 });

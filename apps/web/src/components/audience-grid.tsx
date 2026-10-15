@@ -11,27 +11,14 @@ import {
 import { FOCUS_RING } from "@soundcheck/ui/lib/styles";
 import { cn } from "@soundcheck/ui/lib/utils";
 import { motion, useReducedMotion } from "motion/react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { effectDomain } from "@/lib/audiences-view";
+import { useState } from "react";
 import { AudienceCard } from "./audience-card";
-import { EffectBar } from "./effect-bar";
-
-/** Scrolls a linked effect into view once its sheet has opened. */
-function Highlighted({ children }: { children: ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    ref.current?.scrollIntoView({ block: "center" });
-  }, []);
-  return (
-    <div ref={ref} aria-current="true" className="-mx-2 rounded-[4px] bg-highlight p-2">
-      {children}
-    </div>
-  );
-}
+import { EffectList } from "./effect-list";
 
 /**
- * One audience's sheet: every simulated effect on one scale, centered on
- * zero. `highlight` marks the effect a link from a drop-off asked for.
+ * One audience's sheet: what Soundcheck tried on a typical video, in plain
+ * words, grouped by what it found. `highlight` marks the effect a link from a
+ * drop-off asked for.
  */
 function EffectsSheet({
   card,
@@ -44,7 +31,6 @@ function EffectsSheet({
   onOpenChange: (open: boolean) => void;
   highlight: string | null;
 }) {
-  const domain = effectDomain(card.effects);
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
@@ -56,42 +42,21 @@ function EffectsSheet({
             FOCUS_RING,
           )}
         >
-          See every effect ({card.effects.length})
+          See what keeps them watching
         </button>
       </SheetTrigger>
       <SheetContent>
-        <SheetTitle>{card.label}: every effect</SheetTitle>
+        <SheetTitle>{card.label}: what keeps them watching</SheetTitle>
         <SheetDescription>
-          How many more or fewer viewers would still be watching at the end of a typical video of
-          yours with each edit, in percentage points, with a 90% interval.
+          Soundcheck tried small changes to a typical video of yours, and predicted how many of
+          every 100 viewers would still be watching at the end.
         </SheetDescription>
         {card.model && !card.model.usable ? (
           <p className="rounded-[4px] border-2 border-ink bg-highlight px-3 py-2 text-sm">
             Not a result yet: {card.model.unusableReasons.join("; ")}.
           </p>
         ) : null}
-        <p className="text-sm text-ink-muted">
-          Green or red: a clear effect. White: can&apos;t tell yet, because the interval includes
-          zero. Not learned: it never varied in your videos.
-        </p>
-        <div className="flex flex-col gap-5">
-          {card.effects.map((effect) => {
-            const bar = (
-              <EffectBar
-                key={effect.feature}
-                label={effect.label}
-                delta={effect.deltaPp}
-                ci={effect.ci}
-                domain={domain}
-              />
-            );
-            return effect.feature === highlight ? (
-              <Highlighted key={effect.feature}>{bar}</Highlighted>
-            ) : (
-              bar
-            );
-          })}
-        </div>
+        <EffectList effects={card.effects} highlight={highlight} />
       </SheetContent>
     </Sheet>
   );

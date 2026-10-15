@@ -19,11 +19,6 @@ export function plain(value: number, digits = 1): string {
   return value < 0 && Number(fixed) !== 0 ? `${MINUS}${fixed}` : fixed;
 }
 
-/** A change in percentage points with its interval: "+4.2 pp (2.1 to 6.3)". */
-export function formatInterval(delta: number, [low, high]: readonly [number, number]): string {
-  return `${signed(delta)} pp (${plain(low)} to ${plain(high)})`;
-}
-
 /** A share as a whole percentage: 0.617 is "62%". */
 export function formatShare(share: number): string {
   return `${Math.round(share * 100)}%`;
