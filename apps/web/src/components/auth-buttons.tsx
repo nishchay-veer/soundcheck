@@ -2,13 +2,7 @@ import { Button } from "@soundcheck/ui/components/button";
 import { signIn, signOut } from "@/auth";
 
 /** Starts Google sign-in, which also connects the channel. */
-export function ConnectButton({
-  label = "Connect YouTube",
-  variant = "primary",
-}: {
-  label?: string;
-  variant?: "primary" | "secondary";
-}) {
+export function ConnectButton({ label = "Connect YouTube" }: { label?: string }) {
   return (
     <form
       action={async () => {
@@ -16,9 +10,7 @@ export function ConnectButton({
         await signIn("google", { redirectTo: "/app" });
       }}
     >
-      <Button type="submit" variant={variant}>
-        {label}
-      </Button>
+      <Button type="submit">{label}</Button>
     </form>
   );
 }

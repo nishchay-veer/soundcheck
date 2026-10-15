@@ -141,15 +141,6 @@ function SectionHeader({ id, title, text }: { id: string; title: string; text?: 
 
 export default async function HomePage() {
   const userId = await currentUserId();
-  const start = (variant: "primary" | "secondary") =>
-    userId ? (
-      <Link href="/app" className={buttonVariants({ variant })}>
-        Open your channel
-      </Link>
-    ) : (
-      <ConnectButton label="Connect your YouTube channel" variant={variant} />
-    );
-
   return (
     <main className="mx-auto flex max-w-[1200px] flex-col px-4 sm:px-6">
       <section className="grid items-center gap-10 py-12 sm:py-20 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-14">
@@ -164,7 +155,13 @@ export default async function HomePage() {
             error, and which edits would help.
           </p>
           <div className="flex flex-wrap items-center gap-3">
-            {start("primary")}
+            {userId ? (
+              <Link href="/app" className={buttonVariants()}>
+                Open your channel
+              </Link>
+            ) : (
+              <ConnectButton label="Connect your YouTube channel" />
+            )}
             <a href="#how" className={buttonVariants({ variant: "secondary" })}>
               See how it works
             </a>
@@ -314,19 +311,6 @@ export default async function HomePage() {
               <p className="max-w-3xl px-5 pb-5 text-ink-muted sm:px-6">{faq.answer}</p>
             </details>
           ))}
-        </div>
-      </section>
-
-      <section className="border-t-2 border-ink py-14 sm:py-20">
-        <div className="flex flex-col items-start gap-6 rounded-[4px] border-2 border-ink bg-accent p-6 sm:p-10 md:flex-row md:items-center md:justify-between">
-          <div className="flex max-w-2xl flex-col gap-3">
-            <h2 className={heading}>Soundcheck your next video</h2>
-            <p className="text-lg">
-              Connect your channel to start. Access is read-only, and you can delete everything at
-              any time.
-            </p>
-          </div>
-          <div className="shrink-0">{start("secondary")}</div>
         </div>
       </section>
 

@@ -26,8 +26,7 @@ describe("the landing page", () => {
     expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
       "Run a soundcheck before you publish",
     );
-    // The hero and the closing band.
-    expect(screen.getAllByRole("button", { name: "Connect your YouTube channel" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "Connect your YouTube channel" })).toHaveLength(1);
     expect(screen.queryByRole("link", { name: "Open your channel" })).toBeNull();
     expect(screen.getByRole("link", { name: "See how it works" }).getAttribute("href")).toBe(
       "#how",
@@ -41,7 +40,7 @@ describe("the landing page", () => {
   it("opens the channel for someone signed in", async () => {
     await page("111111111111111111111");
     const links = screen.getAllByRole("link", { name: "Open your channel" });
-    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/app", "/app"]);
+    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/app"]);
     expect(screen.queryByRole("button", { name: /Connect/ })).toBeNull();
   });
 
