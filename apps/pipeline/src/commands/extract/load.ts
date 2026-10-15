@@ -24,13 +24,21 @@ export async function loadBeats(
   {
     settings = extractionSettings(),
     log = rootLogger,
-  }: { settings?: ExtractionSettings; log?: Logger } = {},
+    progress,
+  }: {
+    settings?: ExtractionSettings;
+    log?: Logger;
+    /** Told how many of the catalogue's videos have been read. */
+    progress?: (done: number, total: number) => void;
+  } = {},
 ): Promise<{ videos: number; beats: number; runs: number }> {
   const runId = randomUUID().replaceAll("-", "");
   const loadLog = childLogger({ channel_id: channelId, stage: "extract-load", run_id: runId }, log);
 
   const extractions: CachedExtraction[] = [];
-  for (const row of await readChannelRows("videos", ["video_id"], channelId)) {
+  const catalogue = await readChannelRows("videos", ["video_id"], channelId);
+  progress?.(0, catalogue.length);
+  for (const [index, row] of catalogue.entries()) {
     const videoId = String(row.video_id);
     const cached = await readCachedExtraction(
       channelId,
@@ -38,6 +46,7 @@ export async function loadBeats(
       extractionRequest(videoId, settings).key,
     );
     if (cached) extractions.push(cached);
+    progress?.(index + 1, catalogue.length);
   }
   const runs = await readRunRecords(channelId);
 

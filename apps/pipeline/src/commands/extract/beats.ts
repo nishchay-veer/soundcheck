@@ -123,6 +123,7 @@ export async function extractBeats(options: ExtractOptions): Promise<ExtractResu
   }
 
   const progress = progressWriter(channelId, "extract", { log });
+  progress.update(0, targets.length);
   const limit = pLimit(EXTRACT_CONCURRENCY);
   let done = 0;
   const outcomes = await Promise.all(

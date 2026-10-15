@@ -11,6 +11,9 @@ from datetime import UTC, datetime
 from typing import Any, Protocol
 
 INTERVAL_S = 5.0
+# The time left is only estimated once this many items are done (as `ETA_MIN_DONE`
+# in packages/core): one finished item says little about the pace of the rest.
+ETA_MIN_DONE = 2
 log = logging.getLogger(__name__)
 
 
@@ -56,7 +59,7 @@ class ProgressWriter:
             "total": total,
             "updatedAt": datetime.now(UTC),
         }
-        if done > 0:
+        if done >= ETA_MIN_DONE:
             progress["etaS"] = round((now - self.started) / done * (total - done))
         try:
             self.document.update({"build.progress": progress})

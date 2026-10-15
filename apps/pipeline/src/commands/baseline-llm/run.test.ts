@@ -45,11 +45,24 @@ describe("runBaselineLlm", () => {
 
   afterEach(resetTestbed);
 
-  const run = (options: { video?: string; noCache?: boolean } = {}) =>
-    runBaselineLlm({ channelId: CHANNEL, settings, log: quiet, ...options });
+  const run = (
+    options: {
+      video?: string;
+      noCache?: boolean;
+      progress?: (done: number, total: number) => void;
+    } = {},
+  ) => runBaselineLlm({ channelId: CHANNEL, settings, log: quiet, ...options });
 
   it("asks about every usable video of a small channel and loads the curves", async () => {
-    const result = await run();
+    const progress = vi.fn();
+    const result = await run({ progress });
+    // Counted from 0 as soon as the videos are known, then one by one.
+    expect(progress.mock.calls).toEqual([
+      [0, 3],
+      [1, 3],
+      [2, 3],
+      [3, 3],
+    ]);
     expect(result.mode).toBe("check");
     expect(result.outcomes.map((o) => [o.videoId, o.status])).toEqual([
       ["vidA", "predicted"],

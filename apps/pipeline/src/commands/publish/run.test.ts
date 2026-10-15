@@ -201,13 +201,27 @@ describe("publishChannel", () => {
 
   afterEach(resetTestbed);
 
-  const publish = (force = false) =>
-    publishChannel({ channelId: CHANNEL, runId: "pub1", now: NOW, log: quiet, draws: 40, force });
+  const publish = (force = false, progress?: (done: number, total: number) => void) =>
+    publishChannel({
+      channelId: CHANNEL,
+      runId: "pub1",
+      now: NOW,
+      log: quiet,
+      draws: 40,
+      force,
+      ...(progress ? { progress } : {}),
+    });
 
   it("writes the summary, the video list and each video's page, each valid", async () => {
     // A page of a video that is no longer published.
     await db.doc(paths.video("gone1234567")).set({ title: "Gone" });
-    const result = await publish();
+    const progress = vi.fn();
+    const result = await publish(false, progress);
+    // The caption batches, counted from 0.
+    const total = (progress.mock.calls[0] as [number, number])[1];
+    expect(total).toBeGreaterThan(0);
+    expect(progress.mock.calls[0]).toEqual([0, total]);
+    expect(progress.mock.calls.at(-1)).toEqual([total, total]);
     expect(result).toMatchObject({
       videos: 1,
       templated: 0,

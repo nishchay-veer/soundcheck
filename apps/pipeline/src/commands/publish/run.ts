@@ -122,6 +122,7 @@ export async function publishChannel({
   draws = 200,
   seed = 1,
   force = false,
+  progress,
 }: {
   channelId: string;
   runId?: string;
@@ -130,6 +131,8 @@ export async function publishChannel({
   draws?: number;
   seed?: number;
   force?: boolean;
+  /** Told how many batches of captions are written, the slow part of publishing. */
+  progress?: (done: number, total: number) => void;
 }): Promise<PublishResult> {
   const publishLog = childLogger(
     { channel_id: channelId, stage: PUBLISH_STEP, run_id: runId },
@@ -157,8 +160,16 @@ export async function publishChannel({
     seed,
   });
   const limit = pLimit(NARRATION_CONCURRENCY);
+  let done = 0;
+  progress?.(0, draft.batches.length);
   const narrated = await Promise.all(
-    draft.batches.map((batch) => limit(() => narrate(channelId, batch, { log: publishLog }))),
+    draft.batches.map((batch) =>
+      limit(async () => {
+        const narration = await narrate(channelId, batch, { log: publishLog });
+        progress?.((done += 1), draft.batches.length);
+        return narration;
+      }),
+    ),
   );
   const narrations = new Map<string, Narration>(narrated.flatMap((batch) => [...batch]));
   const documents = finalize(draft, narrations);

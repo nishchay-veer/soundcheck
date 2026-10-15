@@ -1,5 +1,5 @@
 import { childLogger, getJobEnv, logger as rootLogger, type Logger } from "@soundcheck/core";
-import { readChannelRows, recordBuildCounts } from "@soundcheck/core/jobs";
+import { progressWriter, readChannelRows, recordBuildCounts } from "@soundcheck/core/jobs";
 import { runBaselineLlm } from "../baseline-llm/run";
 import { extractBeats } from "../extract/beats";
 import { loadBeats } from "../extract/load";
@@ -91,6 +91,24 @@ export async function countVideos(channelId: string) {
   return { eligibleVideos: eligible.size, usableVideos: usable.size };
 }
 
+/**
+ * Runs `work` with a progress writer for the stage, so the build screen can
+ * count it, and writes the last value even when the work fails.
+ */
+async function reporting<T>(
+  channelId: string,
+  stage: Stage,
+  log: Logger,
+  work: (progress: (done: number, total: number) => void) => Promise<T>,
+): Promise<T> {
+  const writer = progressWriter(channelId, stage, { log });
+  try {
+    return await work((done, total) => writer.update(done, total));
+  } finally {
+    await writer.flush();
+  }
+}
+
 /** Runs one stage and returns a line for the job's output. */
 export async function runStage(stage: Stage, options: StageOptions = {}): Promise<string> {
   const { channelId, mode, runId } = stageTarget(options);
@@ -126,7 +144,9 @@ export async function runStage(stage: Stage, options: StageOptions = {}): Promis
       return `extract: ${summary}`;
     }
     case "extract-load": {
-      const loaded = await steps.loadBeats(channelId, { log });
+      const loaded = await reporting(channelId, stage, log, (progress) =>
+        steps.loadBeats(channelId, { log, progress }),
+      );
       return `extract-load: ${loaded.videos} videos, ${loaded.beats} beats`;
     }
     case "features": {
@@ -134,12 +154,16 @@ export async function runStage(stage: Stage, options: StageOptions = {}): Promis
       return `features: ${result.rows} rows from ${result.used.length} videos${result.written ? "" : " (unchanged)"}`;
     }
     case "baseline": {
-      const run = await steps.runBaselineLlm({ channelId, log });
+      const run = await reporting(channelId, stage, log, (progress) =>
+        steps.runBaselineLlm({ channelId, log, progress }),
+      );
       return `baseline: ${run.outcomes.length} videos (${run.mode}), ${run.rows} curves`;
     }
     case "publish":
       return formatPublish(
-        await steps.publishChannel({ channelId, now, log, ...(runId ? { runId } : {}) }),
+        await reporting(channelId, stage, log, (progress) =>
+          steps.publishChannel({ channelId, now, log, progress, ...(runId ? { runId } : {}) }),
+        ),
       );
   }
 }

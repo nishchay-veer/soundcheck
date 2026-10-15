@@ -1,5 +1,5 @@
 import { resetEnvCache, type Logger } from "@soundcheck/core";
-import type { FakeBigQuery } from "@soundcheck/core/testing";
+import type { FakeBigQuery, FakeFirestore } from "@soundcheck/core/testing";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CHANNEL, ingestTestbed, quiet, resetTestbed } from "../ingest/testbed";
 import { STEPS, countVideos, runStage, stageTarget } from "./run";
@@ -35,10 +35,11 @@ function fakeSteps() {
 
 describe("runStage", () => {
   let bigquery: FakeBigQuery;
+  let db: FakeFirestore;
   let steps: ReturnType<typeof fakeSteps>;
 
   beforeEach(async () => {
-    ({ bigquery } = await ingestTestbed());
+    ({ bigquery, db } = await ingestTestbed());
     steps = fakeSteps();
     Object.assign(bigquery.tables, {
       videos: ["v1", "v2", "v3", "short"].map((video_id) => ({
@@ -101,6 +102,33 @@ describe("runStage", () => {
     expect(await run("publish")).toBe(
       'publish: 3 videos, 20 drop-offs (written); models not usable: screens must say "not a result yet"',
     );
+  });
+
+  it("counts the stages that had no progress: reading beats, the baseline and publishing", async () => {
+    const counted = {
+      loadBeats: [12, 69],
+      runBaselineLlm: [3, 7],
+      publishChannel: [2, 5],
+    } as const;
+    for (const [step, [done, total]] of Object.entries(counted)) {
+      const fake = steps[step as keyof typeof counted];
+      const original = fake.getMockImplementation() as (...args: unknown[]) => Promise<unknown>;
+      fake.mockImplementationOnce((async (...args: unknown[]) => {
+        const options = args.at(-1) as { progress: (done: number, total: number) => void };
+        options.progress(done, total);
+        return original(...args);
+      }) as never);
+    }
+    for (const [stage, [done, total]] of [
+      ["extract-load", counted.loadBeats],
+      ["baseline", counted.runBaselineLlm],
+      ["publish", counted.publishChannel],
+    ] as const) {
+      await run(stage);
+      expect(db.docs.get(`channels/${CHANNEL}`)?.build).toMatchObject({
+        progress: { stage, done, total },
+      });
+    }
   });
 
   it("binds the build's stage and run under keys the commands do not use", async () => {

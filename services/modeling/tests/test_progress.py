@@ -38,6 +38,15 @@ def test_writes_at_most_every_5_seconds_with_an_eta() -> None:
     assert document.writes[1]["stage"] == "train"
 
 
+def test_leaves_the_eta_out_until_two_are_done() -> None:
+    document, clock = Document(), Clock()
+    writer = ProgressWriter(document, "evaluate", clock=clock)
+    clock.now += 30
+    writer.update(1, 7)  # one done says little about the pace of the rest
+    writer.flush()
+    assert "etaS" not in document.writes[-1]
+
+
 def test_flush_writes_the_latest_value_once() -> None:
     document, clock = Document(), Clock()
     writer = ProgressWriter(document, "evaluate", clock=clock)

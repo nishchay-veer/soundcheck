@@ -3,6 +3,12 @@ import { getFirestore } from "../gcp";
 import { logger as rootLogger } from "../logger";
 import { COLLECTIONS, buildProgressSchema } from "../schemas";
 
+/**
+ * The time left is only estimated once this many items are done: with several
+ * running at once, one finished item says little about the pace of the rest.
+ */
+export const ETA_MIN_DONE = 2;
+
 /** At most one progress write per channel every five seconds. */
 export const PROGRESS_INTERVAL_MS = 5_000;
 
@@ -47,7 +53,7 @@ export function progressWriter(
       stage,
       done,
       total,
-      ...(done > 0 ? { etaS: Math.round((elapsedS / done) * (total - done)) } : {}),
+      ...(done >= ETA_MIN_DONE ? { etaS: Math.round((elapsedS / done) * (total - done)) } : {}),
       updatedAt: new Date(),
     });
     pending = undefined;

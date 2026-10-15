@@ -51,12 +51,15 @@ export async function runBaselineLlm({
   noCache = false,
   settings = extractionSettings(),
   log = rootLogger,
+  progress,
 }: {
   channelId: string;
   video?: string;
   noCache?: boolean;
   settings?: ExtractionSettings;
   log?: Logger;
+  /** Told how many videos have their curve. */
+  progress?: (done: number, total: number) => void;
 }): Promise<BaselineRun> {
   const runId = randomUUID().replaceAll("-", "");
   const runLog = childLogger({ channel_id: channelId, stage: "baseline-llm", run_id: runId }, log);
@@ -97,14 +100,18 @@ export async function runBaselineLlm({
   }
 
   const limit = pLimit(CONCURRENCY);
+  let done = 0;
+  progress?.(0, targets.length);
   const outcomes = await Promise.all(
     targets.map((videoId) =>
-      limit(() =>
-        predictBaselineCurve(
+      limit(async () => {
+        const outcome = await predictBaselineCurve(
           { channelId, videoId, durationS: videos.get(videoId)?.durationS ?? 0 },
           { settings, noCache, log: runLog },
-        ),
-      ),
+        );
+        progress?.((done += 1), targets.length);
+        return outcome;
+      }),
     ),
   );
 
