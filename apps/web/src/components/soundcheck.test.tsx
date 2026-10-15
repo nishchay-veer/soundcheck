@@ -393,6 +393,30 @@ describe("SoundcheckView with edits", () => {
     ).toContain("1:22");
   });
 
+  it("recommends on newcomers alone when only their model is usable", async () => {
+    const partly = doc({
+      prediction: {
+        ...prediction,
+        audiences: {
+          subscribed: prediction.audiences.subscribed!,
+          unsubscribed: { ...prediction.audiences.unsubscribed!, model: usableModel },
+        },
+      },
+      edits: USABLE.edits,
+      editsJudgedOn: ["unsubscribed"],
+    });
+    const fetch = api(partly);
+    view(partly);
+    expect(box(/Move the sponsor read/).checked).toBe(true);
+    expect(screen.getByText("Recommended for newcomers")).toBeTruthy();
+    expect(screen.getByText(/^Judged on newcomers:/)).toBeTruthy();
+    expect(screen.getByRole("note").textContent).toContain("Not a result yet for subscribers");
+    await vi.waitFor(() =>
+      expect(live().textContent).toBe("With 1 edit, for newcomers: +6.4 s (3.1 s to 9.8 s)(sure)"),
+    );
+    expect(posts(fetch)).toEqual([[SIMULATE, { edits: [{ op: "move", beat: 3, to: 5 }] }]]);
+  });
+
   it("ticks nothing while the model is not usable, but lets each edit be tried", async () => {
     const fetch = api(SAMPLE_SOUNDCHECK);
     view(SAMPLE_SOUNDCHECK);

@@ -14,7 +14,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import useSWR from "swr";
 import { AUDIENCE_COLOR } from "@/lib/audiences";
-import { marksFor, toEdited, toOriginal, type Objective } from "@/lib/edits";
+import { marksFor, recommendingOf, toEdited, toOriginal, type Objective } from "@/lib/edits";
 import { standingOf } from "@/lib/model-standing";
 import {
   KIND_LABELS,
@@ -180,13 +180,14 @@ export function SoundcheckResult({ doc }: { doc: SoundcheckDoc }) {
   const [playhead, setPlayhead] = useState<number | null>(null);
   const prediction = doc.prediction;
   const standing = prediction ? standingOf(prediction.audiences) : { notUsable: [], usable: [] };
-  // Edits are recommended only when every audience's model is usable.
-  const usable = standing.notUsable.length === 0;
+  const recommending = recommendingOf(prediction, doc.editsJudgedOn);
   const [objective, setObjective] = useState<Objective>("avd");
   const [ticked, setTicked] = useState<ReadonlySet<string>>(
     () =>
       new Set(
-        usable ? doc.edits.filter((edit) => edit.recommended).map((edit) => edit.editId) : [],
+        recommending.kind === "none"
+          ? []
+          : doc.edits.filter((edit) => edit.recommended).map((edit) => edit.editId),
       ),
   );
   const settled = useDebounced(ticked, EDIT_DEBOUNCE_MS);
@@ -377,7 +378,7 @@ export function SoundcheckResult({ doc }: { doc: SoundcheckDoc }) {
             onObjective={setObjective}
             ticked={ticked}
             onToggle={toggle}
-            usable={usable}
+            recommending={recommending}
             together={simulation?.delta ?? null}
             pending={isLoading || settled !== ticked}
             error={error ? (error as Error).message : null}

@@ -1,9 +1,13 @@
-import type {
-  Chapter,
-  Edit,
-  Percentiles,
-  SimulatedSpan,
-  VideoBeat,
+import {
+  AUDIENCE_LABELS,
+  measuredAudienceSchema,
+  type Chapter,
+  type Edit,
+  type MeasuredAudience,
+  type Percentiles,
+  type SimulatedSpan,
+  type SoundcheckPrediction,
+  type VideoBeat,
 } from "@soundcheck/core/schemas";
 import { formatClock, plain, signed } from "./format";
 
@@ -173,4 +177,37 @@ export function toEdited(spans: readonly SimulatedSpan[], t: number): number | n
   if (!span) return null;
   const into = t - span.fromS;
   return into <= span.endS - span.startS ? span.startS + into : null;
+}
+
+/**
+ * Whether a soundcheck's edits can be recommended, and on whom: on every
+ * audience (`all`); on the audiences whose model is usable, the others left out
+ * (`some`, labels); or on none, because no model is usable or the usable ones
+ * bring too few of the views. `judgedOn` is the job's `editsJudgedOn`: null on
+ * soundchecks from before it, which recommended only when every model was usable.
+ */
+export type Recommending =
+  | { kind: "all" }
+  | { kind: "some"; on: string[]; without: string[] }
+  | { kind: "none"; why: "not-usable" | "too-few-views" };
+
+export function recommendingOf(
+  prediction: SoundcheckPrediction | null,
+  judgedOn: readonly MeasuredAudience[] | null,
+): Recommending {
+  if (!prediction) return { kind: "none", why: "not-usable" };
+  const present = measuredAudienceSchema.options.filter((key) => prediction.audiences[key]);
+  const usable = present.filter((key) => prediction.audiences[key]?.model.usable);
+  const judged = judgedOn ?? present;
+  if (judged.length && judged.every((key) => usable.includes(key))) {
+    const without = present.filter((key) => !judged.includes(key));
+    return without.length
+      ? {
+          kind: "some",
+          on: judged.map((key) => AUDIENCE_LABELS[key]),
+          without: without.map((key) => AUDIENCE_LABELS[key]),
+        }
+      : { kind: "all" };
+  }
+  return { kind: "none", why: judgedOn && usable.length ? "too-few-views" : "not-usable" };
 }

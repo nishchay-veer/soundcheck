@@ -32,7 +32,7 @@ describe("EditPanel", () => {
         edits={EDITS}
         objective="avd"
         ticked={new Set()}
-        usable
+        recommending={{ kind: "all" }}
         together={null}
         pending={false}
         error={null}
@@ -74,7 +74,7 @@ describe("EditPanel", () => {
         onObjective={onObjective}
         ticked={new Set()}
         onToggle={vi.fn()}
-        usable
+        recommending={{ kind: "all" }}
         together={null}
         pending={false}
         error={null}
@@ -102,7 +102,7 @@ describe("EditPanel", () => {
         onObjective={vi.fn()}
         ticked={new Set()}
         onToggle={vi.fn()}
-        usable={false}
+        recommending={{ kind: "none", why: "not-usable" }}
         together={null}
         pending={false}
         error={null}
@@ -114,6 +114,38 @@ describe("EditPanel", () => {
     expect(
       screen.getAllByRole("checkbox").every((box) => !(box as HTMLInputElement).disabled),
     ).toBe(true);
+  });
+
+  it("says when the edits are judged on newcomers alone, and why", () => {
+    panel({
+      edits: EDITS.map((one) => ({ ...one, recommended: one.editId === "move-3-to-5" })),
+      ticked: new Set(["move-3-to-5"]),
+      recommending: { kind: "some", on: ["Newcomers"], without: ["Subscribers"] },
+      together: {
+        avdS: { p10: 3.1, p50: 6.4, p90: 9.8 },
+        avpPp: { p10: 1.4, p50: 3, p90: 4.6 },
+      },
+    });
+    expect(
+      screen.getByText(/the subscribers' model isn't usable yet, so their numbers are left out\./)
+        .textContent,
+    ).toBe(
+      "Judged on newcomers: the subscribers' model isn't usable yet, so their numbers are left out.",
+    );
+    expect(
+      within(card(/Move the sponsor read/)).getByText("Recommended for newcomers"),
+    ).toBeTruthy();
+    expect(screen.queryByText("Not a result yet")).toBeNull();
+    expect(screen.getByText(/^With 1 edit/).textContent).toBe(
+      "With 1 edit, for newcomers: +6.4 s (3.1 s to 9.8 s)(sure)",
+    );
+  });
+
+  it("says when the usable audiences bring too few of the views to recommend anything", () => {
+    panel({ recommending: { kind: "none", why: "too-few-views" } });
+    expect(screen.getByText(/bring too few of the views/).textContent).toBe(
+      "Not a result yetNothing is recommended yet: the audiences whose model is usable bring too few of the views. You can still try any edit.",
+    );
   });
 
   it("toggles edits, and blocks another edit on a beat that is already changed", async () => {
@@ -144,7 +176,7 @@ describe("EditPanel", () => {
           onObjective={vi.fn()}
           ticked={new Set(["move-3-to-5", "trim-2"])}
           onToggle={vi.fn()}
-          usable
+          recommending={{ kind: "all" }}
           together={null}
           pending={false}
           error={null}

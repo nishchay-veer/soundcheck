@@ -53,7 +53,7 @@ export function EditDemo() {
             return next;
           })
         }
-        usable
+        recommending={{ kind: "all" }}
         together={
           chosen.length
             ? {

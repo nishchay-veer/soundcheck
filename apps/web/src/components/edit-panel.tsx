@@ -4,10 +4,21 @@ import type { Edit, Percentiles } from "@soundcheck/core/schemas";
 import { Badge } from "@soundcheck/ui/components/badge";
 import { FOCUS_RING } from "@soundcheck/ui/lib/styles";
 import { cn } from "@soundcheck/ui/lib/utils";
-import { deltaOf, formatDelta, isSure, rankEdits, type Objective } from "@/lib/edits";
+import {
+  deltaOf,
+  formatDelta,
+  isSure,
+  rankEdits,
+  type Objective,
+  type Recommending,
+} from "@/lib/edits";
 import { formatClock } from "@/lib/format";
 
 const chip = "rounded-full border-2 border-ink px-3 py-1 text-sm font-medium";
+
+const list = new Intl.ListFormat("en", { style: "long", type: "conjunction" });
+const lowered = (labels: readonly string[]) =>
+  list.format(labels.map((label) => label.charAt(0).toLowerCase() + label.slice(1)));
 
 const OBJECTIVES: { value: Objective; label: string }[] = [
   { value: "avd", label: "Seconds watched" },
@@ -35,7 +46,8 @@ function Effect({ delta, objective }: { delta: Percentiles; objective: Objective
  * The suggested edits, ranked by the chosen objective, each with its beat's
  * time, its reason and its own effect; ticking edits simulates them together.
  * Two edits on one beat cannot go together, so ticking one disables the
- * others. While the model is not usable, nothing is recommended.
+ * others. Edits are recommended on the audiences whose model is usable when
+ * they bring enough of the views (`recommending`); otherwise nothing is.
  */
 export function EditPanel({
   edits,
@@ -43,7 +55,7 @@ export function EditPanel({
   onObjective,
   ticked,
   onToggle,
-  usable,
+  recommending,
   together,
   pending,
   error,
@@ -53,7 +65,7 @@ export function EditPanel({
   onObjective: (objective: Objective) => void;
   ticked: ReadonlySet<string>;
   onToggle: (editId: string) => void;
-  usable: boolean;
+  recommending: Recommending;
   /** The ticked edits' effect together, from the simulation; null with none ticked. */
   together: { avdS: Percentiles; avpPp: Percentiles } | null;
   pending: boolean;
@@ -88,12 +100,20 @@ export function EditPanel({
         </div>
       </div>
 
-      {usable ? null : (
+      {recommending.kind === "none" ? (
         <p className="text-sm">
           <Badge className="mr-2">Not a result yet</Badge>
-          Nothing is recommended until your model is usable, but you can try any edit.
+          {recommending.why === "too-few-views"
+            ? "Nothing is recommended yet: the audiences whose model is usable bring too few of the views. You can still try any edit."
+            : "Nothing is recommended until your model is usable, but you can try any edit."}
         </p>
-      )}
+      ) : recommending.kind === "some" ? (
+        <p className="text-sm">
+          <span className="font-medium">Judged on {lowered(recommending.on)}:</span> the{" "}
+          {lowered(recommending.without)}&apos; model isn&apos;t usable yet, so their numbers are
+          left out.
+        </p>
+      ) : null}
 
       {edits.length === 0 ? (
         <p className="text-ink-muted">
@@ -127,7 +147,13 @@ export function EditPanel({
                 <div className="flex min-w-0 flex-col gap-1.5">
                   <label htmlFor={id} className="flex flex-wrap items-center gap-2 font-medium">
                     {edit.label}
-                    {edit.recommended ? <Badge>Recommended</Badge> : null}
+                    {edit.recommended ? (
+                      <Badge>
+                        {recommending.kind === "some"
+                          ? `Recommended for ${lowered(recommending.on)}`
+                          : "Recommended"}
+                      </Badge>
+                    ) : null}
                   </label>
                   <p id={`${id}-why`} className="text-sm text-ink-muted">
                     <span className="font-mono">{formatClock(edit.startS)}</span> · {edit.rationale}
@@ -152,7 +178,8 @@ export function EditPanel({
           "Simulating…"
         ) : (
           <>
-            With {ticked.size} edit{ticked.size === 1 ? "" : "s"}:{" "}
+            With {ticked.size} edit{ticked.size === 1 ? "" : "s"}
+            {recommending.kind === "some" ? `, for ${lowered(recommending.on)}` : ""}:{" "}
             <Effect
               delta={objective === "avd" ? together.avdS : together.avpPp}
               objective={objective}

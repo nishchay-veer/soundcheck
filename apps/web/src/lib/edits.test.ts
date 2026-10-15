@@ -1,4 +1,10 @@
-import type { Chapter, Edit, SimulatedSpan, VideoBeat } from "@soundcheck/core/schemas";
+import type {
+  Chapter,
+  Edit,
+  SimulatedSpan,
+  SoundcheckPrediction,
+  VideoBeat,
+} from "@soundcheck/core/schemas";
 import { describe, expect, it } from "vitest";
 import {
   chaptersText,
@@ -8,6 +14,7 @@ import {
   isSure,
   marksFor,
   rankEdits,
+  recommendingOf,
   timecode,
   toEdited,
   toOriginal,
@@ -231,5 +238,54 @@ describe("times in the edited cut", () => {
         [3, { moved: true }],
       ]),
     );
+  });
+});
+
+describe("recommending", () => {
+  const model = (usable: boolean) => ({
+    runId: "r",
+    usable,
+    unusableReasons: usable ? [] : ["trained on 2 videos; at least 8 are needed"],
+    trainedVideos: usable ? 8 : 2,
+  });
+  const prediction = (subscribers: boolean, newcomers: boolean) =>
+    ({
+      audiences: {
+        subscribed: { model: model(subscribers) },
+        unsubscribed: { model: model(newcomers) },
+      },
+    }) as unknown as SoundcheckPrediction;
+
+  it("recommends on every audience when every model is usable", () => {
+    expect(recommendingOf(prediction(true, true), ["subscribed", "unsubscribed"])).toEqual({
+      kind: "all",
+    });
+    expect(recommendingOf(prediction(true, true), null)).toEqual({ kind: "all" });
+  });
+
+  it("recommends on the audiences the job judged on, naming those left out", () => {
+    expect(recommendingOf(prediction(false, true), ["unsubscribed"])).toEqual({
+      kind: "some",
+      on: ["Newcomers"],
+      without: ["Subscribers"],
+    });
+  });
+
+  it("says why nothing is recommended", () => {
+    expect(recommendingOf(prediction(false, false), ["subscribed", "unsubscribed"])).toEqual({
+      kind: "none",
+      why: "not-usable",
+    });
+    // Usable subscribers alone bring too few of the views, so the job judged on everyone.
+    expect(recommendingOf(prediction(true, false), ["subscribed", "unsubscribed"])).toEqual({
+      kind: "none",
+      why: "too-few-views",
+    });
+    // Soundchecks from before needed every model to be usable.
+    expect(recommendingOf(prediction(false, true), null)).toEqual({
+      kind: "none",
+      why: "not-usable",
+    });
+    expect(recommendingOf(null, null)).toEqual({ kind: "none", why: "not-usable" });
   });
 });
