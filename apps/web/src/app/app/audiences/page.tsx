@@ -10,7 +10,7 @@ import { redirect } from "next/navigation";
 import { AudienceGrid } from "@/components/audience-grid";
 import { ResultNotice } from "@/components/result-notice";
 import { StatCard } from "@/components/stat-card";
-import { notUsableReasons } from "@/lib/audiences-view";
+import { modelStanding } from "@/lib/model-standing";
 import { currentChannel } from "@/lib/channel";
 import { formatCount } from "@/lib/format";
 import { currentUserId } from "@/lib/session";
@@ -62,7 +62,7 @@ export default async function AudiencesPage({
   const summary = await getSummary(userId, channel.id);
   if (!summary && channel.build.state !== "ready") redirect("/app/building");
 
-  const reasons = summary ? notUsableReasons(summary.audiences) : [];
+  const standing = modelStanding(summary?.audiences ?? []);
   const error = modelError(
     summary?.evaluation ?? null,
     pickServerEnv(["MIN_TRAIN_VIDEOS"]).MIN_TRAIN_VIDEOS,
@@ -89,7 +89,7 @@ export default async function AudiencesPage({
         </div>
       ) : (
         <>
-          {reasons.length ? <ResultNotice reasons={reasons} /> : null}
+          <ResultNotice standing={standing} />
           {channel.build.state !== "ready" ? (
             <p className="max-w-2xl text-ink-muted">
               This is a preview from your last build.{" "}

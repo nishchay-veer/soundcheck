@@ -15,6 +15,7 @@ import { useRef, useState } from "react";
 import useSWR from "swr";
 import { AUDIENCE_COLOR } from "@/lib/audiences";
 import { marksFor, toEdited, toOriginal, type Objective } from "@/lib/edits";
+import { standingOf } from "@/lib/model-standing";
 import {
   KIND_LABELS,
   SCENARIO_ASSUMPTIONS,
@@ -24,7 +25,6 @@ import {
   predictedSeries,
   soundcheckSteps,
   soundcheckTitle,
-  unusableReasons,
 } from "@/lib/soundcheck";
 import { formatClock } from "@/lib/format";
 import { useDebounced } from "@/lib/use-debounced";
@@ -179,8 +179,9 @@ export function SoundcheckResult({ doc }: { doc: SoundcheckDoc }) {
   const player = useRef<PlayerHandle>(null);
   const [playhead, setPlayhead] = useState<number | null>(null);
   const prediction = doc.prediction;
-  const reasons = prediction ? unusableReasons(prediction) : [];
-  const usable = reasons.length === 0;
+  const standing = prediction ? standingOf(prediction.audiences) : { notUsable: [], usable: [] };
+  // Edits are recommended only when every audience's model is usable.
+  const usable = standing.notUsable.length === 0;
   const [objective, setObjective] = useState<Objective>("avd");
   const [ticked, setTicked] = useState<ReadonlySet<string>>(
     () =>
@@ -253,7 +254,7 @@ export function SoundcheckResult({ doc }: { doc: SoundcheckDoc }) {
 
   return (
     <div className="flex flex-col gap-8">
-      {reasons.length ? <ResultNotice reasons={reasons} /> : null}
+      <ResultNotice standing={standing} />
 
       <section aria-label="Prediction" className="grid gap-3 sm:grid-cols-3 sm:gap-4">
         <StatCard

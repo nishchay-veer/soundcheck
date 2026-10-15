@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SAMPLE_SOUNDCHECK } from "@/app/styleguide/samples";
+import { standingOf } from "./model-standing";
 import {
   durationRange,
   isActive,
@@ -7,7 +8,6 @@ import {
   predictedSeries,
   soundcheckSteps,
   soundcheckTitle,
-  unusableReasons,
 } from "./soundcheck";
 
 const progress = (
@@ -70,6 +70,12 @@ describe("soundcheck numbers", () => {
       ["subscribed", null, 100],
       ["unsubscribed", null, 100],
     ]);
-    expect(unusableReasons(prediction)).toEqual(["trained on 3 videos; at least 8 are needed"]);
+    expect(standingOf(prediction.audiences)).toEqual({
+      notUsable: [
+        { label: "Subscribers", reasons: ["trained on 3 videos; at least 8 are needed"] },
+        { label: "Newcomers", reasons: ["trained on 3 videos; at least 8 are needed"] },
+      ],
+      usable: [],
+    });
   });
 });

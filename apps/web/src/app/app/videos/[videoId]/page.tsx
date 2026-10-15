@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ResultNotice } from "@/components/result-notice";
+import { standingOf } from "@/lib/model-standing";
 import { StatCard } from "@/components/stat-card";
 import { VideoAutopsy } from "@/components/video-autopsy";
 import { currentChannel } from "@/lib/channel";
@@ -39,13 +40,6 @@ export default async function VideoPage({ params }: { params: Promise<{ videoId:
     throw error;
   }
 
-  const reasons = [
-    ...new Set(
-      Object.values(video.audiences).flatMap((audience) =>
-        audience?.model && !audience.model.usable ? audience.model.unusableReasons : [],
-      ),
-    ),
-  ];
   return (
     <main className="mx-auto flex max-w-[1200px] flex-col gap-8 px-4 py-12 sm:px-6">
       <div className="flex flex-col gap-3">
@@ -74,7 +68,7 @@ export default async function VideoPage({ params }: { params: Promise<{ videoId:
         </section>
       ) : null}
 
-      {reasons.length ? <ResultNotice reasons={reasons} /> : null}
+      <ResultNotice standing={standingOf(video.audiences)} />
 
       <VideoAutopsy video={video} />
     </main>

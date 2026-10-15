@@ -57,10 +57,47 @@ describe("KindBadge", () => {
 });
 
 describe("ResultNotice", () => {
-  it("says the numbers are not a result yet, and why", () => {
-    render(<ResultNotice reasons={["trained on 3 videos; at least 30 are needed"]} />);
+  const twoVideos = "trained on 2 videos; at least 8 are needed";
+
+  it("says no number is a result yet when no model is usable, and why", () => {
+    render(
+      <ResultNotice
+        standing={{
+          notUsable: [
+            { label: "Subscribers", reasons: ["trained on 3 videos; at least 8 are needed"] },
+            { label: "Newcomers", reasons: ["trained on 3 videos; at least 8 are needed"] },
+          ],
+          usable: [],
+        }}
+      />,
+    );
+    expect(screen.getByRole("note").textContent).toBe(
+      "Not a result yet" +
+        "Trained on 3 videos; at least 8 are needed. These numbers show that Soundcheck works on your channel; they don't describe your audiences yet.",
+    );
+  });
+
+  it("names the audience it is about when the others' numbers are real results", () => {
+    render(
+      <ResultNotice
+        standing={{
+          notUsable: [{ label: "Subscribers", reasons: [twoVideos] }],
+          usable: ["Newcomers"],
+        }}
+      />,
+    );
     const note = screen.getByRole("note");
-    expect(note.textContent).toContain("Not a result yet");
-    expect(note.textContent).toContain("Trained on 3 videos; at least 30 are needed.");
+    expect(within(note).getByText("Not a result yet for subscribers")).toBeTruthy();
+    expect(note.textContent).toContain(
+      "Subscribers: trained on 2 videos; at least 8 are needed. Until then, their numbers don't describe how they watch. The numbers for newcomers are real results.",
+    );
+    expect(note.textContent).not.toContain("don't describe your audiences");
+  });
+
+  it("shows nothing when every model is usable", () => {
+    const { container } = render(
+      <ResultNotice standing={{ notUsable: [], usable: ["Subscribers", "Newcomers"] }} />,
+    );
+    expect(container.textContent).toBe("");
   });
 });

@@ -95,14 +95,3 @@ export const durationRange = ({ p10, p50, p90 }: Percentiles): string =>
 /** Average view percentage with its range: "38% (32 to 44%)". */
 export const percentRange = ({ p10, p50, p90 }: Percentiles): string =>
   `${Math.round(p50)}% (${Math.round(p10)} to ${Math.round(p90)}%)`;
-
-/** Whether any audience's model is not usable, so the numbers are not a result yet. */
-export function unusableReasons(prediction: SoundcheckPrediction): string[] {
-  return [
-    ...new Set(
-      Object.values(prediction.audiences).flatMap((audience) =>
-        audience && !audience.model.usable ? audience.model.unusableReasons : [],
-      ),
-    ),
-  ];
-}

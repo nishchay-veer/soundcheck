@@ -199,7 +199,23 @@ export default function StyleguidePage() {
       </Section>
 
       <Section title="Audiences">
-        <ResultNotice reasons={["trained on 3 videos; at least 8 are needed"]} />
+        <ResultNotice
+          standing={{
+            notUsable: [
+              { label: "Subscribers", reasons: ["trained on 3 videos; at least 8 are needed"] },
+              { label: "Newcomers", reasons: ["trained on 3 videos; at least 8 are needed"] },
+            ],
+            usable: [],
+          }}
+        />
+        <ResultNotice
+          standing={{
+            notUsable: [
+              { label: "Subscribers", reasons: ["trained on 2 videos; at least 8 are needed"] },
+            ],
+            usable: ["Newcomers"],
+          }}
+        />
         <div className="grid gap-6 lg:grid-cols-3">
           {SAMPLE_CARDS.map((card) => (
             <AudienceCard key={card.key} card={card} />
