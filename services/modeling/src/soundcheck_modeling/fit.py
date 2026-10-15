@@ -34,6 +34,8 @@ GRADIENT_TOLERANCE = 1e-7
 NEWTON_STEPS = 50
 # A perfect fit has no scatter; this keeps its covariance positive definite.
 MIN_DISPERSION = 1e-12
+# Predicted hazards are kept this far from 0 and 1 in the dispersion.
+MIN_HAZARD = 1e-12
 # Videos are shuffled into folds with this seed, so folds are reproducible.
 FOLD_SEED = 20261010
 
@@ -158,7 +160,13 @@ def fit_model(
         loss, gradient = objective(theta, problem)
         if np.max(np.abs(gradient)) <= 1e-12 * max(1.0, float(w.sum())):
             break
-        step = np.linalg.solve(hessian(theta, problem), gradient)
+        try:
+            step = np.linalg.solve(hessian(theta, problem), gradient)
+        except np.linalg.LinAlgError:
+            # A singular Hessian (unpenalized columns that move together, as a few
+            # near-identical videos can make them): keep L-BFGS-B's answer. The
+            # check below then reports the fit as not converged.
+            break
         size = 1.0
         while size > 1e-10 and objective(theta - size * step, problem)[0] > loss:
             size /= 2
@@ -205,7 +213,8 @@ def quasi_dispersion(
     rows with weight, with k the effective number of parameters,
     trace((X^T W X + lambda * P)^-1 X^T W X). Returns (dispersion, k).
     """
-    p = expit(theta[0] + problem.z @ theta[1:])
+    # A hazard predicted as exactly 0 or 1 would divide by zero.
+    p = np.clip(expit(theta[0] + problem.z @ theta[1:]), MIN_HAZARD, 1 - MIN_HAZARD)
     rows = problem.w > 0
     pearson = float(
         np.sum(problem.w[rows] * (problem.h[rows] - p[rows]) ** 2 / (p[rows] * (1 - p[rows])))

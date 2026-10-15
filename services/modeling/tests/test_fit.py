@@ -8,6 +8,7 @@ from soundcheck_modeling.fit import (
     fit_model,
     hessian,
     objective,
+    quasi_dispersion,
     video_folds,
     video_weights,
 )
@@ -160,6 +161,35 @@ def test_reports_a_fit_that_did_not_converge() -> None:
     fit = fit_model(x, NAMES, h, n, lam=1.0, max_iterations=1, newton_steps=0)
     assert not fit.converged
     assert fit.gradient_norm > 0
+
+
+def test_survives_unpenalized_columns_that_move_together() -> None:
+    # Six near-identical videos can make two unpenalized columns move in
+    # lockstep; the Hessian is then singular, and the fit must not crash.
+    x, h, n, _ = synthetic(videos=10)
+    together = np.column_stack([x, 2 * x[:, 0]])
+    fit = fit_model(
+        together, [*NAMES, "pos_twice"], h, n, lam=1.0, unpenalized=["pos", "pos_twice"]
+    )
+    assert not fit.converged
+    assert np.all(np.isfinite(fit.beta)) and np.all(np.isfinite(fit.cov))
+    assert np.isfinite(fit.dispersion)
+
+
+def test_the_dispersion_stays_finite_when_a_hazard_is_predicted_as_exactly_zero() -> None:
+    rows = 50
+    problem = Problem(
+        z=np.zeros((rows, 1)),
+        h=np.zeros(rows),
+        w=np.ones(rows),
+        lam=1.0,
+        penalized=np.ones(1),
+        beta0=np.zeros(1),
+    )
+    theta = np.array([-800.0, 0.0])  # expit(-800) is exactly 0.0 in floating point
+    information = hessian(theta, problem)
+    dispersion, _ = quasi_dispersion(problem, theta, information, np.linalg.pinv(information))
+    assert np.isfinite(dispersion)
 
 
 def test_weights_follow_viewers_at_risk_and_cap_each_video_at_log_views() -> None:
