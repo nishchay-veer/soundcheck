@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { soundcheckDocSchema, type Simulation, type SoundcheckDoc } from "@soundcheck/core/schemas";
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SWRConfig } from "swr";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -415,6 +415,12 @@ describe("SoundcheckView with edits", () => {
       expect(live().textContent).toBe("With 1 edit, for newcomers: +6.4 s (3.1 s to 9.8 s)(sure)"),
     );
     expect(posts(fetch)).toEqual([[SIMULATE, { edits: [{ op: "move", beat: 3, to: 5 }] }]]);
+    // The totals are everyone's, so they say so beside the newcomers' change.
+    const stats = screen.getByRole("region", { name: "Prediction" });
+    expect(
+      within(stats).getByText("Predicted average view with 1 edit (all viewers)"),
+    ).toBeTruthy();
+    expect(within(stats).getByText("Of the cut with 1 edit (all viewers)")).toBeTruthy();
   });
 
   it("ticks nothing while the model is not usable, but lets each edit be tried", async () => {

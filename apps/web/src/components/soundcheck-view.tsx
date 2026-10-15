@@ -252,6 +252,8 @@ export function SoundcheckResult({ doc }: { doc: SoundcheckDoc }) {
   const withEdits = chosen.length
     ? ` with ${chosen.length} edit${chosen.length === 1 ? "" : "s"}`
     : "";
+  // The panel judges the edits on part of the audience; these totals are everyone's.
+  const allViewers = chosen.length && recommending.kind === "some" ? " (all viewers)" : "";
 
   return (
     <div className="flex flex-col gap-8">
@@ -259,7 +261,7 @@ export function SoundcheckResult({ doc }: { doc: SoundcheckDoc }) {
 
       <section aria-label="Prediction" className="grid gap-3 sm:grid-cols-3 sm:gap-4">
         <StatCard
-          label={`Predicted average view${withEdits}`}
+          label={`Predicted average view${withEdits}${allViewers}`}
           value={formatClock(shown.avdS.p50)}
           detail={
             <>
@@ -274,7 +276,7 @@ export function SoundcheckResult({ doc }: { doc: SoundcheckDoc }) {
           }
         />
         <StatCard
-          label={`Of the cut${withEdits}`}
+          label={`Of the cut${withEdits}${allViewers}`}
           value={`${Math.round(shown.avp.p50)}%`}
           detail={
             <>
