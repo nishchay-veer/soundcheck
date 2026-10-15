@@ -31,7 +31,8 @@ test("from the landing page to an audience's effects", async ({ page }, info) =>
   await expect(page.getByText("Fixture data")).toBeVisible();
   await check(page, "landing", info);
 
-  await page.getByRole("link", { name: "Open your channel" }).click();
+  // The hero's button; the closing band has the same one.
+  await page.getByRole("link", { name: "Open your channel" }).first().click();
   await expect(page).toHaveURL(/\/app\/building$/);
   await expect(page.getByRole("heading", { name: "Not enough videos yet" })).toBeVisible();
   await expect(page.getByText(/Your channel has 3 of 3 eligible videos/)).toBeVisible();
