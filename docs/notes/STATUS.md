@@ -4,6 +4,17 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Change: training minimum lowered to 8 videos (Oct 15, 2026)
+
+- **Nishchay's decision:** `MIN_TRAIN_VIDEOS` is now 8 (was 20), in the code defaults (TypeScript and Python), `.env.example`, `.env`, the workflow deploy script and the specs. A build with fewer usable videos still stops as `insufficient_data`, and a model trained on fewer is still not usable.
+- **What follows from it:**
+  - the held-out accuracy test now needs 14 settled videos (6 tested, 8 for training), not 26;
+  - a channel's models are marked usable from 8 videos, so "Not a result yet" goes and soundchecks recommend edits much sooner; their ranges are wider;
+  - cross-validation already uses fewer folds with fewer videos, so training needs no other change;
+  - the landing page now reads the minimum from the setting instead of repeating it, like the building and audiences screens;
+  - estimated audiences keep their own rule of 30 videos (`ESTIMATED_AUDIENCE_RULE`).
+- **To reach the cloud:** `deploy-workflows.sh` (the build's stop rule), `deploy-pipeline.sh` and `deploy-web.sh`, all reading `.env`. Saved models still state the minimum they were trained under until the channel is rebuilt.
+
 ### Phase 14: Soundcheck upload and prediction (Oct 13, 2026)
 
 - **Built:**

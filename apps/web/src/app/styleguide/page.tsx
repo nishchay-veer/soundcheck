@@ -183,7 +183,7 @@ export default function StyleguidePage() {
           <StatCard
             label="Model error"
             value="Not measured"
-            detail="Soundcheck checks its accuracy once you have 26 videos at least 14 days old"
+            detail="Soundcheck checks its accuracy once you have 14 videos at least 14 days old"
             hint="How far predicted curves are from real ones on videos the model never saw, against the channel's average curve."
           />
         </div>
@@ -199,7 +199,7 @@ export default function StyleguidePage() {
       </Section>
 
       <Section title="Audiences">
-        <ResultNotice reasons={["trained on 3 videos; at least 20 are needed"]} />
+        <ResultNotice reasons={["trained on 3 videos; at least 8 are needed"]} />
         <div className="grid gap-6 lg:grid-cols-3">
           {SAMPLE_CARDS.map((card) => (
             <AudienceCard key={card.key} card={card} />

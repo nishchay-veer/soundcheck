@@ -48,7 +48,7 @@ export const serverEnvSchema = z.object({
   WORKFLOW_CHANNEL_BUILD: required.optional(),
   WORKFLOW_SOUNDCHECK: required.optional(),
   MIN_VIEWS: count.default(500),
-  MIN_TRAIN_VIDEOS: count.default(20),
+  MIN_TRAIN_VIDEOS: count.default(8),
   DEMO_CHANNEL_ID: required.optional(),
   // Fixtures mode reads saved documents from here, relative to the app (Phase 11).
   FIXTURES_DIR: required.default("fixtures"),

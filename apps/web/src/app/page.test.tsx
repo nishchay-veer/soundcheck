@@ -44,6 +44,19 @@ describe("the landing page", () => {
     expect(screen.queryByRole("button", { name: /Connect/ })).toBeNull();
   });
 
+  it("states the channel minimum and the accuracy test's from the settings", async () => {
+    vi.stubEnv("MIN_TRAIN_VIDEOS", "18");
+    await page(null);
+    expect(
+      screen.getByText(/^At least 18 that YouTube has a full retention curve for\./),
+    ).toBeTruthy();
+    expect(screen.getByText(/Once your channel has 24 videos at least 14 days old/)).toBeTruthy();
+    expect(
+      screen.getByText(/enough of your videos, at least 18, every screen says so/),
+    ).toBeTruthy();
+    vi.unstubAllEnvs();
+  });
+
   it("links only to sections that exist, and answers each question in a closed panel", async () => {
     const { container } = await page(null);
     const footer = screen.getByRole("navigation", { name: "On this page" });

@@ -70,6 +70,6 @@ describe("soundcheck numbers", () => {
       ["subscribed", null, 100],
       ["unsubscribed", null, 100],
     ]);
-    expect(unusableReasons(prediction)).toEqual(["trained on 3 videos; at least 20 are needed"]);
+    expect(unusableReasons(prediction)).toEqual(["trained on 3 videos; at least 8 are needed"]);
   });
 });

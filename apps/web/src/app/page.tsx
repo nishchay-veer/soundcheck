@@ -1,3 +1,5 @@
+import { pickServerEnv } from "@soundcheck/core/env";
+import { EVALUATION_SPLIT, heldOutMinimum } from "@soundcheck/core/model";
 import { Badge } from "@soundcheck/ui/components/badge";
 import { buttonVariants } from "@soundcheck/ui/components/button";
 import { FOCUS_RING } from "@soundcheck/ui/lib/styles";
@@ -21,7 +23,8 @@ import { currentUserId } from "@/lib/session";
 
 /*
  * The landing page. Every claim on it is true of the code: what is read, the
- * video minimum, the upload limits, the ranges and what is deleted. The
+ * video minimum (read from MIN_TRAIN_VIDEOS), the upload limits, the ranges
+ * and what is deleted. The
  * example soundcheck is labelled as one.
  */
 
@@ -70,14 +73,15 @@ const FEATURES: { icon: LucideIcon; strip: string; title: string; text: string }
   },
 ];
 
-const HONEST = [
+/** The "honest" points; `minimum` is the training minimum (MIN_TRAIN_VIDEOS). */
+const honest = (minimum: number) => [
   {
     title: "A range on every number",
     text: "Each prediction is the middle 80% of 200 simulations, so you can see how sure it is.",
   },
   {
     title: "“Not a result yet” until it is",
-    text: "Until your model has learned from enough of your videos, at least 20, every screen says so.",
+    text: `Until your model has learned from enough of your videos, at least ${minimum}, every screen says so.`,
   },
   {
     title: "The part it can't explain",
@@ -92,11 +96,11 @@ const READS = [
   "The videos themselves: Gemini, Google's AI model, watches each public video to mark its beats, such as the hook, a sponsor read or the payoff.",
 ];
 
-const FAQS: { question: string; answer: string }[] = [
+/** The questions; `minimum` is the training minimum, `heldOut` the accuracy test's. */
+const faqs = (minimum: number, heldOut: number): { question: string; answer: string }[] => [
   {
     question: "How many videos do I need?",
-    answer:
-      "At least 20 that YouTube has a full retention curve for. A video counts when it isn't a Short, is at least a week old, lasts between 1 minute and 3 hours, and has at least 200 views. With fewer, you can still look around: every screen is marked “Not a result yet”.",
+    answer: `At least ${minimum} that YouTube has a full retention curve for. A video counts when it isn't a Short, is at least a week old, lasts between 1 minute and 3 hours, and has at least 200 views. With fewer, you can still look around: every screen is marked “Not a result yet”.`,
   },
   {
     question: "Does Soundcheck change my videos?",
@@ -110,8 +114,7 @@ const FAQS: { question: string; answer: string }[] = [
   },
   {
     question: "How accurate is it?",
-    answer:
-      "Every number comes with its range, and edits are compared on the same simulations, so small differences stay honest. Once your channel has 26 videos at least 14 days old, the model is also tested on videos it never saw, against your channel's average curve.",
+    answer: `Every number comes with its range, and edits are compared on the same simulations, so small differences stay honest. Once your channel has ${heldOut} videos at least ${EVALUATION_SPLIT.minAgeDays} days old, the model is also tested on videos it never saw, against your channel's average curve.`,
   },
   {
     question: "Does it work with Shorts?",
@@ -141,6 +144,7 @@ function SectionHeader({ id, title, text }: { id: string; title: string; text?: 
 
 export default async function HomePage() {
   const userId = await currentUserId();
+  const minimum = pickServerEnv(["MIN_TRAIN_VIDEOS"]).MIN_TRAIN_VIDEOS;
   return (
     <main className="mx-auto flex max-w-[1200px] flex-col px-4 sm:px-6">
       <section className="grid items-center gap-10 py-12 sm:py-20 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-14">
@@ -244,7 +248,7 @@ export default async function HomePage() {
           text="A prediction is only useful if you know how far to trust it."
         />
         <ul className={cn(card, "grid divide-ink max-md:divide-y-2 md:grid-cols-3 md:divide-x-2")}>
-          {HONEST.map((item) => (
+          {honest(minimum).map((item) => (
             <li key={item.title} className="flex flex-col gap-2 p-5 sm:p-6">
               <h3 className="font-heading text-xl leading-tight font-bold tracking-tight">
                 {item.title}
@@ -297,7 +301,7 @@ export default async function HomePage() {
       >
         <SectionHeader id="faq" title="Questions" />
         <div className={cn(card, "divide-y-2 divide-ink")}>
-          {FAQS.map((faq) => (
+          {faqs(minimum, heldOutMinimum(minimum)).map((faq) => (
             <details key={faq.question} className="group">
               <summary
                 className={cn(

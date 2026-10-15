@@ -48,7 +48,7 @@ Here x-tilde is x standardized with means and standard deviations stored in the 
    - **Fields:** `{runId, channelId, audience, modelVersion, featureVersion, extractionVersion, createdAt, featureNames, droppedFeatures, unpenalized, mean, sd, alpha, beta, cov, lambda, priorRef, trainChannelIds, trainVideoIds, channelContext, usable, unusableReasons, metrics}`.
    - **`cov`** covers (alpha, beta), intercept first.
    - **`channelContext`** is copied from the `feature_contexts` table that `soundcheck features` writes, so predictions measure features the same way.
-   - **`usable` is false**, with reasons, for a channel model trained on fewer than `MIN_TRAIN_VIDEOS` (20) videos, or for a pooled model from one channel. Such a model is never shown or shipped.
+   - **`usable` is false**, with reasons, for a channel model trained on fewer than `MIN_TRAIN_VIDEOS` (8) videos, or for a pooled model from one channel. Such a model is never shown or shipped.
    - **`metrics`:** rows, videos, training loss, the cross-validation losses, folds, iterations, convergence, gradient norm, dispersion and effective parameters.
    - **Where it goes:** it is validated against the exported JSON Schema (plus the consistency checks the schema cannot express) before it is written to `gs://{project}-raw/{channel}/models/{runId}/{audience}.json` (`pooled/models/…` for the pooled model).
    - **`model_runs`:** each fit writes a row, keyed by audience. The status is `fitted`, `not_converged` (no artifact written), `no_data` or `failed`.

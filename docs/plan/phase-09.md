@@ -15,7 +15,7 @@
    - **Test set:** the most recent 20% of eligible videos (at least 6), excluding videos under 14 days old (counted to the curves' data date), whose curves are still settling.
    - **Refit:** Phase 08 is refitted on the training videos only, with lambda chosen by cross-validation on them. The pooled prior is refitted without the test videos and used only when 2 or more channels remain.
    - **The split's numbers** live in `packages/core/src/model/config.ts` (`EVALUATION_SPLIT`) and are exported to Python. TypeScript's `evaluationTestVideos` and Python's `choose_split` apply the same rule, so the LLM baseline is asked about the test videos.
-   - **Check mode:** a channel that cannot hold out 6 videos and still keep `MIN_TRAIN_VIDEOS` (20) for training holds each video out in turn instead. The result is labelled a pipeline check everywhere (eval status `check`, plots, card) and never makes a claim.
+   - **Check mode:** a channel that cannot hold out 6 videos and still keep `MIN_TRAIN_VIDEOS` (8) for training holds each video out in turn instead. The result is labelled a pipeline check everywhere (eval status `check`, plots, card) and never makes a claim.
 2. **Metrics per test video and audience:**
    - **Curve MAE:** mean absolute difference between predicted and actual survival over bins 2 to 100, in percentage points. The actual curve is rebuilt from the hazards the model trains on.
    - **Share-watched error:** absolute difference between the mean predicted survival and the mean actual survival. YouTube's average view percentage counts rewatches, can pass 100%, and has no all-viewers figure, so it is shown beside the result for reference and never scored against.
