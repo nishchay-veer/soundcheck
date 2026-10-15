@@ -53,6 +53,8 @@ export interface StepView {
   detail?: string | null;
   /** Seconds the current step's stage has been running, when known. */
   elapsedS?: number | null;
+  /** The attempt at the current step's stage, when it is being tried again (2 or more). */
+  attempt?: number | null;
 }
 
 /** States in which the build is still at work, so the screen keeps polling. */
@@ -105,6 +107,10 @@ export function buildSteps(build: BuildView, now?: number): StepView[] {
       status: status(index),
       detail: current && build.state === "running" ? stageDetail(build) : null,
       elapsedS: current && build.state === "running" ? elapsedS : null,
+      attempt:
+        current && build.state === "running" && (build.stageAttempt ?? 1) > 1
+          ? (build.stageAttempt ?? null)
+          : null,
       progress:
         current && own && build.progress
           ? {

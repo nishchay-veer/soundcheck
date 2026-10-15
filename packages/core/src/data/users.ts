@@ -26,6 +26,7 @@ export function toBuildView(build: Build): BuildView {
     mode: build.mode,
     stage: build.stage,
     stageStartedAt: build.stageStartedAt?.toISOString(),
+    stageAttempt: build.stageAttempt,
     startedAt: build.startedAt?.toISOString(),
     finishedAt: build.finishedAt?.toISOString(),
     error: build.error,

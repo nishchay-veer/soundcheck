@@ -79,6 +79,7 @@ describe("users", () => {
         mode: "build",
         stage: "extract",
         stageStartedAt: new Date("2026-10-10T16:01:30Z"),
+        stageAttempt: 2,
         startedAt: new Date("2026-10-10T15:59:08Z"),
         execution: "projects/p/locations/us-central1/workflows/channel_build/executions/e",
         usableVideos: 3,
@@ -97,6 +98,7 @@ describe("users", () => {
       mode: "build",
       stage: "extract",
       stageStartedAt: "2026-10-10T16:01:30.000Z",
+      stageAttempt: 2,
       startedAt: "2026-10-10T15:59:08.000Z",
       usableVideos: 3,
       progress: {

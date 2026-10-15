@@ -120,6 +120,21 @@ describe("BuildScreen", () => {
     expect(screen.getByText(/^Checking our accuracy/).textContent).not.toMatch(/of 7/);
   });
 
+  it("says when a step is being tried again", () => {
+    const retrying: ChannelView["build"] = {
+      state: "running",
+      stage: "evaluate",
+      stageAttempt: 2,
+      stageStartedAt: "2026-10-16T09:00:00.000Z",
+    };
+    api([retrying]);
+    show(retrying);
+    expect(
+      screen.getByText("Something went wrong, so this is running again: attempt 2 of 3"),
+    ).toBeTruthy();
+    expect(screen.getByText("Getting ready…")).toBeTruthy();
+  });
+
   it("says where a build failed and starts it again", async () => {
     const { fetch } = api([{ state: "queued" }]);
     show({

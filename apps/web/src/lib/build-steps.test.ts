@@ -136,6 +136,25 @@ describe("buildSteps", () => {
     ).toBeNull();
   });
 
+  it("says when the current stage is being tried again", () => {
+    const at = (stageAttempt?: number) =>
+      buildSteps({
+        state: "running",
+        stage: "evaluate",
+        ...(stageAttempt ? { stageAttempt } : {}),
+      })[3]?.attempt;
+    expect(at()).toBeNull();
+    expect(at(1)).toBeNull();
+    expect(at(2)).toBe(2);
+    expect(at(3)).toBe(3);
+    // Not once the build has failed: the screen says so instead.
+    expect(
+      buildSteps({ state: "failed", stage: "evaluate", stageAttempt: 3 }).every(
+        (step) => !step.attempt,
+      ),
+    ).toBe(true);
+  });
+
   it("keeps polling only while the build is queued or running", () => {
     expect(["queued", "running"].map((state) => isBusy({ state } as BuildView))).toEqual([
       true,

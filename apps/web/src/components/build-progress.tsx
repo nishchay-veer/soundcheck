@@ -1,3 +1,4 @@
+import { STAGE_ATTEMPTS } from "@soundcheck/core/schemas";
 import { Progress } from "@soundcheck/ui/components/progress";
 import { cn } from "@soundcheck/ui/lib/utils";
 import { Check, Minus, X } from "lucide-react";
@@ -88,6 +89,12 @@ export function BuildProgress({ steps }: { steps: readonly StepView[] }) {
                   }
                   aria-label={step.label}
                 />
+                {step.attempt ? (
+                  <span className="text-sm font-medium">
+                    Something went wrong, so this is running again: attempt {step.attempt} of{" "}
+                    {STAGE_ATTEMPTS}
+                  </span>
+                ) : null}
                 {step.detail ? <span className="text-sm">{step.detail}</span> : null}
                 <span className="text-sm text-ink-muted">
                   {step.progress?.etaS !== undefined

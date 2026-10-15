@@ -190,67 +190,75 @@ main:
     - done:
         return: '${"ready: " + string(usable) + " usable videos"}'
 
-# Runs one stage's job and waits for it. Retries twice with exponential
-# backoff; on the final failure marks the build failed with the stage and a
-# short message, then raises so the execution fails too.
+# Runs one stage's job and waits for it, up to 3 attempts (STAGE_ATTEMPTS in
+# packages/core), 30 s and then 60 s apart. Each attempt marks the build with
+# the stage, the attempt and when it started, so the screen can say it is
+# trying again. On the final failure marks the build failed with the stage and
+# a short message, then raises so the execution fails too.
 run_stage:
   params: [project, region, doc, stage, job, job_env, tasks]
   steps:
-    - mark_stage:
-        call: set_build
-        args:
-          doc: ${doc}
-          values:
-            stage: { stringValue: "${stage}" }
-            stageStartedAt: { timestampValue: "${time.format(sys.now())}" }
-          clear: ["progress"]
-    - run:
-        try:
-          call: googleapis.run.v2.projects.locations.jobs.run
-          args:
-            name: ${"projects/" + project + "/locations/" + region + "/jobs/" + job}
-            body:
-              overrides:
-                containerOverrides:
-                  - env: ${job_env}
-                taskCount: ${tasks}
-            connector_params:
-              timeout: 7200
-        retry:
-          predicate: ${always}
-          max_retries: 2
-          backoff:
-            initial_delay: 30
-            max_delay: 300
-            multiplier: 2
-        except:
-          as: failure
+    - attempts:
+        for:
+          value: attempt
+          range: [1, 3]
           steps:
-            # A failed job comes back as "An error occurred during execution of
-            # a long-running operation"; the operation's own error names the
-            # job execution and the exit code, so it is kept when present.
-            - describe:
-                assign:
-                  - reason: ${default(map.get(failure, ["operation", "error", "message"]), map.get(failure, "message"))}
-                  - message: '${stage + ": " + default(reason, json.encode_to_string(failure))}'
-                  - message: ${text.substring(message, 0, math.min(300, len(message)))}
-            - mark_failed:
+            - mark_stage:
                 call: set_build
                 args:
                   doc: ${doc}
                   values:
-                    state: { stringValue: "failed" }
-                    error: { stringValue: "${message}" }
-                    finishedAt: { timestampValue: "${time.format(sys.now())}" }
-            - give_up:
-                raise: ${failure}
-
-# Every stage is idempotent, so any failure may be retried.
-always:
-  params: [e]
-  steps:
-    - yes:
-        return: true
+                    stage: { stringValue: "${stage}" }
+                    stageAttempt: { integerValue: "${string(attempt)}" }
+                    stageStartedAt: { timestampValue: "${time.format(sys.now())}" }
+                  clear: ["progress"]
+            - run:
+                try:
+                  call: googleapis.run.v2.projects.locations.jobs.run
+                  args:
+                    name: ${"projects/" + project + "/locations/" + region + "/jobs/" + job}
+                    body:
+                      overrides:
+                        containerOverrides:
+                          - env: ${job_env}
+                        taskCount: ${tasks}
+                    connector_params:
+                      timeout: 7200
+                except:
+                  as: failure
+                  steps:
+                    - last_attempt:
+                        switch:
+                          - condition: ${attempt == 3}
+                            steps:
+                              # A failed job comes back as "An error occurred during
+                              # execution of a long-running operation"; the operation's
+                              # own error names the job execution and the exit code, so
+                              # it is kept when present.
+                              - describe:
+                                  assign:
+                                    - reason: ${default(map.get(failure, ["operation", "error", "message"]), map.get(failure, "message"))}
+                                    - message: '${stage + ": " + default(reason, json.encode_to_string(failure))}'
+                                    - message: ${text.substring(message, 0, math.min(300, len(message)))}
+                              - mark_failed:
+                                  call: set_build
+                                  args:
+                                    doc: ${doc}
+                                    values:
+                                      state: { stringValue: "failed" }
+                                      error: { stringValue: "${message}" }
+                                      finishedAt: { timestampValue: "${time.format(sys.now())}" }
+                              - give_up:
+                                  raise: ${failure}
+                    # Every stage is idempotent, so any failure may be tried again.
+                    - wait:
+                        call: sys.sleep
+                        args:
+                          seconds: ${30 * attempt}
+                    - try_again:
+                        next: continue
+            - succeeded:
+                next: break
 
 # Sets fields of channels/{id}.build: `values` maps a field to a Firestore
 # value ({stringValue: …}); `clear` lists fields to delete.

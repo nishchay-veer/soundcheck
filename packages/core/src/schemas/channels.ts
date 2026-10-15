@@ -50,6 +50,9 @@ export const buildProgressSchema = z
   });
 export type BuildProgress = z.infer<typeof buildProgressSchema>;
 
+/** How many times the build workflow runs a stage before it gives up (`run_stage` in channel_build.yaml). */
+export const STAGE_ATTEMPTS = 3;
+
 /** `channels/{channelId}.build`, written by `startChannelBuild`, the workflow and the jobs. */
 export const buildSchema = z.object({
   state: buildStateSchema,
@@ -60,6 +63,8 @@ export const buildSchema = z.object({
   stage: z.string().min(1).optional(),
   /** When that stage started, written by the workflow with the stage. */
   stageStartedAt: firestoreDate.optional(),
+  /** Which attempt at the stage this is, from 1 to STAGE_ATTEMPTS. */
+  stageAttempt: z.number().int().min(1).max(STAGE_ATTEMPTS).optional(),
   startedAt: firestoreDate.optional(),
   finishedAt: firestoreDate.optional(),
   /** A short reason, when `failed`. */
