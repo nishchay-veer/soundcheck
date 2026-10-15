@@ -2,7 +2,7 @@ import { Progress } from "@soundcheck/ui/components/progress";
 import { cn } from "@soundcheck/ui/lib/utils";
 import { Check, Minus, X } from "lucide-react";
 import { formatCount } from "@/lib/format";
-import { timeLeft, type StepStatus, type StepView } from "@/lib/build-steps";
+import { timeLeft, timeSoFar, type StepStatus, type StepView } from "@/lib/build-steps";
 
 const SPOKEN: Record<StepStatus, string> = {
   done: "done",
@@ -70,7 +70,7 @@ export function BuildProgress({ steps }: { steps: readonly StepView[] }) {
                 )}
               >
                 {step.label}
-                {counted && step.progress ? (
+                {counted && step.progress && !step.detail ? (
                   <span className="tabular-nums">
                     , {formatCount(step.progress.done)} of {formatCount(step.progress.total)}
                   </span>
@@ -88,8 +88,13 @@ export function BuildProgress({ steps }: { steps: readonly StepView[] }) {
                   }
                   aria-label={step.label}
                 />
+                {step.detail ? <span className="text-sm">{step.detail}</span> : null}
                 <span className="text-sm text-ink-muted">
-                  {step.progress?.etaS !== undefined ? timeLeft(step.progress.etaS) : "Working…"}
+                  {step.progress?.etaS !== undefined
+                    ? timeLeft(step.progress.etaS)
+                    : step.elapsedS !== null && step.elapsedS !== undefined
+                      ? timeSoFar(step.elapsedS)
+                      : "Working…"}
                 </span>
               </div>
             ) : null}

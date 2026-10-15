@@ -58,6 +58,8 @@ export const buildSchema = z.object({
   mode: z.enum(["build", "refresh"]).optional(),
   /** The stage running, or the one that failed. */
   stage: z.string().min(1).optional(),
+  /** When that stage started, written by the workflow with the stage. */
+  stageStartedAt: firestoreDate.optional(),
   startedAt: firestoreDate.optional(),
   finishedAt: firestoreDate.optional(),
   /** A short reason, when `failed`. */

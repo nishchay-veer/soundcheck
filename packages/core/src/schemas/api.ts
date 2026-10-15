@@ -10,6 +10,7 @@ export const buildViewSchema = z.object({
   runId: runIdSchema.optional(),
   mode: z.enum(["build", "refresh"]).optional(),
   stage: z.string().min(1).optional(),
+  stageStartedAt: z.iso.datetime().optional(),
   startedAt: z.iso.datetime().optional(),
   finishedAt: z.iso.datetime().optional(),
   error: z.string().optional(),

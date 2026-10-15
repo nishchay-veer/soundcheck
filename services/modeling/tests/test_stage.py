@@ -39,7 +39,8 @@ def test_the_train_stage_fits_every_audience_and_reports_progress(
     monkeypatch.setattr(cli, "TRAINER", lambda: trainer)
     result = CliRunner().invoke(cli.app, ["stage", "train", "--channel", CHANNEL_A])
     assert result.exit_code == 0, result.output
-    assert recorder.updates == [(1, 3), (2, 3), (3, 3)] and recorder.flushed == 1
+    # 0 of 3 first, so the screen counts from the start.
+    assert recorder.updates == [(0, 3), (1, 3), (2, 3), (3, 3)] and recorder.flushed == 1
     assert [row["audience"] for row in store.runs] == ["all", "subscribed", "unsubscribed"]
 
 
@@ -75,7 +76,7 @@ def test_the_evaluate_stage_draws_no_plots(
     assert result.exit_code == 0, result.output
     assert "plots: none" in result.output
     assert list(tmp_path.iterdir()) == []
-    assert recorder.updates == [(1, 3), (2, 3), (3, 3)]
+    assert recorder.updates == [(0, 3), (1, 3), (2, 3), (3, 3)]
     assert store.rows[0]["status"] == "check"
 
 

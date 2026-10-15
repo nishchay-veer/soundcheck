@@ -7,10 +7,13 @@ import { useState, type ReactNode } from "react";
 import useSWR from "swr";
 import { BUILD_STEPS, buildSteps, isBusy } from "@/lib/build-steps";
 import { formatCount } from "@/lib/format";
+import { useNow } from "@/lib/use-now";
 import { BuildProgress } from "./build-progress";
 
 /** How often the screen asks for the build's progress while it runs. */
 export const POLL_MS = 3000;
+/** How often the time a step has been running is brought up to date. */
+const TICK_MS = 15_000;
 
 async function fetchChannel(url: string): Promise<ChannelView> {
   const response = await fetch(url, { cache: "no-store" });
@@ -60,7 +63,8 @@ export function BuildScreen({
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
   const build = (data ?? initial).build;
-  const steps = buildSteps(build);
+  const now = useNow(TICK_MS);
+  const steps = buildSteps(build, now ?? undefined);
   const current = steps.find((step) => step.status === "current");
 
   async function start() {

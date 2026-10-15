@@ -78,6 +78,7 @@ describe("users", () => {
         runId: "d81fba4cba194878a25705b6d33d9e5f",
         mode: "build",
         stage: "extract",
+        stageStartedAt: new Date("2026-10-10T16:01:30Z"),
         startedAt: new Date("2026-10-10T15:59:08Z"),
         execution: "projects/p/locations/us-central1/workflows/channel_build/executions/e",
         usableVideos: 3,
@@ -95,6 +96,7 @@ describe("users", () => {
       runId: "d81fba4cba194878a25705b6d33d9e5f",
       mode: "build",
       stage: "extract",
+      stageStartedAt: "2026-10-10T16:01:30.000Z",
       startedAt: "2026-10-10T15:59:08.000Z",
       usableVideos: 3,
       progress: {

@@ -1,6 +1,6 @@
 import type { BuildView } from "@soundcheck/core/schemas";
 import { describe, expect, it } from "vitest";
-import { buildSteps, isBusy, timeLeft } from "./build-steps";
+import { buildSteps, isBusy, timeLeft, timeSoFar } from "./build-steps";
 
 const statuses = (build: BuildView) => buildSteps(build).map((step) => step.status);
 
@@ -91,6 +91,51 @@ describe("buildSteps", () => {
     expect(stale.every((step) => step.progress === null)).toBe(true);
   });
 
+  it("says what the current stage is doing, with what it counts", () => {
+    const at = (stage: string, progress?: { done: number; total: number }) =>
+      buildSteps({
+        state: "running",
+        stage,
+        ...(progress
+          ? { progress: { stage, ...progress, updatedAt: "2026-10-16T09:00:00.000Z" } }
+          : {}),
+      }).find((step) => step.status === "current")?.detail;
+    expect(at("extract-load", { done: 12, total: 69 })).toBe(
+      "Saving what Gemini found · 12 of 69 videos",
+    );
+    expect(at("baseline", { done: 3, total: 7 })).toBe(
+      "Asking Gemini to guess each video's curve, to compare the model against · 3 of 7 videos",
+    );
+    expect(at("publish", { done: 2, total: 5 })).toBe("Writing your screens' captions · 2 of 5");
+    // Before a counting stage's job reports, it is still starting up.
+    expect(at("evaluate")).toBe("Getting ready…");
+    // Features counts nothing: it says what it does from the start.
+    expect(at("features")).toBe("Preparing your videos' data for the model");
+    // Nothing for a step that is not running.
+    expect(buildSteps({ state: "failed", stage: "baseline" }).every((step) => !step.detail)).toBe(
+      true,
+    );
+  });
+
+  it("says how long the current stage has been running, from when the workflow started it", () => {
+    const started = Date.parse("2026-10-16T09:00:00.000Z");
+    const steps = buildSteps(
+      { state: "running", stage: "baseline", stageStartedAt: "2026-10-16T09:00:00.000Z" },
+      started + 4 * 60_000 + 20_000,
+    );
+    expect(steps.find((step) => step.status === "current")?.elapsedS).toBe(260);
+    expect(steps.filter((step) => step.elapsedS !== null)).toHaveLength(1);
+    // Without the time, or before the page knows it, no elapsed time.
+    expect(buildSteps({ state: "running", stage: "baseline" }, started)[3]?.elapsedS).toBeNull();
+    expect(
+      buildSteps({
+        state: "running",
+        stage: "baseline",
+        stageStartedAt: "2026-10-16T09:00:00.000Z",
+      })[3]?.elapsedS,
+    ).toBeNull();
+  });
+
   it("keeps polling only while the build is queued or running", () => {
     expect(["queued", "running"].map((state) => isBusy({ state } as BuildView))).toEqual([
       true,
@@ -99,6 +144,15 @@ describe("buildSteps", () => {
     for (const state of ["not_started", "ready", "failed", "insufficient_data"] as const) {
       expect(isBusy({ state })).toBe(false);
     }
+  });
+});
+
+describe("timeSoFar", () => {
+  it("says time so far in plain words", () => {
+    expect(timeSoFar(30)).toBe("under a minute so far");
+    expect(timeSoFar(60)).toBe("1 minute so far");
+    expect(timeSoFar(14 * 60 + 50)).toBe("14 minutes so far");
+    expect(timeSoFar(65 * 60)).toBe("1 h 5 min so far");
   });
 });
 

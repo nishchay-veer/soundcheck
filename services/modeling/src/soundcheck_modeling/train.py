@@ -190,6 +190,7 @@ class Trainer:
             )
         run_id = uuid.uuid4().hex
         outcomes = []
+        self._done(0, len(audiences))
         for audience in audiences:
             prior: tuple[dict[str, float], str] | None = None
             uri = self.store.latest_pooled_uri(

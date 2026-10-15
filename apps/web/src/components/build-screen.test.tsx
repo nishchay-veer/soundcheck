@@ -98,6 +98,28 @@ describe("BuildScreen", () => {
     expect(gets.length).toBe(asked);
   });
 
+  it("says what a long step is doing and how long it has been at it", async () => {
+    vi.setSystemTime(new Date("2026-10-16T09:04:20.000Z"));
+    const baseline: ChannelView["build"] = {
+      state: "running",
+      stage: "baseline",
+      stageStartedAt: "2026-10-16T09:00:00.000Z",
+      progress: { stage: "baseline", done: 1, total: 7, updatedAt: "2026-10-16T09:03:00.000Z" },
+    };
+    api([baseline]);
+    show(baseline);
+    expect(
+      screen.getByText(
+        "Asking Gemini to guess each video's curve, to compare the model against · 1 of 7 videos",
+      ),
+    ).toBeTruthy();
+    // No estimate from one video yet, so the time so far instead of "Working…".
+    expect(await screen.findByText("4 minutes so far")).toBeTruthy();
+    expect(screen.queryByText("Working…")).toBeNull();
+    // The count lives in that line, not after the step's name.
+    expect(screen.getByText(/^Checking our accuracy/).textContent).not.toMatch(/of 7/);
+  });
+
   it("says where a build failed and starts it again", async () => {
     const { fetch } = api([{ state: "queued" }]);
     show({

@@ -546,6 +546,8 @@ def evaluate_channel(
     durations = {v.video_id: v.duration_s for v in usable}
     rng = np.random.default_rng(seed)
     results: dict[str, AudienceResult] = {}
+    if progress is not None:
+        progress(0, len(audiences))
     for audience in audiences:
         results[audience] = _evaluate_audience(
             table,

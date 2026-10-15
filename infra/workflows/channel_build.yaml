@@ -202,6 +202,7 @@ run_stage:
           doc: ${doc}
           values:
             stage: { stringValue: "${stage}" }
+            stageStartedAt: { timestampValue: "${time.format(sys.now())}" }
           clear: ["progress"]
     - run:
         try:

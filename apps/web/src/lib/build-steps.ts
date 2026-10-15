@@ -17,6 +17,29 @@ export const BUILD_STEPS = [
   { key: "publish", label: "Publishing your screens", stages: ["publish"] },
 ] as const;
 
+/**
+ * What each pipeline stage is doing, in a line under its step. A stage that
+ * counts says what (`unit`); until its job reports, it is still starting up.
+ */
+export const STAGE_TEXT: Record<string, { text: string; counts: boolean; unit?: string }> = {
+  ingest: { text: "Asking YouTube for your videos and their numbers", counts: true },
+  extract: { text: "Gemini is watching your videos", counts: true, unit: "videos" },
+  "extract-load": { text: "Saving what Gemini found", counts: true, unit: "videos" },
+  features: { text: "Preparing your videos' data for the model", counts: false },
+  train: { text: "Fitting a model for each audience", counts: true, unit: "audiences" },
+  baseline: {
+    text: "Asking Gemini to guess each video's curve, to compare the model against",
+    counts: true,
+    unit: "videos",
+  },
+  evaluate: {
+    text: "Testing each audience's model on videos it didn't see",
+    counts: true,
+    unit: "audiences",
+  },
+  publish: { text: "Writing your screens' captions", counts: true },
+};
+
 export type StepStatus = "done" | "current" | "waiting" | "failed" | "skipped";
 
 export interface StepView {
@@ -26,14 +49,34 @@ export interface StepView {
   status: StepStatus;
   /** How far the current step has got, when its job reports it. */
   progress: { done: number; total: number; etaS?: number } | null;
+  /** The current step's stage in words, with its count: "Saving what Gemini found · 12 of 69 videos". */
+  detail?: string | null;
+  /** Seconds the current step's stage has been running, when known. */
+  elapsedS?: number | null;
 }
 
 /** States in which the build is still at work, so the screen keeps polling. */
 export const isBusy = (build: Pick<BuildView, "state">): boolean =>
   build.state === "queued" || build.state === "running";
 
-/** Each step's status for a build, and the current step's progress. */
-export function buildSteps(build: BuildView): StepView[] {
+/** The current stage in words: what it is doing, its count, or that its job is still starting. */
+function stageDetail(build: BuildView): string | null {
+  const text = STAGE_TEXT[build.stage ?? ""];
+  if (!text) return null;
+  if (!text.counts) return text.text;
+  const progress = build.progress?.stage === build.stage ? build.progress : undefined;
+  if (!progress || progress.total === 0) return "Getting ready…";
+  return `${text.text} · ${progress.done} of ${progress.total}${text.unit ? ` ${text.unit}` : ""}`;
+}
+
+/**
+ * Each step's status for a build, and the current step's progress, what its
+ * stage is doing and, given `now`, how long it has been running.
+ */
+export function buildSteps(build: BuildView, now?: number): StepView[] {
+  const started = build.stageStartedAt ? Date.parse(build.stageStartedAt) : Number.NaN;
+  const elapsedS =
+    now === undefined || Number.isNaN(started) ? null : Math.max(0, (now - started) / 1000);
   const at = BUILD_STEPS.findIndex((step) =>
     (step.stages as readonly string[]).includes(build.stage ?? ""),
   );
@@ -60,6 +103,8 @@ export function buildSteps(build: BuildView): StepView[] {
       key: step.key,
       label: step.label,
       status: status(index),
+      detail: current && build.state === "running" ? stageDetail(build) : null,
+      elapsedS: current && build.state === "running" ? elapsedS : null,
       progress:
         current && own && build.progress
           ? {
@@ -70,6 +115,14 @@ export function buildSteps(build: BuildView): StepView[] {
           : null,
     };
   });
+}
+
+/** Time so far in words: "under a minute so far", "4 minutes so far", "1 h 5 min so far". */
+export function timeSoFar(seconds: number): string {
+  if (seconds < 60) return "under a minute so far";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} so far`;
+  return `${Math.floor(minutes / 60)} h ${minutes % 60} min so far`;
 }
 
 /** Time left in words: "under a minute", "about 4 minutes", "about 2 hours". */
