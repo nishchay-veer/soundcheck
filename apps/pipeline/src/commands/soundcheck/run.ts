@@ -17,6 +17,7 @@ import { archiveRaw } from "@soundcheck/core/jobs";
 import {
   CUT_DRAWS,
   cutSampler,
+  judging,
   predictCut,
   recentAudienceMix,
   searchEdits,
@@ -312,14 +313,20 @@ export async function runSoundcheck({
       progress: progressAt("suggesting", "Trying edits that could keep viewers longer"),
     });
 
-    // 4. Suggesting: edits on the prediction's own draws, and chapter titles.
-    const usable = Object.values(prediction.audiences).every((audience) => audience.model.usable);
+    // 4. Suggesting: edits on the prediction's own draws, judged on the audiences
+    // whose model is usable when they bring enough of the views, and chapter titles.
+    const judged = judging(
+      audienceMix.weights,
+      Object.fromEntries(
+        Object.entries(prediction.audiences).map(([key, audience]) => [key, audience.model.usable]),
+      ),
+    );
     const search = searchEdits(
       cutSampler(models, { seed: SOUNDCHECK_SEED, draws: CUT_DRAWS }),
       Object.fromEntries(Object.entries(models).map(([key, model]) => [key, model.artifact])),
       { video: extraction, durationS },
-      audienceMix,
-      { usable },
+      judged ? { ...audienceMix, weights: judged.weights } : audienceMix,
+      { usable: judged !== null },
     );
     const chapters = await deps.chapters(
       {
@@ -366,6 +373,7 @@ export async function runSoundcheck({
       prediction,
       edits: editsDoc(search.edits),
       recommendedEffect: effectDoc(search.together),
+      editsJudgedOn: judged?.audiences ?? MEASURED.filter((key) => prediction.audiences[key]),
       chapters,
       narrative: narrative(prediction),
       extractionVersion: EXTRACTION_VERSION,

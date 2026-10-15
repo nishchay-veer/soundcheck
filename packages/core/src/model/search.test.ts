@@ -4,6 +4,7 @@ import type { FeatureBeat, FeatureVideo } from "../features";
 import type { BeatType, ModelArtifact } from "../schemas";
 import { cutSampler } from "./counterfactual";
 import type { AudienceMix } from "./cut";
+import { judging } from "./judge";
 import { loadArtifact } from "./runtime";
 import { SEARCH, candidateEdits, editId, searchEdits } from "./search";
 
@@ -172,6 +173,25 @@ describe("searchEdits", () => {
     expect(recommended.every((edit) => edit.sure)).toBe(true);
     expect(together?.avdS.delta.p10).toBeGreaterThan(0);
     expect(edits.filter((edit) => !edit.recommended).length).toBeLessThanOrEqual(SEARCH.topSingles);
+  });
+
+  it("judges edits on newcomers alone when only their model is usable", () => {
+    const judged = judging(mix.weights, { subscribed: false, unsubscribed: true });
+    const { edits, together } = searchEdits(
+      sampler,
+      artifacts,
+      { video: cut, durationS: 240 },
+      { ...mix, weights: judged?.weights ?? mix.weights },
+      { usable: judged !== null },
+    );
+    expect(edits.some((edit) => edit.recommended)).toBe(true);
+    for (const edit of edits) {
+      // The number shown is the newcomers' own, and they are the ones named in the reason.
+      expect(edit.avdS.delta).toEqual(edit.avdS.byAudience.unsubscribed);
+      expect(edit.avdS.driver).toBe("unsubscribed");
+      expect(edit.rationale).not.toMatch(/^Subscribers/);
+    }
+    expect(together?.avdS.delta).toEqual(together?.avdS.byAudience.unsubscribed);
   });
 
   it("judges by seconds watched by default, which merely shortening the cut does not raise", () => {

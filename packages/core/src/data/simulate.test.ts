@@ -179,6 +179,24 @@ describe("simulateSoundcheck", () => {
     expect(await simulate([{ op: "remove", beat: 2 }])).toEqual(result);
   });
 
+  it("judges the change on newcomers alone when only their model is usable", async () => {
+    const all = await simulate([{ op: "remove", beat: 2 }]);
+    resetSimulationCache();
+    const usable = { ...stamp, usable: true, unusableReasons: [], trainedVideos: 24 };
+    await db.doc(paths.inputs(ID)).set({
+      ...inputs(),
+      models: {
+        subscribed: { artifactUri: URIS.subscribed, inflation: 1, stamp },
+        unsubscribed: { artifactUri: URIS.unsubscribed, inflation: 1, stamp: usable },
+      },
+    });
+    const judged = await simulate([{ op: "remove", beat: 2 }]);
+    // The tangent costs newcomers twice what it costs subscribers, so judged on newcomers
+    // alone, cutting it gains more; the predicted curves are the same either way.
+    expect(judged.delta.avpPp.p50).toBeGreaterThan(all.delta.avpPp.p50);
+    expect(judged.audiences).toEqual(all.audiences);
+  });
+
   it("keeps the models in memory between toggles", async () => {
     await simulate();
     await storage.bucket("test-raw").file("models/sub.json").delete();

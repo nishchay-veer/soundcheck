@@ -332,6 +332,12 @@ export const soundcheckDocSchema = z
       .default(null),
     /** The cut's chapters, in order (Phase 15); none when Gemini gave none, or before. */
     chapters: z.array(chapterSchema).nullable().default(null),
+    /**
+     * The audiences the edits' numbers describe (`judging` in the model):
+     * those with a usable model when they bring enough of the views, otherwise
+     * every audience, with nothing recommended. Null before: every audience.
+     */
+    editsJudgedOn: z.array(measuredAudienceSchema).min(1).nullable().default(null),
     narrative: z.string().nullable(),
     extractionVersion: z.string().min(1),
     featureVersion: z.string().min(1),
@@ -445,7 +451,7 @@ export const simulationSchema = z.object({
   /** Both audiences, weighted as the soundcheck was. */
   avdS: percentilesSchema,
   avp: percentilesSchema,
-  /** The change against the cut as it is, draw by draw. */
+  /** The change against the cut as it is, draw by draw, on the audiences the edits are judged on. */
   delta: z.object({ avdS: percentilesSchema, avpPp: percentilesSchema }),
   /** The edited cut's beats, in their new order; removed beats are left out. */
   spans: z.array(simulatedSpanSchema),

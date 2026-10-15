@@ -62,6 +62,7 @@ const awaiting = (): SoundcheckDoc => ({
   prediction: null,
   edits: [],
   recommendedEffect: null,
+  editsJudgedOn: null,
   chapters: null,
   narrative: null,
   extractionVersion: "beats-v3",
@@ -242,9 +243,11 @@ describe("soundcheck edits and chapters", () => {
     const older: Record<string, unknown> = { ...ready() };
     delete older.recommendedEffect;
     delete older.chapters;
+    delete older.editsJudgedOn;
     expect(soundcheckDocSchema.parse(older)).toMatchObject({
       recommendedEffect: null,
       chapters: null,
+      editsJudgedOn: null,
     });
   });
 

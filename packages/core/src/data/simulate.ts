@@ -9,6 +9,7 @@ import {
   applyEdits,
   compareCuts,
   cutSampler,
+  judging,
   loadArtifact,
   percentiles,
   presentWeights,
@@ -181,14 +182,25 @@ export async function simulateSoundcheck(
     };
   }
   const avp = percentiles(combined);
+  // The change is judged on the same audiences as the job's edits: those whose model is usable.
+  const judged = judging(
+    inputs.weights,
+    Object.fromEntries(
+      MEASURED.flatMap((audience) => {
+        const ref = inputs.models[audience];
+        return ref ? [[audience, ref.stamp.usable]] : [];
+      }),
+    ),
+  );
+  const judgedWeights = judged?.weights ?? inputs.weights;
   return simulationSchema.parse({
     durationS: round(edited.durationS, 2),
     audiences,
     avp: spread(avp, 2),
     avdS: spread(avp, 1, edited.durationS / 100),
     delta: {
-      avdS: spread(compareCuts(sampler, baseline, simulated, inputs.weights, "avd").delta, 1),
-      avpPp: spread(compareCuts(sampler, baseline, simulated, inputs.weights, "avp").delta, 2),
+      avdS: spread(compareCuts(sampler, baseline, simulated, judgedWeights, "avd").delta, 1),
+      avpPp: spread(compareCuts(sampler, baseline, simulated, judgedWeights, "avp").delta, 2),
     },
     spans: edited.spans.map((span) => ({
       beat: span.beat,

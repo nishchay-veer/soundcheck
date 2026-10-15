@@ -337,7 +337,8 @@ export function compareCuts(
   const present = MEASURED.filter((audience) => sampler.audiences[audience]);
   const byAudience: CutComparison["byAudience"] = {};
   const combined = new Float64Array(sampler.draws);
-  let driver = present[0] as MeasuredAudience;
+  // An audience given no weight (its model is not usable) never drives the change.
+  let driver = (present.find((audience) => share[audience] > 0) ?? present[0]) as MeasuredAudience;
   let largest = -1;
   for (const audience of present) {
     const deltas = Float64Array.from(
@@ -350,7 +351,7 @@ export function compareCuts(
     );
     const spread = percentiles(deltas);
     byAudience[audience] = spread;
-    if (Math.abs(share[audience] * spread.p50) > largest) {
+    if (share[audience] > 0 && Math.abs(share[audience] * spread.p50) > largest) {
       largest = Math.abs(share[audience] * spread.p50);
       driver = audience;
     }

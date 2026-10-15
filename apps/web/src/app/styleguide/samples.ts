@@ -307,6 +307,7 @@ export const SAMPLE_SOUNDCHECK: SoundcheckDoc = {
     ),
   ],
   recommendedEffect: null,
+  editsJudgedOn: null,
   chapters: [
     { firstBeat: 0, title: "Will it play in tune?" },
     { firstBeat: 2, title: "Shaping the neck" },

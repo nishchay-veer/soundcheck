@@ -152,6 +152,7 @@ const base = (): SoundcheckDoc => ({
   prediction: null,
   edits: [],
   recommendedEffect: null,
+  editsJudgedOn: null,
   chapters: null,
   narrative: null,
   extractionVersion: EXTRACTION_VERSION,
@@ -190,6 +191,31 @@ afterEach(() => {
 });
 
 describe("runSoundcheck: a link", () => {
+  it("judges edits on newcomers alone when only their model is usable", async () => {
+    await db.doc(paths.soundcheck(ID)).set(base());
+    const unsubscribed = channel.models.unsubscribed as NonNullable<
+      ChannelForCut["models"]["unsubscribed"]
+    >;
+    const partly: ChannelForCut = {
+      ...channel,
+      models: {
+        ...channel.models,
+        unsubscribed: {
+          ...unsubscribed,
+          artifact: { ...newcomers, usable: true, unusableReasons: [] },
+        },
+      },
+    };
+    expect(await run(deps({ readChannel: vi.fn(async () => partly) }))).toMatchObject({
+      status: "ready",
+    });
+    const doc = stored();
+    expect(doc.prediction?.audiences.subscribed?.model.usable).toBe(false);
+    expect(doc.prediction?.audiences.unsubscribed?.model.usable).toBe(true);
+    // Newcomers bring 80% of the views, so the edits are judged on them.
+    expect(doc.editsJudgedOn).toEqual(["unsubscribed"]);
+  });
+
   it("checks, watches and predicts it, then saves the result and the model's inputs", async () => {
     await db.doc(paths.soundcheck(ID)).set(base());
     const d = deps();
@@ -226,6 +252,8 @@ describe("runSoundcheck: a link", () => {
     // no edit gains seconds watched at all, so none is even listed.)
     expect(doc.edits.some((edit) => edit.recommended)).toBe(false);
     expect(doc.recommendedEffect).toBeNull();
+    // Neither model is usable, so the edits' numbers describe both audiences.
+    expect(doc.editsJudgedOn).toEqual(["subscribed", "unsubscribed"]);
     expect(doc.chapters).toEqual([
       { firstBeat: 0, title: "The opening song" },
       { firstBeat: 1, title: "The full cover" },
