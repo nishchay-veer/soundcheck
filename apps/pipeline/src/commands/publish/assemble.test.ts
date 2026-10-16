@@ -7,7 +7,14 @@ import { hazards } from "@soundcheck/core/stats";
 import { describe, expect, it } from "vitest";
 import type { CurvePoint } from "../features/inputs";
 import type { TraitsResult } from "../traits/run";
-import { assemble, finalize, holdoutResults, topTraits, type Draft } from "./assemble";
+import {
+  assemble,
+  finalize,
+  holdoutResults,
+  publishedShares,
+  topTraits,
+  type Draft,
+} from "./assemble";
 import type { PublishInputs } from "./read";
 
 const CHANNEL = "UCaBcDeFgHiJkLmNoPqRsTuV";
@@ -366,5 +373,27 @@ describe("topTraits", () => {
     expect(topTraits(list).map((card) => card.feature)).toEqual(["b", "d", "a"]);
     // An interval that only clears zero before rounding is not clear.
     expect(topTraits([trait("e", -0.8, -1, -0.004)])).toEqual([]);
+  });
+});
+
+describe("publishedShares", () => {
+  const share = (group: string, value: number) => ({ group, label: group, share: value });
+
+  it("never lets rounded shares pass 1, so a fully explained drop stays valid", () => {
+    // To the nearest, these round to 0.3334 + 0.3334 + 0.3333 = 1.0001.
+    const { attributions, residualShare } = publishedShares([
+      share("sponsor", 0.33335),
+      share("position", 0.33335),
+      share("energy", 0.3333),
+    ]);
+    expect(attributions.map((a) => a.share)).toEqual([0.3333, 0.3333, 0.3333]);
+    expect(residualShare).toBeCloseTo(0.0001, 10);
+    const total = attributions.reduce((sum, a) => sum + a.share, residualShare);
+    expect(Math.abs(total - 1)).toBeLessThanOrEqual(1e-6);
+  });
+
+  it("gives the residual whatever the shares leave", () => {
+    expect(publishedShares([share("sponsor", 0.42)]).residualShare).toBeCloseTo(0.58, 10);
+    expect(publishedShares([])).toEqual({ attributions: [], residualShare: 1 });
   });
 });

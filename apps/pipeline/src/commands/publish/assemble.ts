@@ -38,6 +38,22 @@ const MEASURED: readonly MeasuredAudience[] = ["subscribed", "unsubscribed"];
 const TRAITS = 3;
 
 const round = (value: number, places: number) => Number(value.toFixed(places));
+
+/**
+ * A drop-off's attribution shares as published: each rounded down to 4
+ * places, so together they never pass 1, and the residual takes the rest.
+ * Rounding to the nearest once made three shares of a fully explained drop
+ * add up to 1.0001, which the drop schema refuses (Oct 16, 2026).
+ */
+export function publishedShares<T extends { share: number }>(
+  attributions: readonly T[],
+): { attributions: T[]; residualShare: number } {
+  const rounded = attributions
+    .map((attribution) => ({ ...attribution, share: Math.floor(attribution.share * 1e4) / 1e4 }))
+    .filter((attribution) => attribution.share > 0);
+  const explained = rounded.reduce((sum, attribution) => sum + attribution.share, 0);
+  return { attributions: rounded, residualShare: Math.max(0, 1 - explained) };
+}
 /** Survival to 4 places (0.01 points); rounding keeps the percentiles in order. */
 const curve = (values: ArrayLike<number>) =>
   Array.from(values, (value) => round(Math.min(1, Math.max(0, value)), 4));
@@ -233,10 +249,7 @@ export function assemble(
               )
             : { attributions: [], residualShare: 1 };
         const narrationId = `${video.videoId}:${audience}:${span.binStart}`;
-        const attributions = attribution.attributions.map((a) => ({
-          ...a,
-          share: round(a.share, 4),
-        }));
+        const { attributions, residualShare } = publishedShares(attribution.attributions);
         drops.push({
           audience,
           binStart: span.binStart,
@@ -245,8 +258,7 @@ export function assemble(
           endS: round(span.endS, 1),
           actualLossPp: round(span.actualLossPp, 2),
           attributions,
-          // The residual takes the rounding, so the shares still sum to 1.
-          residualShare: Math.max(0, 1 - attributions.reduce((sum, a) => sum + a.share, 0)),
+          residualShare,
           narrationId,
         });
         items.push(dropNarration(narrationId, { audience, span, attribution, model: stamp }));
