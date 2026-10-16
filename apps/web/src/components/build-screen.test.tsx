@@ -153,23 +153,40 @@ describe("BuildScreen", () => {
     ).toBeTruthy();
   });
 
-  it("explains a channel with too few videos, and offers the preview only when one exists", () => {
-    api([{ state: "insufficient_data", stage: "ingest", eligibleVideos: 3, usableVideos: 3 }]);
+  it("offers to build a channel that stopped under the old minimum, and the preview when one exists", () => {
     const build = {
       state: "insufficient_data",
       stage: "ingest",
       eligibleVideos: 3,
       usableVideos: 3,
     } as const;
+    api([build]);
     show(build);
-    expect(screen.getByText(/Soundcheck needs at least/).textContent).toMatch(
-      /at least 30 videos .* Your channel has 3 of 3 eligible videos/,
+    expect(screen.getByRole("heading", { name: "Ready to build" })).toBeTruthy();
+    expect(screen.getByText(/Your channel has/).textContent).toMatch(
+      /Your channel has 3 videos Soundcheck can learn from\. .* With fewer than 30, its screens say/,
     );
+    expect(screen.getByRole("button", { name: "Build now" })).toBeTruthy();
     expect(screen.queryByRole("link", { name: "See the preview anyway" })).toBeNull();
     cleanup();
     show(build, { hasPreview: true });
     expect(screen.getByRole("link", { name: "See the preview anyway" }).getAttribute("href")).toBe(
       "/app/audiences",
+    );
+  });
+
+  it("explains a channel with no video to learn from yet", () => {
+    const build = {
+      state: "insufficient_data",
+      stage: "ingest",
+      eligibleVideos: 4,
+      usableVideos: 0,
+    } as const;
+    api([build]);
+    show(build);
+    expect(screen.getByRole("heading", { name: "No videos to learn from yet" })).toBeTruthy();
+    expect(screen.getByText(/needs at least one video/).textContent).toMatch(
+      /Your channel has none yet, of 4 eligible videos\./,
     );
     expect(screen.getByRole("button", { name: "Check again" })).toBeTruthy();
   });

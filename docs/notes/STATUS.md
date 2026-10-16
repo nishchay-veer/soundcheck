@@ -4,6 +4,18 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Change: every channel is built; 20 videos for usable (Oct 16, 2026)
+
+- **Nishchay's decisions:**
+  - **every channel with a usable video is built,** whatever its count: the `channel_build` workflow stops as `insufficient_data` only when no video has a complete retention curve;
+  - **`MIN_TRAIN_VIDEOS` is 20 again** (was 8), in the code defaults (TypeScript and Python), `.env.example`, `.env` and the specs. It now only decides whether a model is usable.
+- **What follows from it:**
+  - a channel with fewer than 20 usable videos gets its audiences, videos and soundcheck screens, all saying "not a result yet", and edits are listed but not recommended;
+  - the workflow no longer reads `MIN_TRAIN_VIDEOS`, and `allow_small` (Phase 10's way past the old stop) is gone from the workflows, `startChannelBuild` and `build start`;
+  - a channel that stopped earlier under the old rule shows "Ready to build" with **Build now**; one with no usable video shows "No videos to learn from yet";
+  - the held-out accuracy test needs 26 settled videos again.
+- **To reach the cloud:** `deploy-workflows.sh`, `deploy-pipeline.sh` and `deploy-web.sh`, all reading `.env`. The deployed `channel_build` keeps its old `MIN_TRAIN_VIDEOS` variable, now unused.
+
 ### Change: training minimum lowered to 8 videos (Oct 15, 2026)
 
 - **Nishchay's decision:** `MIN_TRAIN_VIDEOS` is now 8 (was 20), in the code defaults (TypeScript and Python), `.env.example`, `.env`, the workflow deploy script and the specs. A build with fewer usable videos still stops as `insufficient_data`, and a model trained on fewer is still not usable.

@@ -63,20 +63,16 @@ async function isStale(build: Build, now: Date): Promise<boolean> {
  * Starts a build of the channel: marks it `queued` with a new run ID in a
  * Firestore transaction that refuses while another build is queued or running
  * (unless that one is stale), then starts the workflow with
- * `{channel_id, run_id, mode, allow_small}`. If the workflow cannot start, the
- * build is marked `failed` at stage `start`.
- *
- * `allowSmall` runs every stage even below MIN_TRAIN_VIDEOS, for testing and
- * demos; the models stay marked not usable.
+ * `{channel_id, run_id, mode}`. If the workflow cannot start, the build is
+ * marked `failed` at stage `start`.
  */
 export async function startChannelBuild(
   channelId: string,
   {
     mode = "build",
-    allowSmall = false,
     log = rootLogger,
     now = new Date(),
-  }: { mode?: BuildMode; allowSmall?: boolean; log?: Logger; now?: Date } = {},
+  }: { mode?: BuildMode; log?: Logger; now?: Date } = {},
 ): Promise<StartedBuild> {
   refuseInFixturesMode("starting a build");
   const parent = channelBuildWorkflow();
@@ -111,7 +107,6 @@ export async function startChannelBuild(
           channel_id: channelId,
           run_id: runId,
           mode,
-          allow_small: allowSmall,
         }),
       },
     });
@@ -126,9 +121,6 @@ export async function startChannelBuild(
     throw error;
   }
   await ref.update({ "build.execution": execution });
-  buildLog.info(
-    { run_id: runId, mode, allow_small: allowSmall, execution, replaced_stale: stale },
-    "build started",
-  );
+  buildLog.info({ run_id: runId, mode, execution, replaced_stale: stale }, "build started");
   return { channelId, runId, mode, execution };
 }

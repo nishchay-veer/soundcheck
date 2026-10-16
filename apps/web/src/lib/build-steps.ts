@@ -92,7 +92,7 @@ export function buildSteps(build: BuildView, now?: number): StepView[] {
         if (at < 0) return "waiting";
         return index < at ? "done" : index === at ? "failed" : "waiting";
       case "insufficient_data":
-        // The build stopped after collecting: too few usable videos to go on.
+        // The build stopped after collecting: no usable video to learn from.
         return index === 0 ? "done" : "skipped";
       default:
         return "waiting";

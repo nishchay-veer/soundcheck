@@ -33,8 +33,9 @@ test("from the landing page to an audience's effects", async ({ page }, info) =>
 
   await page.getByRole("link", { name: "Open your channel" }).click();
   await expect(page).toHaveURL(/\/app\/building$/);
-  await expect(page.getByRole("heading", { name: "Not enough videos yet" })).toBeVisible();
-  await expect(page.getByText(/Your channel has 3 of 3 eligible videos/)).toBeVisible();
+  // The fixture channel stopped under the old minimum, so it can be built now.
+  await expect(page.getByRole("heading", { name: "Ready to build" })).toBeVisible();
+  await expect(page.getByText(/Your channel has 3 videos Soundcheck can learn from/)).toBeVisible();
   await check(page, "building", info);
 
   await page.getByRole("link", { name: "See the preview anyway" }).click();

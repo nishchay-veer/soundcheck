@@ -1,6 +1,6 @@
 # channel_build (Phase 10): builds one channel end to end, unattended.
 #
-# Argument: {channel_id, run_id, mode: "build" | "refresh", allow_small: bool}.
+# Argument: {channel_id, run_id, mode: "build" | "refresh"}.
 # `startChannelBuild` (packages/core/src/data/build.ts) queues the build and
 # starts this; the weekly_refresh workflow starts it with mode "refresh".
 #
@@ -10,9 +10,11 @@
 # the build is marked failed. Progress lives on channels/{id}.build: this
 # workflow writes state and stage, the jobs write progress and the counts.
 #
-# Deployed by infra/deploy-workflows.sh with MIN_TRAIN_VIDEOS as an environment
-# variable. A channel with fewer usable videos stops as insufficient_data,
-# unless allow_small (testing and demos; its models stay marked not usable).
+# Deployed by infra/deploy-workflows.sh. Every channel with a usable video is
+# built, whatever its count: models trained on fewer than MIN_TRAIN_VIDEOS are
+# marked not usable by training, so its screens say "not a result yet". Only a
+# channel with no usable video at all, nothing to learn from, stops as
+# insufficient_data.
 
 main:
   params: [args]
@@ -21,11 +23,9 @@ main:
         assign:
           - project: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
           - region: ${sys.get_env("GOOGLE_CLOUD_LOCATION")}
-          - min_videos: ${int(sys.get_env("MIN_TRAIN_VIDEOS"))}
           - channel: ${args.channel_id}
           - run_id: ${args.run_id}
           - mode: ${default(map.get(args, "mode"), "build")}
-          - allow_small: ${default(map.get(args, "allow_small"), false)}
           - doc: ${"projects/" + project + "/databases/(default)/documents/channels/" + channel}
           - job_env:
               - name: CHANNEL_ID
@@ -84,7 +84,7 @@ main:
                 raise: ${failure}
     - enough_data:
         switch:
-          - condition: ${usable < min_videos and not allow_small}
+          - condition: ${usable < 1}
             steps:
               - stop_insufficient:
                   call: set_build
@@ -95,7 +95,7 @@ main:
                       finishedAt: { timestampValue: "${time.format(sys.now())}" }
                     clear: ["progress"]
               - done_insufficient:
-                  return: '${"insufficient_data: " + string(usable) + " usable videos, " + string(min_videos) + " needed"}'
+                  return: "insufficient_data: no usable video"
     - extract:
         call: run_stage
         args:

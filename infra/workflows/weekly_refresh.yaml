@@ -87,7 +87,6 @@ start_refresh:
               channel_id: ${channel}
               run_id: ${run_id}
               mode: refresh
-              allow_small: false
     - queue:
         call: set_build
         args:

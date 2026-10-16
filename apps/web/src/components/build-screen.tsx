@@ -120,25 +120,39 @@ export function BuildScreen({
       break;
     }
     case "insufficient_data":
-      header = (
-        <Heading title="Not enough videos yet">
-          <p>
-            To learn how your audiences watch, Soundcheck needs at least{" "}
-            <strong className="text-ink">{formatCount(minVideos)} videos</strong> with a complete
-            retention curve from YouTube. Your channel has{" "}
-            <strong className="text-ink">{formatCount(build.usableVideos ?? 0)}</strong>
-            {build.eligibleVideos !== undefined
-              ? ` of ${formatCount(build.eligibleVideos)} eligible videos`
-              : ""}
-            .
-          </p>
-          <p>
-            A video counts when it is not a Short, is at least a week old, lasts between 1 minute
-            and 3 hours, and has at least {formatCount(minViews)} views; YouTube adds its curve once
-            enough people have watched. When you have more, choose Check again.
-          </p>
-        </Heading>
-      );
+      // From Oct 16, 2026 every channel with a usable video is built; one that
+      // stopped earlier for having too few can be built now.
+      if ((build.usableVideos ?? 0) > 0) {
+        header = (
+          <Heading title="Ready to build">
+            <p>
+              Your channel has{" "}
+              <strong className="text-ink">{formatCount(build.usableVideos ?? 0)}</strong>{" "}
+              {build.usableVideos === 1 ? "video" : "videos"} Soundcheck can learn from. Choose
+              Build now to learn how your audiences watch. With fewer than {formatCount(minVideos)},
+              its screens say &ldquo;not a result yet&rdquo; until you have more.
+            </p>
+          </Heading>
+        );
+      } else {
+        header = (
+          <Heading title="No videos to learn from yet">
+            <p>
+              To learn how your audiences watch, Soundcheck needs at least one video with a complete
+              retention curve from YouTube. Your channel has none yet
+              {build.eligibleVideos !== undefined
+                ? `, of ${formatCount(build.eligibleVideos)} eligible videos`
+                : ""}
+              .
+            </p>
+            <p>
+              A video counts when it is not a Short, is at least a week old, lasts between 1 minute
+              and 3 hours, and has at least {formatCount(minViews)} views; YouTube adds its curve
+              once enough people have watched. When you have one, choose Check again.
+            </p>
+          </Heading>
+        );
+      }
       actions = (
         <div className="flex flex-wrap items-center gap-4">
           {hasPreview ? (
@@ -146,7 +160,10 @@ export function BuildScreen({
               See the preview anyway
             </Link>
           ) : null}
-          {startButton("Check again", hasPreview ? "secondary" : "primary")}
+          {startButton(
+            (build.usableVideos ?? 0) > 0 ? "Build now" : "Check again",
+            hasPreview ? "secondary" : "primary",
+          )}
         </div>
       );
       break;

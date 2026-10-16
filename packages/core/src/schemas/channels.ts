@@ -22,7 +22,8 @@ export type ChannelStatus = z.infer<typeof channelStatusSchema>;
 /**
  * The unattended channel build (Phase 10): `queued` once started, `running`
  * while the `channel_build` workflow works, then `ready`, `insufficient_data`
- * (fewer usable videos than MIN_TRAIN_VIDEOS) or `failed`.
+ * (no usable video; before Oct 16, 2026, fewer than MIN_TRAIN_VIDEOS) or
+ * `failed`.
  */
 export const buildStateSchema = z.enum([
   "not_started",

@@ -69,8 +69,9 @@ const daysBefore = (now: Date, days: number) =>
 
 /**
  * Eligible videos, and those with a complete retention curve for at least one
- * training audience: the workflow stops with `insufficient_data` when there
- * are fewer usable ones than MIN_TRAIN_VIDEOS.
+ * training audience: the workflow stops with `insufficient_data` only when
+ * there is no usable one. Fewer than MIN_TRAIN_VIDEOS still build, and their
+ * models are marked not usable.
  */
 export async function countVideos(channelId: string) {
   const eligible = new Set(

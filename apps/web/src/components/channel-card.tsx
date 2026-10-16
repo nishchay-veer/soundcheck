@@ -10,7 +10,7 @@ const BUILD_LABEL: Record<ChannelView["build"]["state"], string> = {
   queued: "Queued",
   running: "Learning how your audiences watch",
   ready: "Ready",
-  insufficient_data: "Not enough videos yet",
+  insufficient_data: "No videos to learn from yet",
   failed: "Failed",
 };
 
@@ -49,7 +49,11 @@ export function ChannelCard({ channel }: { channel: ChannelView }) {
           </div>
           <div>
             <dt className="text-sm text-ink-muted">Analysis</dt>
-            <dd>{BUILD_LABEL[channel.build.state]}</dd>
+            <dd>
+              {channel.build.state === "insufficient_data" && (channel.build.usableVideos ?? 0) > 0
+                ? "Ready to build"
+                : BUILD_LABEL[channel.build.state]}
+            </dd>
           </div>
         </dl>
         {channel.status === "reauth_required" ? (

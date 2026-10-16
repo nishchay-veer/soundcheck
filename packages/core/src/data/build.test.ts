@@ -49,7 +49,7 @@ describe("startChannelBuild", () => {
     expect(executions.created).toEqual([
       {
         parent: WORKFLOW,
-        argument: { channel_id: CHANNEL, run_id: started.runId, mode: "build", allow_small: false },
+        argument: { channel_id: CHANNEL, run_id: started.runId, mode: "build" },
       },
     ]);
     expect(build()).toEqual({
@@ -61,12 +61,16 @@ describe("startChannelBuild", () => {
     });
   });
 
-  it("passes a refresh and allow_small through, and accepts a full workflow path", async () => {
+  it("passes a refresh through, and accepts a full workflow path", async () => {
     vi.stubEnv("WORKFLOW_CHANNEL_BUILD", "projects/p/locations/europe-west1/workflows/other");
     resetEnvCache();
     expect(channelBuildWorkflow()).toBe("projects/p/locations/europe-west1/workflows/other");
-    await start({ mode: "refresh", allowSmall: true });
-    expect(executions.created[0]?.argument).toMatchObject({ mode: "refresh", allow_small: true });
+    await start({ mode: "refresh" });
+    expect(executions.created[0]?.argument).toEqual({
+      channel_id: CHANNEL,
+      run_id: expect.any(String),
+      mode: "refresh",
+    });
   });
 
   it("refuses while another build is queued or running", async () => {
