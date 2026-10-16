@@ -14,13 +14,13 @@ describe("model standing", () => {
   it("names each audience whose model is not usable, with its reasons, and the usable ones", () => {
     expect(
       modelStanding([
-        card("Subscribers", stamp(false, ["trained on 2 videos; at least 8 are needed"])),
+        card("Subscribers", stamp(false, ["trained on 2 videos; at least 20 are needed"])),
         card("Newcomers", stamp(true)),
         card("Newcomers from search", null),
       ]),
     ).toEqual({
       notUsable: [
-        { label: "Subscribers", reasons: ["trained on 2 videos; at least 8 are needed"] },
+        { label: "Subscribers", reasons: ["trained on 2 videos; at least 20 are needed"] },
       ],
       usable: ["Newcomers"],
     });
@@ -29,12 +29,12 @@ describe("model standing", () => {
   it("labels a video's or a soundcheck's audiences from their keys", () => {
     expect(
       standingOf({
-        subscribed: { model: stamp(false, ["trained on 2 videos; at least 8 are needed"]) },
+        subscribed: { model: stamp(false, ["trained on 2 videos; at least 20 are needed"]) },
         unsubscribed: { model: stamp(true) },
       }),
     ).toEqual({
       notUsable: [
-        { label: "Subscribers", reasons: ["trained on 2 videos; at least 8 are needed"] },
+        { label: "Subscribers", reasons: ["trained on 2 videos; at least 20 are needed"] },
       ],
       usable: ["Newcomers"],
     });

@@ -57,15 +57,15 @@ describe("KindBadge", () => {
 });
 
 describe("ResultNotice", () => {
-  const twoVideos = "trained on 2 videos; at least 8 are needed";
+  const twoVideos = "trained on 2 videos; at least 20 are needed";
 
   it("says no number is a result yet when no model is usable, and why", () => {
     render(
       <ResultNotice
         standing={{
           notUsable: [
-            { label: "Subscribers", reasons: ["trained on 3 videos; at least 8 are needed"] },
-            { label: "Newcomers", reasons: ["trained on 3 videos; at least 8 are needed"] },
+            { label: "Subscribers", reasons: ["trained on 3 videos; at least 20 are needed"] },
+            { label: "Newcomers", reasons: ["trained on 3 videos; at least 20 are needed"] },
           ],
           usable: [],
         }}
@@ -73,7 +73,7 @@ describe("ResultNotice", () => {
     );
     expect(screen.getByRole("note").textContent).toBe(
       "Not a result yet" +
-        "Trained on 3 videos; at least 8 are needed. These numbers show that Soundcheck works on your channel; they don't describe your audiences yet.",
+        "Trained on 3 videos; at least 20 are needed. These numbers show that Soundcheck works on your channel; they don't describe your audiences yet.",
     );
   });
 
@@ -89,7 +89,7 @@ describe("ResultNotice", () => {
     const note = screen.getByRole("note");
     expect(within(note).getByText("Not a result yet for subscribers")).toBeTruthy();
     expect(note.textContent).toContain(
-      "Subscribers: trained on 2 videos; at least 8 are needed. Until then, their numbers don't describe how they watch. The numbers for newcomers are real results.",
+      "Subscribers: trained on 2 videos; at least 20 are needed. Until then, their numbers don't describe how they watch. The numbers for newcomers are real results.",
     );
     expect(note.textContent).not.toContain("don't describe your audiences");
   });

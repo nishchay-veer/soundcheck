@@ -245,7 +245,7 @@ describe("recommending", () => {
   const model = (usable: boolean) => ({
     runId: "r",
     usable,
-    unusableReasons: usable ? [] : ["trained on 2 videos; at least 8 are needed"],
+    unusableReasons: usable ? [] : ["trained on 2 videos; at least 20 are needed"],
     trainedVideos: usable ? 8 : 2,
   });
   const prediction = (subscribers: boolean, newcomers: boolean) =>

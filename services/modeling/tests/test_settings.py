@@ -16,7 +16,7 @@ def test_settings_need_a_project_and_default_the_rest() -> None:
         location="US",
         region="us-central1",
         raw_bucket="proj-raw",
-        min_train_videos=8,
+        min_train_videos=20,
     )
     assert load_settings(
         {

@@ -72,8 +72,8 @@ describe("soundcheck numbers", () => {
     ]);
     expect(standingOf(prediction.audiences)).toEqual({
       notUsable: [
-        { label: "Subscribers", reasons: ["trained on 3 videos; at least 8 are needed"] },
-        { label: "Newcomers", reasons: ["trained on 3 videos; at least 8 are needed"] },
+        { label: "Subscribers", reasons: ["trained on 3 videos; at least 20 are needed"] },
+        { label: "Newcomers", reasons: ["trained on 3 videos; at least 20 are needed"] },
       ],
       usable: [],
     });
