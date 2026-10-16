@@ -9,6 +9,13 @@ import { featureSpecDocumentSchema } from "./features";
 
 const timestamp = z.iso.datetime({ offset: true });
 
+/**
+ * At most this many videos are used for a channel: the newest that meet every
+ * other rule, including a complete retention curve; older ones are
+ * `beyond_newest`. A channel with years of uploads is described as it is now.
+ */
+export const NEWEST_VIDEOS = 100;
+
 /** Why a video is not used for training; the first rule it fails. */
 export const exclusionReasonSchema = z.enum([
   "content_type_unknown",
@@ -17,6 +24,8 @@ export const exclusionReasonSchema = z.enum([
   "too_long",
   "too_recent",
   "too_few_views",
+  /** Meets every rule, but is older than the newest NEWEST_VIDEOS used. */
+  "beyond_newest",
 ]);
 export type ExclusionReason = z.infer<typeof exclusionReasonSchema>;
 

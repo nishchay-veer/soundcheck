@@ -4,6 +4,7 @@ import { runBaselineLlm } from "../baseline-llm/run";
 import { extractBeats } from "../extract/beats";
 import { loadBeats } from "../extract/load";
 import { buildFeatures } from "../features/run";
+import { capVideos } from "../ingest/cap";
 import { ingestCatalogue } from "../ingest/catalogue";
 import { ingestMix } from "../ingest/mix";
 import { ingestRetention } from "../ingest/retention";
@@ -37,6 +38,7 @@ export const STEPS = {
   ingestStats,
   ingestMix,
   ingestRetention,
+  capVideos,
   extractBeats,
   loadBeats,
   buildFeatures,
@@ -131,6 +133,8 @@ export async function runStage(stage: Stage, options: StageOptions = {}): Promis
       await steps.ingestStats({ ...ingest, publishedSince });
       if (mode === "build") await steps.ingestMix(ingest);
       await steps.ingestRetention({ ...ingest, publishedSince });
+      // Only the newest usable videos go on: older ones are left out before Gemini sees them.
+      await steps.capVideos({ channelId, log });
       const counts = await countVideos(channelId);
       await steps.recordBuildCounts(channelId, counts);
       return `ingest (${mode}): ${counts.eligibleVideos} eligible videos, ${counts.usableVideos} usable`;

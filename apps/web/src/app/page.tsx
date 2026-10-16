@@ -1,5 +1,6 @@
 import { pickServerEnv } from "@soundcheck/core/env";
 import { EVALUATION_SPLIT, heldOutMinimum } from "@soundcheck/core/model";
+import { NEWEST_VIDEOS } from "@soundcheck/core/schemas";
 import { buttonVariants } from "@soundcheck/ui/components/button";
 import { FOCUS_RING } from "@soundcheck/ui/lib/styles";
 import { cn } from "@soundcheck/ui/lib/utils";
@@ -107,7 +108,7 @@ const faqs = (
 ): { question: string; answer: string }[] => [
   {
     question: "How many videos do I need?",
-    answer: `At least ${minimum} that YouTube has a full retention curve for. A video counts when it isn't a Short, is at least a week old, lasts between 1 minute and 3 hours, and has at least ${minViews} views. With fewer, you can still look around: every screen is marked “Not a result yet”.`,
+    answer: `At least ${minimum} that YouTube has a full retention curve for. A video counts when it isn't a Short, is at least a week old, lasts between 1 minute and 3 hours, and has at least ${minViews} views. Soundcheck learns from your newest ${NEWEST_VIDEOS} of them, so it describes your channel as it is now. With fewer, you can still look around: every screen is marked “Not a result yet”.`,
   },
   {
     question: "Does Soundcheck change my videos?",

@@ -4,6 +4,14 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Change: only the newest 100 videos are used (Oct 16, 2026)
+
+- **Nishchay's decision:** a channel's model learns from its **newest 100** videos that meet every rule, including a complete retention curve (`NEWEST_VIDEOS` in `packages/core`). Older eligible videos are left out as `beyond_newest`.
+- **Why:** a channel with years of uploads would otherwise pay for Gemini to watch all of them (about $0.009 a minute of video) and wait hours, and the model would describe its whole history rather than the channel as it is now.
+- **How:** after ingest reads the retention curves, `capVideos` marks the older ones in `videos`, so extract, features and publish never use them. Each build (and weekly refresh) chooses again, so as new videos come in, the oldest drop out; their saved Gemini answers stay in the cache.
+- **Still to know:** retention curves are still read for every eligible video, since the cap needs them; that costs Analytics quota, not money. The landing page's FAQ says the newest 100 are used.
+- **To reach the cloud:** `deploy-pipeline.sh`, and `deploy-web.sh` for the FAQ.
+
 ### Change: every channel is built; 20 videos for usable (Oct 16, 2026)
 
 - **Nishchay's decisions:**

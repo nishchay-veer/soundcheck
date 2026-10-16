@@ -52,7 +52,9 @@ describe("the landing page", () => {
       screen.getByText(/^At least 18 that YouTube has a full retention curve for\./),
     ).toBeTruthy();
     expect(screen.getByText(/Once your channel has 24 videos at least 14 days old/)).toBeTruthy();
-    expect(screen.getByText(/has at least 350 views\./)).toBeTruthy();
+    expect(
+      screen.getByText(/has at least 350 views\. Soundcheck learns from your newest 100 of them/),
+    ).toBeTruthy();
     expect(
       screen.getByText(/enough of your videos, at least 18, every screen says so/),
     ).toBeTruthy();

@@ -13,6 +13,7 @@ function fakeSteps() {
     ingestStats: vi.fn(async () => []),
     ingestMix: vi.fn(async () => undefined),
     ingestRetention: vi.fn(async () => undefined),
+    capVideos: vi.fn(async () => ({ kept: 2, excluded: 0 })),
     extractBeats: vi.fn(async () => ({
       outcomes: [{ status: "extracted" }, { status: "cached" }, { status: "cached" }],
     })),
@@ -70,8 +71,21 @@ describe("runStage", () => {
 
   it("ingests every step of a build and records the video counts", async () => {
     const line = await run("ingest", "build");
-    const order = ["ingestCatalogue", "ingestStats", "ingestMix", "ingestRetention"] as const;
+    const order = [
+      "ingestCatalogue",
+      "ingestStats",
+      "ingestMix",
+      "ingestRetention",
+      "capVideos",
+    ] as const;
     for (const name of order) expect(steps[name]).toHaveBeenCalledOnce();
+    // The newest videos are chosen once the curves are in, before anything is counted.
+    expect(steps.capVideos.mock.invocationCallOrder[0]).toBeGreaterThan(
+      steps.ingestRetention.mock.invocationCallOrder[0] as number,
+    );
+    expect(steps.capVideos.mock.invocationCallOrder[0]).toBeLessThan(
+      steps.recordBuildCounts.mock.invocationCallOrder[0] as number,
+    );
     expect(steps.ingestStats).toHaveBeenCalledWith(
       expect.objectContaining({ channelId: CHANNEL, publishedSince: undefined }),
     );
