@@ -6,6 +6,7 @@ import { Storage } from "@google-cloud/storage";
 import { ExecutionsClient } from "@google-cloud/workflows";
 import { GoogleGenAI } from "@google/genai";
 import { pickServerEnv } from "./env";
+import { geminiFetch } from "./gemini/fetch";
 
 /**
  * Lazy singletons for the Google Cloud clients. Nothing is constructed (and no
@@ -46,6 +47,8 @@ const factories: { [K in GcpClientName]: () => GcpClients[K] } = {
       vertexai: true,
       project: env.GCP_PROJECT_ID,
       location: env.GEMINI_LOCATION,
+      // Long videos can keep Gemini silent for more than fetch's default 5 minutes.
+      httpOptions: { fetch: geminiFetch() },
     });
   },
 };
