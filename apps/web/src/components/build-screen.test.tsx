@@ -189,6 +189,15 @@ describe("BuildScreen", () => {
       /Your channel has none yet, of 4 eligible videos\./,
     );
     expect(screen.getByRole("button", { name: "Check again" })).toBeTruthy();
+    expect(screen.getByText(/A video counts when it/).textContent).toContain(
+      "and has at least 200 views",
+    );
+    // With no views floor, the rule is left out.
+    cleanup();
+    show(build, { minViews: 0 });
+    expect(screen.getByText(/A video counts when it/).textContent).toMatch(
+      /is at least a week old, and lasts between 1 minute and 3 hours\s*; YouTube adds/,
+    );
   });
 
   it("explains why a build could not start", async () => {

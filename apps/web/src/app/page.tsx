@@ -101,6 +101,17 @@ const READS = [
  * The questions; `minimum` is the training minimum, `heldOut` the accuracy
  * test's, `minViews` the views a video needs to count (MIN_VIEWS).
  */
+const rules = new Intl.ListFormat("en", { style: "long", type: "conjunction" });
+
+/** What a video needs to count, with the views rule only when there is a minimum. */
+const videoRules = (minViews: number) =>
+  rules.format([
+    "isn't a Short",
+    "is at least a week old",
+    "lasts between 1 minute and 3 hours",
+    ...(minViews > 0 ? [`has at least ${minViews} views`] : []),
+  ]);
+
 const faqs = (
   minimum: number,
   heldOut: number,
@@ -108,7 +119,7 @@ const faqs = (
 ): { question: string; answer: string }[] => [
   {
     question: "How many videos do I need?",
-    answer: `At least ${minimum} that YouTube has a full retention curve for. A video counts when it isn't a Short, is at least a week old, lasts between 1 minute and 3 hours, and has at least ${minViews} views. Soundcheck learns from your newest ${NEWEST_VIDEOS} of them, so it describes your channel as it is now. With fewer, you can still look around: every screen is marked “Not a result yet”.`,
+    answer: `At least ${minimum} that YouTube has a full retention curve for. A video counts when it ${videoRules(minViews)}. Soundcheck learns from your newest ${NEWEST_VIDEOS} of them, so it describes your channel as it is now. With fewer, you can still look around: every screen is marked “Not a result yet”.`,
   },
   {
     question: "Does Soundcheck change my videos?",

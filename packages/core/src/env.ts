@@ -47,7 +47,8 @@ export const serverEnvSchema = z.object({
   IMAGEN_MODEL: required.optional(),
   WORKFLOW_CHANNEL_BUILD: required.optional(),
   WORKFLOW_SOUNDCHECK: required.optional(),
-  MIN_VIEWS: count.default(500),
+  /** Lifetime views a video needs to count; 0 (the default) leaves it to YouTube's own curve. */
+  MIN_VIEWS: z.coerce.number().int().nonnegative().default(0),
   MIN_TRAIN_VIDEOS: count.default(20),
   DEMO_CHANNEL_ID: required.optional(),
   // Fixtures mode reads saved documents from here, relative to the app (Phase 11).

@@ -51,7 +51,7 @@ describe("server env", () => {
       BQ_LOCATION: "US",
       FIRESTORE_DATABASE: "(default)",
       GEMINI_LOCATION: "global",
-      MIN_VIEWS: 500,
+      MIN_VIEWS: 0,
       MIN_TRAIN_VIDEOS: 20,
       NEXT_PUBLIC_USE_FIXTURES: false,
     });
@@ -86,6 +86,8 @@ describe("server env", () => {
       NEXT_PUBLIC_USE_FIXTURES: "true",
     });
     expect(env.MIN_VIEWS).toBe(1000);
+    // No views floor at all is allowed.
+    expect(parseServerEnv({ ...requiredVars, MIN_VIEWS: "0" }).MIN_VIEWS).toBe(0);
     expect(env.NEXT_PUBLIC_USE_FIXTURES).toBe(true);
   });
 

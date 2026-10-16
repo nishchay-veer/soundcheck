@@ -146,9 +146,15 @@ export function BuildScreen({
               .
             </p>
             <p>
-              A video counts when it is not a Short, is at least a week old, lasts between 1 minute
-              and 3 hours, and has at least {formatCount(minViews)} views; YouTube adds its curve
-              once enough people have watched. When you have one, choose Check again.
+              A video counts when it{" "}
+              {new Intl.ListFormat("en", { style: "long", type: "conjunction" }).format([
+                "is not a Short",
+                "is at least a week old",
+                "lasts between 1 minute and 3 hours",
+                ...(minViews > 0 ? [`has at least ${formatCount(minViews)} views`] : []),
+              ])}
+              ; YouTube adds its curve once enough people have watched. When you have one, choose
+              Check again.
             </p>
           </Heading>
         );

@@ -61,6 +61,17 @@ describe("the landing page", () => {
     vi.unstubAllEnvs();
   });
 
+  it("leaves the views rule out when there is no views floor", async () => {
+    vi.stubEnv("MIN_VIEWS", "0");
+    await page(null);
+    expect(
+      screen.getByText(
+        /^At least \d+ that YouTube has a full retention curve for\. A video counts when it isn't a Short, is at least a week old, and lasts between 1 minute and 3 hours\. Soundcheck/,
+      ),
+    ).toBeTruthy();
+    vi.unstubAllEnvs();
+  });
+
   it("links only to sections that exist, and answers each question in a closed panel", async () => {
     const { container } = await page(null);
     const footer = screen.getByRole("navigation", { name: "On this page" });

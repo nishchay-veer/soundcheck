@@ -4,6 +4,13 @@ Handoff log: one short entry per phase, newest first. Details live in `docs/note
 
 ## Entries
 
+### Change: no views floor (Oct 16, 2026)
+
+- **Nishchay's decision:** `MIN_VIEWS` is now 0 (was 200 in `.env`, 500 in the defaults), so a video's views no longer decide whether it counts. YouTube still only reports a complete retention curve once enough people have watched, so videos with very few views still drop out, by YouTube's rule.
+- **Why it is safe:** each video already counts in proportion to its views (log of views) when the model trains, and the newest-100 cap bounds what Gemini watches.
+- **What follows:** the setting accepts 0 (it had to be positive), and the landing page FAQ and the building screen leave the views rule out when it is 0. Setting it above 0 brings the rule back, with its wording.
+- **To reach the cloud:** `deploy-pipeline.sh` (ingest) and `deploy-web.sh`, both reading `.env`.
+
 ### Change: only the newest 100 videos are used (Oct 16, 2026)
 
 - **Nishchay's decision:** a channel's model learns from its **newest 100** videos that meet every rule, including a complete retention curve (`NEWEST_VIDEOS` in `packages/core`). Older eligible videos are left out as `beyond_newest`.
