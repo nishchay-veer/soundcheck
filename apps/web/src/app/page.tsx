@@ -1,6 +1,5 @@
 import { pickServerEnv } from "@soundcheck/core/env";
 import { EVALUATION_SPLIT, heldOutMinimum } from "@soundcheck/core/model";
-import { Badge } from "@soundcheck/ui/components/badge";
 import { buttonVariants } from "@soundcheck/ui/components/button";
 import { FOCUS_RING } from "@soundcheck/ui/lib/styles";
 import { cn } from "@soundcheck/ui/lib/utils";
@@ -23,7 +22,8 @@ import { currentUserId } from "@/lib/session";
 
 /*
  * The landing page. Every claim on it is true of the code: what is read, the
- * video minimum (read from MIN_TRAIN_VIDEOS), the upload limits, the ranges
+ * video and view minimums (read from MIN_TRAIN_VIDEOS and MIN_VIEWS), the
+ * upload limits, the ranges
  * and what is deleted. The
  * example soundcheck is labelled as one.
  */
@@ -96,11 +96,18 @@ const READS = [
   "The videos themselves: Gemini, Google's AI model, watches each public video to mark its beats, such as the hook, a sponsor read or the payoff.",
 ];
 
-/** The questions; `minimum` is the training minimum, `heldOut` the accuracy test's. */
-const faqs = (minimum: number, heldOut: number): { question: string; answer: string }[] => [
+/**
+ * The questions; `minimum` is the training minimum, `heldOut` the accuracy
+ * test's, `minViews` the views a video needs to count (MIN_VIEWS).
+ */
+const faqs = (
+  minimum: number,
+  heldOut: number,
+  minViews: number,
+): { question: string; answer: string }[] => [
   {
     question: "How many videos do I need?",
-    answer: `At least ${minimum} that YouTube has a full retention curve for. A video counts when it isn't a Short, is at least a week old, lasts between 1 minute and 3 hours, and has at least 200 views. With fewer, you can still look around: every screen is marked “Not a result yet”.`,
+    answer: `At least ${minimum} that YouTube has a full retention curve for. A video counts when it isn't a Short, is at least a week old, lasts between 1 minute and 3 hours, and has at least ${minViews} views. With fewer, you can still look around: every screen is marked “Not a result yet”.`,
   },
   {
     question: "Does Soundcheck change my videos?",
@@ -144,12 +151,14 @@ function SectionHeader({ id, title, text }: { id: string; title: string; text?: 
 
 export default async function HomePage() {
   const userId = await currentUserId();
-  const minimum = pickServerEnv(["MIN_TRAIN_VIDEOS"]).MIN_TRAIN_VIDEOS;
+  const { MIN_TRAIN_VIDEOS: minimum, MIN_VIEWS: minViews } = pickServerEnv([
+    "MIN_TRAIN_VIDEOS",
+    "MIN_VIEWS",
+  ]);
   return (
     <main className="mx-auto flex max-w-[1200px] flex-col px-4 sm:px-6">
       <section className="grid items-center gap-10 py-12 sm:py-20 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-14">
         <div className="flex flex-col gap-6">
-          <Badge>In development</Badge>
           <h1 className="font-heading text-[44px] leading-[1.02] font-bold tracking-tight sm:text-[60px] lg:text-[64px]">
             Run a soundcheck before you publish
           </h1>
@@ -301,7 +310,7 @@ export default async function HomePage() {
       >
         <SectionHeader id="faq" title="Questions" />
         <div className={cn(card, "divide-y-2 divide-ink")}>
-          {faqs(minimum, heldOutMinimum(minimum)).map((faq) => (
+          {faqs(minimum, heldOutMinimum(minimum), minViews).map((faq) => (
             <details key={faq.question} className="group">
               <summary
                 className={cn(
