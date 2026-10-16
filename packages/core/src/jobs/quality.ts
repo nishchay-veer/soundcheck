@@ -1,8 +1,15 @@
 import type { Logger } from "pino";
 import { pickServerEnv } from "../env";
-import { getBigQuery, getStorage } from "../gcp";
+import { getBigQuery, getFirestore, getStorage } from "../gcp";
 import { logger as rootLogger } from "../logger";
-import { channelIdSchema, qualityReportRowSchema, type QualityReportRow } from "../schemas";
+import {
+  COLLECTIONS,
+  channelIdSchema,
+  extractionGateDocSchema,
+  qualityReportRowSchema,
+  type ExtractionGateDoc,
+  type QualityReportRow,
+} from "../schemas";
 import { replaceChannelRows } from "./bigquery-load";
 
 /**
@@ -70,4 +77,43 @@ export async function latestQualityVerdict(
   return row
     ? { reportId: row.report_id, channelId: row.channel_id, passed: row.passed === "true" }
     : null;
+}
+
+/** Saves an extraction version's gate verdict where deleting a channel cannot reach it. */
+export async function saveExtractionGate(gate: ExtractionGateDoc): Promise<void> {
+  await getFirestore()
+    .collection(COLLECTIONS.extractionGates)
+    .doc(gate.extractionVersion)
+    .set(extractionGateDocSchema.parse(gate));
+}
+
+/**
+ * Whether `extractionVersion` passed its quality gate (report `stage`), from
+ * `extractionGates`. A verdict from before Oct 16, 2026 is only in
+ * `quality_reports`, under the channel the gate ran on: it is read from there
+ * and saved to `extractionGates`, so a later deletion of that channel leaves it.
+ * Null if there is none.
+ */
+export async function extractionGate(
+  stage: string,
+  extractionVersion: string,
+  { now = new Date() }: { now?: Date } = {},
+): Promise<{ reportId: string; passed: boolean } | null> {
+  const snapshot = await getFirestore()
+    .collection(COLLECTIONS.extractionGates)
+    .doc(extractionVersion)
+    .get();
+  if (snapshot.exists) {
+    const gate = extractionGateDocSchema.parse(snapshot.data());
+    return { reportId: gate.reportId, passed: gate.passed };
+  }
+  const verdict = await latestQualityVerdict(stage, extractionVersion);
+  if (!verdict) return null;
+  await saveExtractionGate({
+    extractionVersion,
+    passed: verdict.passed,
+    reportId: verdict.reportId,
+    decidedAt: now,
+  });
+  return { reportId: verdict.reportId, passed: verdict.passed };
 }

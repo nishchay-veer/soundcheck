@@ -1,6 +1,6 @@
 import { EXTRACTION_VERSION } from "@soundcheck/core";
 import { writeQualityReport } from "@soundcheck/core/jobs";
-import type { FakeBigQuery } from "@soundcheck/core/testing";
+import type { FakeBigQuery, FakeFirestore } from "@soundcheck/core/testing";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { CHANNEL, NOW, ingestTestbed, quiet, resetTestbed } from "../ingest/testbed";
 import { GATE_STAGE, formatGateSummary, summarizeGate } from "./gate";
@@ -40,9 +40,10 @@ const consistency = (
 
 describe("summarizeGate", () => {
   let bigquery: FakeBigQuery;
+  let db: FakeFirestore;
 
   beforeEach(async () => {
-    ({ bigquery } = await ingestTestbed());
+    ({ bigquery, db } = await ingestTestbed());
     // An old iteration (before framing became visual) and the current one.
     await writeQualityReport(
       consistency("first", "2026-10-08T10:00:00.000Z", "beats-v1", false, {
@@ -92,8 +93,16 @@ describe("summarizeGate", () => {
     expect(summary.cost.video_minutes).toBeCloseTo(195 * 2 + (157 + 895) / 60, 9);
   });
 
-  it("writes the summary to quality_reports next to the iterations", async () => {
-    await summarizeGate({ channelId: CHANNEL, log: quiet, now: new Date("2026-10-10T00:00:00Z") });
+  it("writes the summary to quality_reports next to the iterations, and the verdict apart", async () => {
+    const now = new Date("2026-10-10T00:00:00Z");
+    const summary = await summarizeGate({ channelId: CHANNEL, log: quiet, now });
+    // Deleting the channel removes its reports, but not the verdict every build needs.
+    expect(db.docs.get(`extractionGates/${EXTRACTION_VERSION}`)).toEqual({
+      extractionVersion: EXTRACTION_VERSION,
+      passed: summary.passed,
+      reportId: summary.report_id,
+      decidedAt: now,
+    });
     expect(bigquery.tables.quality_reports?.map((row) => row.stage)).toEqual([
       CONSISTENCY_STAGE,
       CONSISTENCY_STAGE,

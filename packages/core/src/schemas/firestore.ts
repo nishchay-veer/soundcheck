@@ -12,6 +12,8 @@ export const COLLECTIONS = {
   videos: "videos",
   /** Under `channels/{channelId}`: new cuts (Phases 14 and 15), so disconnecting deletes them. */
   soundchecks: "soundchecks",
+  /** One verdict per extraction version, apart from every channel (`extractionGateDocSchema`). */
+  extractionGates: "extractionGates",
 } as const;
 
 /**
@@ -54,3 +56,18 @@ export const firestoreDate = z.preprocess(
       : value,
   z.date(),
 );
+
+/**
+ * `extractionGates/{extractionVersion}`: whether an extraction version passed
+ * its quality gate (Phase 06), and the report that decided it. It holds no
+ * channel's data, so deleting the channel the gate ran on never removes it;
+ * the full report stays in `quality_reports` under that channel.
+ */
+export const extractionGateDocSchema = z.object({
+  extractionVersion: z.string().min(1),
+  passed: z.boolean(),
+  /** The `quality_reports` row that decided it. */
+  reportId: z.string().min(1),
+  decidedAt: firestoreDate,
+});
+export type ExtractionGateDoc = z.infer<typeof extractionGateDocSchema>;

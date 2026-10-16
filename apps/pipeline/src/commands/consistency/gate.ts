@@ -5,7 +5,12 @@ import {
   logger as rootLogger,
   type Logger,
 } from "@soundcheck/core";
-import { loadQualityReports, readQualityReports, writeQualityReport } from "@soundcheck/core/jobs";
+import {
+  loadQualityReports,
+  readQualityReports,
+  saveExtractionGate,
+  writeQualityReport,
+} from "@soundcheck/core/jobs";
 import { HUMAN_AGREEMENT_STAGE, type HumanAgreementReport } from "./human";
 import { GATE, ORDINAL_FIELDS, type AgreementMetrics } from "./metrics";
 import { CONSISTENCY_STAGE, type ConsistencyReport } from "./run";
@@ -135,6 +140,13 @@ export async function summarizeGate({
     details: summary as unknown as Record<string, unknown>,
   });
   await loadQualityReports(channelId, { runId: reportId, log: gateLog });
+  // The verdict also goes where deleting this channel cannot remove it: every channel's build needs it.
+  await saveExtractionGate({
+    extractionVersion: summary.extraction_version,
+    passed: summary.passed,
+    reportId,
+    decidedAt: now,
+  });
   gateLog.info(
     { extraction_version: EXTRACTION_VERSION, passed: summary.passed },
     "quality gate summarized",

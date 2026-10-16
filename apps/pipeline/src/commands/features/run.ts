@@ -9,7 +9,7 @@ import {
 import { FEATURE_NAMES, FEATURE_SPEC_DOCUMENT } from "@soundcheck/core/features";
 import {
   isStepDone,
-  latestQualityVerdict,
+  extractionGate,
   markStepDone,
   replaceChannelRows,
   saveFeatureSpec,
@@ -51,7 +51,7 @@ export async function buildFeatures({
   const runId = randomUUID().replaceAll("-", "");
   const runLog = childLogger({ channel_id: channelId, stage: FEATURES_STEP, run_id: runId }, log);
 
-  const verdict = await latestQualityVerdict(GATE_STAGE, EXTRACTION_VERSION);
+  const verdict = await extractionGate(GATE_STAGE, EXTRACTION_VERSION, { now });
   if (!verdict?.passed) {
     throw new Error(
       verdict

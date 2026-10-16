@@ -1,7 +1,7 @@
 import { EXTRACTION_VERSION, FEATURE_VERSION } from "@soundcheck/core";
 import { FEATURE_NAMES, FEATURE_SPEC_DOCUMENT } from "@soundcheck/core/features";
 import { readStepMarker } from "@soundcheck/core/jobs";
-import type { FakeBigQuery } from "@soundcheck/core/testing";
+import type { FakeBigQuery, FakeFirestore } from "@soundcheck/core/testing";
 import { survivalLabels } from "@soundcheck/core/stats";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { GATE_STAGE } from "../consistency/gate";
@@ -100,10 +100,11 @@ function beatRow(index: number, start: number, end: number, type: string) {
 
 describe("buildFeatures", () => {
   let bigquery: FakeBigQuery;
+  let db: FakeFirestore;
   let verdict: { report_id: string; channel_id: string; passed: string } | null;
 
   beforeEach(async () => {
-    ({ bigquery } = await ingestTestbed());
+    ({ bigquery, db } = await ingestTestbed());
     seed(bigquery);
     verdict = { report_id: "gate1", channel_id: "UCtestChannelForGate0000", passed: "true" };
     bigquery.respondTo(/FROM `[^`]+\.quality_reports` WHERE stage = @stage/, (params) =>
@@ -182,6 +183,18 @@ describe("buildFeatures", () => {
     (bigquery.tables.beats?.[0] as Record<string, unknown>).beat_type = "demonstration";
     expect((await build()).written).toBe(true);
     expect(bigquery.tables.training_bins).toHaveLength(300);
+  });
+
+  it("builds from the gate's verdict after the channel the gate ran on was deleted", async () => {
+    // The gate's report went with that channel's rows; the verdict kept apart remains.
+    verdict = null;
+    await db.doc(`extractionGates/${EXTRACTION_VERSION}`).set({
+      extractionVersion: EXTRACTION_VERSION,
+      passed: true,
+      reportId: "gate1",
+      decidedAt: NOW,
+    });
+    expect((await build()).gateReportId).toBe("gate1");
   });
 
   it("refuses an extraction version without a passing quality gate", async () => {
