@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="889.5600000000002" viewBox="0 0 1280 889.5600000000002" role="img" aria-label="W-07 Soundchecks wireframe">
+<title>W-07 Soundchecks wireframe</title>
+<defs>
+  <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#9a9a9a" stroke-width="1.5"/></pattern>
+</defs>
+<rect width="1280" height="889.5600000000002" fill="#ffffff"/>
+<text x="24" y="34" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#1f1f1f" text-anchor="start">W-07 · Soundchecks</text>
+<text x="24" y="54" font-family="Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#4d4d4d" text-anchor="start">/app/soundcheck  (listSoundchecks: the newest 30)   ·   UC-21, UC-15</text>
+<line x1="24" y1="66" x2="1256" y2="66" stroke="#1f1f1f" stroke-width="1.5"/>
+<rect x="24" y="80" width="202" height="18" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="32" y="93" font-family="Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#ffffff" text-anchor="start">Populated: earlier soundchecks</text>
+<rect x="24" y="100" width="820" height="325" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M24 122H844" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="36" cy="111" r="3.2" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="47" cy="111" r="3.2" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="58" cy="111" r="3.2" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="74" y="104" width="360" height="14" rx="7" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="82" y="114" font-family="Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/soundcheck</text>
+<path d="M24 150H844" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="40" y="140" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="828" y="140" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="25" y="150" width="818" height="26" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M24 176H844" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="42" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<text x="120" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#1f1f1f" text-anchor="start">Videos</text>
+<rect x="172" y="155" width="76" height="16" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="180" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="264" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="298" y="158" width="24" height="11" rx="6" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="310" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<text x="796" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<text x="44" y="212" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="44" y="237.5" font-family="Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#4d4d4d" text-anchor="start">See how a new cut is likely to do with each audience before you publish it.</text>
+<rect x="616.5" y="220" width="108" height="22" rx="3" fill="#3b3b3b" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="670.5" y="234.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#ffffff" text-anchor="middle">New soundcheck</text>
+<circle cx="811" cy="228" r="8" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="811" y="231.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="700" fill="#1f1f1f" text-anchor="middle">1</text>
+<rect x="44" y="252" width="758" height="40" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="50" y="275.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="400" fill="#4d4d4d" text-anchor="start"></text>
+<text x="353.2" y="275.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="600" fill="#1f1f1f" text-anchor="start">Guitar build (rough cut)</text>
+<rect x="485.85" y="265" width="41" height="14" rx="7" fill="#ffffff" stroke="#1f1f1f" stroke-width="1"/>
+<text x="506.35" y="275" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#1f1f1f" text-anchor="middle">Ready</text>
+<text x="580.6" y="275.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="400" fill="#4d4d4d" text-anchor="start">Average view 1:40 (1:36 to 1:43)</text>
+<rect x="44" y="296" width="758" height="40" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="50" y="319.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="400" fill="#4d4d4d" text-anchor="start"></text>
+<text x="353.2" y="319.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="600" fill="#1f1f1f" text-anchor="start">Neck repair v2</text>
+<rect x="485.85" y="309" width="51.800000000000004" height="14" rx="7" fill="#dedede" stroke="#1f1f1f" stroke-width="1"/>
+<text x="511.75" y="319" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#1f1f1f" text-anchor="middle">Running</text>
+<text x="580.6" y="319.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="400" fill="#4d4d4d" text-anchor="start">Watching your video</text>
+<rect x="44" y="340" width="758" height="40" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="50" y="363.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="400" fill="#4d4d4d" text-anchor="start"></text>
+<text x="353.2" y="363.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="600" fill="#1f1f1f" text-anchor="start">Untitled cut</text>
+<rect x="485.85" y="353" width="46.400000000000006" height="14" rx="7" fill="#ffffff" stroke="#1f1f1f" stroke-width="1"/>
+<text x="509.05" y="363" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#1f1f1f" text-anchor="middle">Failed</text>
+<text x="580.6" y="363.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="400" fill="#4d4d4d" text-anchor="start">This cut is shorter than a minute.</text>
+<circle cx="811" cy="260" r="8" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="811" y="263.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="700" fill="#1f1f1f" text-anchor="middle">2</text>
+<text x="44" y="399" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="400" fill="#7a7a7a" text-anchor="start" font-style="italic">Each row opens its soundcheck. Status labels: Uploading, Starting, Running, Ready, Failed.</text>
+<rect x="868" y="84" width="42.349999999999994" height="14.4" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="876" y="94.4" font-family="Helvetica, Arial, sans-serif" font-size="8.924999999999999" font-weight="700" fill="#ffffff" text-anchor="start">Empty</text>
+<rect x="868" y="100" width="388" height="135.58999999999997" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M868 115.4H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="876.4" cy="107.7" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="884.1" cy="107.7" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="891.8" cy="107.7" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="903" y="102.8" width="251.99999999999997" height="9.799999999999999" rx="4.8999999999999995" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="908.6" y="109.80000000000001" font-family="Menlo, Consolas, monospace" font-size="6.3" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/soundcheck</text>
+<path d="M868 135H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="879.2" y="128" font-family="Helvetica, Arial, sans-serif" font-size="8.399999999999999" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1244.8" y="128" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="869" y="135" width="386" height="18.2" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M868 153.2H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="880.6" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<text x="935.2" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Videos</text>
+<rect x="971.6" y="138.5" width="53.2" height="11.2" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="977.2" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1036.0000000000002" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="1059.8000000000002" y="140.6" width="16.799999999999997" height="7.699999999999999" rx="4.199999999999999" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="1068.2" y="146.55" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<text x="1222.3999999999999" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<text x="882" y="178.39999999999998" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<rect x="882" y="188.89999999999998" width="75.6" height="15.399999999999999" rx="3" fill="#3b3b3b" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="919.8" y="199.04999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="600" fill="#ffffff" text-anchor="middle">New soundcheck</text>
+<text x="882" y="218.64999999999998" font-family="Helvetica, Arial, sans-serif" font-size="7.35" font-weight="400" fill="#4d4d4d" text-anchor="start">No soundchecks yet. Upload a rough cut or paste an unlisted link to see how it might do.</text>
+<rect x="868" y="253.58999999999997" width="153.02" height="14.4" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="876" y="263.98999999999995" font-family="Helvetica, Arial, sans-serif" font-size="8.924999999999999" font-weight="700" fill="#ffffff" text-anchor="start">Not built yet (no summary)</text>
+<rect x="868" y="269.59" width="388" height="127.88999999999999" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M868 284.98999999999995H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="876.4" cy="277.28999999999996" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="884.1" cy="277.28999999999996" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="891.8" cy="277.28999999999996" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="903" y="272.39" width="251.99999999999997" height="9.799999999999999" rx="4.8999999999999995" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="908.6" y="279.38999999999993" font-family="Menlo, Consolas, monospace" font-size="6.3" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/soundcheck</text>
+<path d="M868 304.59H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="879.2" y="297.59" font-family="Helvetica, Arial, sans-serif" font-size="8.399999999999999" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1244.8" y="297.59" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="869" y="304.59" width="386" height="18.2" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M868 322.78999999999996H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="880.6" y="316.14" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<text x="935.2" y="316.14" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Videos</text>
+<rect x="971.6" y="308.09" width="53.2" height="11.2" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="977.2" y="316.14" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1036.0000000000002" y="316.14" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="1059.8000000000002" y="310.19" width="16.799999999999997" height="7.699999999999999" rx="4.199999999999999" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="1068.2" y="316.14" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<text x="1222.3999999999999" y="316.14" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<text x="882" y="347.98999999999995" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="882" y="365.84" font-family="Helvetica, Arial, sans-serif" font-size="7.35" font-weight="400" fill="#4d4d4d" text-anchor="start">Soundchecks use your channel's models, so they start after its first build. See the build.</text>
+<text x="882" y="382.08" font-family="Helvetica, Arial, sans-serif" font-size="5.6" font-weight="400" fill="#7a7a7a" text-anchor="start" font-style="italic">No New soundcheck button</text>
+<rect x="868" y="415.47999999999996" width="126.67000000000002" height="14.4" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="876" y="425.87999999999994" font-family="Helvetica, Arial, sans-serif" font-size="8.924999999999999" font-weight="700" fill="#ffffff" text-anchor="start">Loading (loading.tsx)</text>
+<rect x="868" y="431.47999999999996" width="388" height="158.2000000000001" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M868 446.87999999999994H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="876.4" cy="439.17999999999995" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="884.1" cy="439.17999999999995" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="891.8" cy="439.17999999999995" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="903" y="434.28" width="251.99999999999997" height="9.799999999999999" rx="4.8999999999999995" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="908.6" y="441.2799999999999" font-family="Menlo, Consolas, monospace" font-size="6.3" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/soundcheck</text>
+<path d="M868 466.47999999999996H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="879.2" y="459.47999999999996" font-family="Helvetica, Arial, sans-serif" font-size="8.399999999999999" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1244.8" y="459.47999999999996" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="869" y="466.47999999999996" width="386" height="18.2" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M868 484.67999999999995H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="880.6" y="478.03" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<text x="935.2" y="478.03" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Videos</text>
+<rect x="971.6" y="469.97999999999996" width="53.2" height="11.2" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="977.2" y="478.03" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1036.0000000000002" y="478.03" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="1059.8000000000002" y="472.08" width="16.799999999999997" height="7.699999999999999" rx="4.199999999999999" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="1068.2" y="478.03" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<text x="1222.3999999999999" y="478.03" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<rect x="882" y="495.87999999999994" width="180" height="15.399999999999999" rx="3" fill="#ececec" stroke="#9a9a9a" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="882" y="518.28" width="360" height="25.2" rx="3" fill="#ececec" stroke="#9a9a9a" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="882" y="550.48" width="360" height="25.2" rx="3" fill="#ececec" stroke="#9a9a9a" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="868" y="607.6800000000001" width="105.59" height="14.4" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="876" y="618.08" font-family="Helvetica, Arial, sans-serif" font-size="8.924999999999999" font-weight="700" fill="#ffffff" text-anchor="start">Error (error.tsx)</text>
+<rect x="868" y="623.6800000000001" width="388" height="145.8800000000001" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M868 639.08H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="876.4" cy="631.3800000000001" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="884.1" cy="631.3800000000001" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="891.8" cy="631.3800000000001" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="903" y="626.48" width="251.99999999999997" height="9.799999999999999" rx="4.8999999999999995" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="908.6" y="633.48" font-family="Menlo, Consolas, monospace" font-size="6.3" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/soundcheck</text>
+<path d="M868 658.6800000000001H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="879.2" y="651.68" font-family="Helvetica, Arial, sans-serif" font-size="8.399999999999999" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1244.8" y="651.68" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="869" y="658.6800000000001" width="386" height="18.2" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M868 676.8800000000001H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="880.6" y="670.2300000000001" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<text x="935.2" y="670.2300000000001" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Videos</text>
+<rect x="971.6" y="662.1800000000001" width="53.2" height="11.2" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="977.2" y="670.2300000000001" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1036.0000000000002" y="670.2300000000001" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="1059.8000000000002" y="664.2800000000001" width="16.799999999999997" height="7.699999999999999" rx="4.199999999999999" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="1068.2" y="670.23" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<text x="1222.3999999999999" y="670.2300000000001" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<text x="882" y="702.0800000000002" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#1f1f1f" text-anchor="start">This screen didn't load</text>
+<text x="882" y="719.9300000000002" font-family="Helvetica, Arial, sans-serif" font-size="7.35" font-weight="400" fill="#4d4d4d" text-anchor="start">Something went wrong on our side. Your data is safe; trying again usually works. Reference:</text>
+<text x="882" y="730.2200000000001" font-family="Helvetica, Arial, sans-serif" font-size="7.35" font-weight="400" fill="#4d4d4d" text-anchor="start">3a91f…</text>
+<rect x="882" y="740.1600000000002" width="54.599999999999994" height="15.399999999999999" rx="3" fill="#3b3b3b" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="909.3" y="750.3100000000002" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="600" fill="#ffffff" text-anchor="middle">Try again</text>
+<line x1="24" y1="785.5600000000002" x2="1256" y2="785.5600000000002" stroke="#c8c8c8" stroke-width="1"/>
+<text x="24" y="799.5600000000002" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#1f1f1f" text-anchor="start">Callouts</text>
+<circle cx="32" cy="811.5600000000002" r="7" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="32" y="815.0600000000002" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#1f1f1f" text-anchor="middle">1</text>
+<text x="46" y="815.5600000000002" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">Shown only once a summary is published: soundchecks need the channel's models.</text>
+<circle cx="32" cy="829.5600000000002" r="7" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="32" y="833.0600000000002" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#1f1f1f" text-anchor="middle">2</text>
+<text x="46" y="833.5600000000002" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">SoundcheckList, newest first. The recommended edits' combined effect is stored (recommendedEffect) but not</text>
+<text x="46" y="846.5600000000002" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">shown yet.</text>
+<text x="652" y="799.5600000000002" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#1f1f1f" text-anchor="start">Navigation</text>
+<text x="652" y="815.5600000000002" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">→ New soundcheck → W-08</text>
+<text x="652" y="833.5600000000002" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">→ A row → W-09 /app/soundcheck/[id]</text>
+<text x="652" y="851.5600000000002" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">→ See the build → W-03</text>
+</svg>

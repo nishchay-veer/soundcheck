@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Soundcheck upload and trigger",
+    "output": "docs/architecture/interactive/soundcheck-upload/soundcheck-upload.html",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/nishchay-veer/soundcheck.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "48d7346cd094090390afe68eb2b45b03252ea755"
+    }
+  },
+  "participants": [
+    {
+      "id": "browser",
+      "type": "frontend",
+      "label": "Browser",
+      "sublabel": "form, upload, poll",
+      "sources": [
+        {
+          "path": "apps/web/src/components/soundcheck-form.tsx",
+          "line": 78,
+          "end_line": 129,
+          "label": "Create, upload, go to page"
+        },
+        {
+          "path": "apps/web/src/lib/upload.ts",
+          "line": 1,
+          "end_line": 12,
+          "label": "Resumable chunk protocol"
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "type": "backend",
+      "label": "Web app",
+      "sublabel": "create route",
+      "sources": [
+        {
+          "path": "apps/web/src/app/api/v1/channels/[id]/soundchecks/route.ts",
+          "line": 25,
+          "end_line": 68,
+          "label": "POST and its statuses"
+        },
+        {
+          "path": "packages/core/src/data/soundchecks.ts",
+          "line": 99,
+          "end_line": 194,
+          "label": "createSoundcheck (file)"
+        }
+      ]
+    },
+    {
+      "id": "fs",
+      "type": "database",
+      "label": "Firestore",
+      "sublabel": "soundchecks/{sid}",
+      "sources": [
+        {
+          "path": "packages/core/src/schemas/firestore.ts",
+          "line": 34,
+          "end_line": 45,
+          "label": "Doc and inputs paths"
+        }
+      ]
+    },
+    {
+      "id": "up",
+      "type": "database",
+      "label": "GCS uploads",
+      "sublabel": "the cut object",
+      "sources": [
+        {
+          "path": "packages/core/src/data/soundchecks.ts",
+          "line": 58,
+          "end_line": 88,
+          "label": "One-object session"
+        }
+      ]
+    },
+    {
+      "id": "evt",
+      "type": "messagebus",
+      "label": "Eventarc",
+      "sublabel": "object.finalized",
+      "sources": [
+        {
+          "path": "infra/10-soundcheck-trigger.sh",
+          "line": 14,
+          "end_line": 25,
+          "label": "soundcheck-upload trigger"
+        }
+      ]
+    },
+    {
+      "id": "wf",
+      "type": "cloud",
+      "label": "Workflow",
+      "sublabel": "soundcheck",
+      "sources": [
+        {
+          "path": "infra/workflows/soundcheck.yaml",
+          "line": 17,
+          "end_line": 97,
+          "label": "Name check, run, guard"
+        }
+      ]
+    },
+    {
+      "id": "job",
+      "type": "backend",
+      "label": "Job",
+      "sublabel": "job-soundcheck",
+      "sources": [
+        {
+          "path": "apps/pipeline/src/commands/soundcheck/run.ts",
+          "line": 156,
+          "end_line": 181,
+          "label": "Claim in a transaction"
+        },
+        {
+          "path": "apps/pipeline/src/commands/soundcheck/run.ts",
+          "line": 228,
+          "end_line": 330,
+          "label": "Check, watch, predict"
+        },
+        {
+          "path": "apps/pipeline/src/commands/soundcheck/run.ts",
+          "line": 354,
+          "end_line": 395,
+          "label": "One batch write"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 340,
+      "label": "Create"
+    },
+    {
+      "from": 350,
+      "to": 470,
+      "label": "Upload"
+    },
+    {
+      "from": 480,
+      "to": 590,
+      "label": "Trigger"
+    }
+  ],
+  "messages": [
+    {
+      "id": "create",
+      "from": "browser",
+      "to": "web",
+      "y": 160,
+      "label": "POST soundchecks {file, size, scenario}",
+      "variant": "emphasis"
+    },
+    {
+      "id": "owner",
+      "from": "web",
+      "to": "fs",
+      "y": 188,
+      "label": "owner check + summary/current"
+    },
+    {
+      "id": "built",
+      "from": "fs",
+      "to": "web",
+      "y": 216,
+      "label": "channel built",
+      "variant": "return"
+    },
+    {
+      "id": "session",
+      "from": "web",
+      "to": "up",
+      "y": 244,
+      "label": "open resumable session",
+      "variant": "security"
+    },
+    {
+      "id": "session-url",
+      "from": "up",
+      "to": "web",
+      "y": 272,
+      "label": "session URL",
+      "variant": "return"
+    },
+    {
+      "id": "awaiting",
+      "from": "web",
+      "to": "fs",
+      "y": 300,
+      "label": "status awaiting_upload"
+    },
+    {
+      "id": "created",
+      "from": "web",
+      "to": "browser",
+      "y": 328,
+      "label": "201 sessionUrl, 8 MiB chunks",
+      "variant": "return"
+    },
+    {
+      "id": "chunk",
+      "from": "browser",
+      "to": "up",
+      "y": 360,
+      "label": "PUT chunk, Content-Range",
+      "variant": "emphasis",
+      "note": "Per chunk: 308 Range = kept, 6 tries"
+    },
+    {
+      "id": "complete",
+      "from": "up",
+      "to": "browser",
+      "y": 430,
+      "label": "200 complete",
+      "variant": "return"
+    },
+    {
+      "id": "poll",
+      "from": "browser",
+      "to": "web",
+      "y": 458,
+      "label": "open page, poll every 2 s",
+      "variant": "dashed"
+    },
+    {
+      "id": "finalized",
+      "from": "up",
+      "to": "evt",
+      "y": 492,
+      "label": "object.finalized",
+      "variant": "dashed"
+    },
+    {
+      "id": "start",
+      "from": "evt",
+      "to": "wf",
+      "y": 520,
+      "label": "start workflow",
+      "variant": "dashed",
+      "note": "Other objects are ignored"
+    },
+    {
+      "id": "run",
+      "from": "wf",
+      "to": "job",
+      "y": 578,
+      "label": "jobs.run, wait up to 3600 s",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Bytes skip the web app",
+      "items": [
+        "The server fixes the object name, type and exact size; ifGenerationMatch=0 forbids overwrite",
+        "The browser PUTs 8 MiB chunks straight to Cloud Storage",
+        "ffprobe and Gemini read the object in place; nothing downloads 2 GB"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "What starts the job",
+      "items": [
+        "Cloud Storage fires object.finalized only once the last chunk lands",
+        "Eventarc fires for every object in the bucket, including soundcheck archives",
+        "The workflow ignores names other than {channel}/{32 hex}/source.ext"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Refusals before any work",
+      "items": [
+        "404 for someone else's channel, 409 before the first build has published",
+        "415 for other types, 413 over 2 GB, 503 without the workflow or in fixtures mode",
+        "An expired session (404 or 410) asks the creator to start again"
+      ]
+    }
+  ]
+}

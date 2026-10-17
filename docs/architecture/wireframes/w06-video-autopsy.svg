@@ -1,0 +1,257 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="982.2600000000001" viewBox="0 0 1280 982.2600000000001" role="img" aria-label="W-06 Video autopsy wireframe">
+<title>W-06 Video autopsy wireframe</title>
+<defs>
+  <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#9a9a9a" stroke-width="1.5"/></pattern>
+</defs>
+<rect width="1280" height="982.2600000000001" fill="#ffffff"/>
+<text x="24" y="34" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#1f1f1f" text-anchor="start">W-06 · Video autopsy</text>
+<text x="24" y="54" font-family="Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#4d4d4d" text-anchor="start">/app/videos/[videoId]  (getVideo → channels/{id}/videos/{videoId})   ·   UC-13, UC-14</text>
+<line x1="24" y1="66" x2="1256" y2="66" stroke="#1f1f1f" stroke-width="1.5"/>
+<rect x="24" y="80" width="140" height="18" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="32" y="93" font-family="Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#ffffff" text-anchor="start">Populated: one video</text>
+<rect x="24" y="100" width="820" height="652.7" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M24 122H844" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="36" cy="111" r="3.2" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="47" cy="111" r="3.2" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="58" cy="111" r="3.2" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="74" y="104" width="360" height="14" rx="7" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="82" y="114" font-family="Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/videos/FhcM0zUTVv0</text>
+<path d="M24 150H844" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="40" y="140" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="828" y="140" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="25" y="150" width="818" height="26" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M24 176H844" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="42" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<rect x="112" y="155" width="52" height="16" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="120" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="700" fill="#1f1f1f" text-anchor="start">Videos</text>
+<text x="180" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="264" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="298" y="158" width="24" height="11" rx="6" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="310" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<text x="796" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<text x="44" y="201" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="400" fill="#4d4d4d" text-anchor="start">All videos</text>
+<line x1="44" y1="203" x2="93" y2="203" stroke="#4d4d4d" stroke-width="0.8"/>
+<text x="44" y="234" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#1f1f1f" text-anchor="start">I built a guitar in a weekend</text>
+<text x="44" y="259" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="400" fill="#4d4d4d" text-anchor="start">3 October 2026</text>
+<text x="128.8" y="259" font-family="Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#4d4d4d" text-anchor="start">12:04</text>
+<rect x="166.8" y="249" width="208.4" height="14" rx="7" fill="#ffffff" stroke="#1f1f1f" stroke-width="1"/>
+<text x="271" y="259" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#1f1f1f" text-anchor="middle">Held out: predicted before we looked</text>
+<rect x="44" y="273" width="246" height="58" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="52" y="287" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="400" fill="#4d4d4d" text-anchor="start">Views</text>
+<text x="52" y="307" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#1f1f1f" text-anchor="start">18,240</text>
+<rect x="300" y="273" width="246" height="58" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="308" y="287" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="400" fill="#4d4d4d" text-anchor="start">Average watch</text>
+<text x="308" y="307" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#1f1f1f" text-anchor="start">4:57</text>
+<rect x="556" y="273" width="246" height="58" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="564" y="287" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="400" fill="#4d4d4d" text-anchor="start">Average view</text>
+<text x="564" y="307" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#1f1f1f" text-anchor="start">41%</text>
+<rect x="44" y="341" width="758" height="39" rx="3" fill="#ececec" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="56" y="357" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#1f1f1f" text-anchor="start">Not a result yet</text>
+<text x="56" y="371" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#4d4d4d" text-anchor="start">Shown when either audience's model is not usable.</text>
+<rect x="44" y="390" width="494.6666666666667" height="210" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<line x1="70" y1="441" x2="528.6666666666667" y2="441" stroke="#c8c8c8" stroke-width="1" stroke-dasharray="3 3"/>
+<line x1="70" y1="482" x2="528.6666666666667" y2="482" stroke="#c8c8c8" stroke-width="1" stroke-dasharray="3 3"/>
+<line x1="70" y1="523" x2="528.6666666666667" y2="523" stroke="#c8c8c8" stroke-width="1" stroke-dasharray="3 3"/>
+<line x1="70" y1="400" x2="70" y2="564" stroke="#1f1f1f" stroke-width="1.5"/>
+<line x1="70" y1="564" x2="528.6666666666667" y2="564" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="66" y="406" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#7a7a7a" text-anchor="end">100%</text>
+<text x="66" y="564" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#7a7a7a" text-anchor="end">0</text>
+<rect x="212.18666666666667" y="400" width="32.10666666666667" height="164" rx="0" fill="url(#hatch)" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="386.47999999999996" y="400" width="27.52" height="164" rx="0" fill="url(#hatch)" stroke="#9a9a9a" stroke-width="1"/>
+<path d="M70 404.92L81.46666666666667 408.65363755526994L92.93333333333334 412.2996459340618L104.4 415.8600818096485L115.86666666666667 419.3369535847938L127.33333333333334 422.7322225246703L138.8 426.0478038631881L150.26666666666665 429.2855678833563L161.73333333333335 432.4473409722899L173.2 435.5349066514543L184.66666666666669 438.55000658273036L196.13333333333335 441.49434155086635L207.6 444.36957242287264L219.0666666666667 447.87825715838835L230.53333333333333 454.02608118826095L242 459.9492896745967L253.4666666666667 465.6550396283386L264.93333333333334 470.5128635430295L276.4 472.70702423959966L287.8666666666667 474.8496875714539L299.33333333333337 476.9420621914393L310.8 478.9853283850927L322.2666666666667 480.98063873642764L333.73333333333335 482.9291187780934L345.2 484.83186762627633L356.6666666666667 486.68995860069873L368.1333333333334 488.504439830067L379.6 490.27633484330937L391.06666666666666 492.0066431469375L402.53333333333336 495.8054505651912L414 499.46559805440836L425.4666666666667 502.99150179180333L436.9333333333334 505.07807083468083L448.4 506.4609796073775L459.8666666666667 507.81143125077284L471.33333333333337 509.1301875398034L482.8 510.4179923704044L494.2666666666667 511.6755721791335L505.73333333333335 512.9036363529453L517.2 514.1028776293495L528.6666666666667 515.2739724871755L528.6666666666667 533.6950209227039L517.2 532.6547724259252L505.73333333333335 531.5788163666273L494.2666666666667 530.4659270472722L482.8 529.3148366970375L471.33333333333337 528.1242340276083L459.8666666666667 526.8927627393961L448.4 525.6190199764826L436.9333333333334 524.3015547285271L425.4666666666667 522.482631357572L414 519.6418198557909L402.53333333333336 516.6548998303582L391.06666666666666 513.5151878947131L379.6 511.7822465926015L368.1333333333334 509.9898203596496L356.6666666666667 508.13586731654357L345.2 506.21827549443464L333.73333333333335 504.2348604290462L322.2666666666667 502.18336267219655L310.8 500.0614452179016L299.33333333333337 497.86669084012664L287.8666666666667 495.59659933915304L276.4 493.2485846934244L264.93333333333334 490.8199721136268L253.4666666666667 486.2436675864376L242 480.90561990021547L230.53333333333333 475.29272288839326L219.0666666666667 469.39239728064285L207.6 465.5542227172892L196.13333333333335 462.1749736648038L184.66666666666669 458.67972853332026L173.2 455.06450564225383L161.73333333333335 451.32518663588047L150.26666666666665 447.4575117918266L138.8 443.4570751685188L127.33333333333334 439.31931958606447L115.86666666666667 435.03953143484614L104.4 430.6128353059163L92.93333333333334 426.03418843707436L81.46666666666667 421.29837496830027L70 416.4Z" fill="#dedede" stroke="#9a9a9a" stroke-width="1" opacity="0.9"/>
+<path d="M70 409.84000000000003L81.46666666666667 414.20899476709883L92.93333333333334 418.4541693780292L104.4 422.5790329766309L115.86666666666667 426.5869952553229L127.33333333333334 430.4813692736209L138.8 434.26537419677703L150.26666666666665 437.94213795680434L161.73333333333335 441.514699838086L173.2 444.98601298970726L184.66666666666669 448.3589468665855L196.13333333333335 451.63628960141733L207.6 454.820750309404L219.0666666666667 458.5514715596917L230.53333333333333 464.6323070970621L242 470.4531684256526L253.4666666666667 476.0239071406217L264.93333333333334 480.7866615741359L276.4 483.1449817618332L287.8666666666667 485.43646562000805L299.33333333333337 487.66300733375334L310.8 489.82644740572334L322.2666666666667 491.92857417752873L333.73333333333335 493.9711253080148L345.2 495.9557892096437L356.6666666666667 497.8842064441691L368.1333333333334 499.75797107875655L379.6 501.57863200367046L391.06666666666666 503.3476942126165L402.53333333333336 506.8346214453949L414 510.17262057949694L425.4666666666667 513.3673323796675L436.9333333333334 515.3429292641177L448.4 516.721902327347L459.8666666666667 518.061794396173L471.33333333333337 519.363713051421L482.8 520.6287344843547L494.2666666666667 521.8579043862768L505.73333333333335 523.0522388129175L517.2 524.2127250243263L528.6666666666667 525.3403223009599" fill="none" stroke="#1f1f1f" stroke-width="1.5" stroke-dasharray="4 3"/>
+<path d="M70 408.2L81.46666666666667 412.0467157059858L92.93333333333334 415.79845566278874L104.4 419.45756483001145L115.86666666666667 423.0263302699975L127.33333333333334 426.50698257732L138.8 429.901697272976L150.26666666666665 433.2125961641575L161.73333333333335 436.44174867045047L173.2 439.59117311728903L184.66666666666669 442.6628379974751L196.13333333333335 445.6586632015499L207.6 448.5805212177884L219.0666666666667 452.10565687274976L230.53333333333333 458.1620501794388L242 463.98758856031833L253.4666666666667 469.58997969219325L264.93333333333334 474.3655473795574L276.4 476.57862990004844L287.8666666666667 478.7370712184199L299.33333333333337 480.8422204307591L310.8 482.8953933238522L322.2666666666667 484.89787319759375L333.73333333333335 486.85091166709117L345.2 488.7557294449646L356.6666666666667 490.61351710433235L368.1333333333334 492.42543582295764L379.6 494.1926181090226L391.06666666666666 495.9161685089826L402.53333333333336 499.58924936900564L414 503.1224567838162L425.4666666666667 506.5204586170252L436.9333333333334 508.55568153330523L448.4 509.92460663377705L459.8666666666667 511.2597328530916L471.33333333333337 512.561894688598L482.8 513.8319060338324L494.2666666666667 515.070560687228L505.73333333333335 516.2786328482647L517.2 517.4568776013692L528.6666666666667 518.6060313878675" fill="none" stroke="#1f1f1f" stroke-width="2.5"/>
+<path d="M70 413.12L81.46666666666667 419.03608942069746L92.93333333333334 424.7202056571844L104.4 430.1814445081153L115.86666666666667 435.42854512077804L127.33333333333334 440.4699039755941L138.8 445.3135883222784L150.26666666666665 449.9673490891601L161.73333333333335 454.43863328632153L173.2 458.73459592240283L184.66666666666669 462.86211145414273L196.13333333333335 466.82778478697566L207.6 470.63796184428946L219.0666666666667 474.83694728392356L230.53333333333333 480.91860129441716L242 486.6604105232885L253.4666666666667 492.0796756305879L264.93333333333334 496.73423280885424L276.4 499.3717612662683L287.8666666666667 501.9058707536155L299.33333333333337 504.3406163867144L310.8 506.67989427801797L322.2666666666667 508.92744777122505L333.73333333333335 511.0868734314283L345.2 513.1616268003861L356.6666666666667 515.1550279261264L368.1333333333334 517.0702666757321L379.6 518.9104078398086L391.06666666666666 520.6783960368027L402.53333333333336 523.62574861227L414 526.4085720760914L425.4666666666667 529.0352375252427L436.9333333333334 530.7753878292367L448.4 532.0781435063989L459.8666666666667 533.3298174028121L471.33333333333337 534.5324124637484L482.8 535.6878530978729L494.2666666666667 536.7979882567071L505.73333333333335 537.8645943933467L517.2 538.8893783051651L528.6666666666667 539.8739798650533" fill="none" stroke="#7a7a7a" stroke-width="2.5"/>
+<line x1="225.9466666666667" y1="400" x2="225.9466666666667" y2="588" stroke="#1f1f1f" stroke-width="1" stroke-dasharray="2 2"/>
+<rect x="70" y="572" width="25.52" height="16" rx="1" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="74" y="583" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#4d4d4d" text-anchor="start">Hook</text>
+<rect x="97.52" y="572" width="39.28" height="16" rx="1" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="101.52" y="583" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#4d4d4d" text-anchor="start">Intro</text>
+<rect x="138.8" y="572" width="66.8" height="16" rx="1" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="142.8" y="583" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#4d4d4d" text-anchor="start">Explain</text>
+<rect x="207.60000000000002" y="572" width="53.04" height="16" rx="1" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="211.60000000000002" y="583" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#4d4d4d" text-anchor="start">Tangent</text>
+<rect x="262.64000000000004" y="572" width="34.693333333333335" height="16" rx="1" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="266.64000000000004" y="583" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#4d4d4d" text-anchor="start">Sponsor</text>
+<rect x="299.33333333333337" y="572" width="89.73333333333335" height="16" rx="1" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="303.33333333333337" y="583" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#4d4d4d" text-anchor="start">Demo</text>
+<rect x="391.0666666666667" y="572" width="43.866666666666674" height="16" rx="1" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="395.0666666666667" y="583" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#4d4d4d" text-anchor="start">Payoff</text>
+<rect x="436.9333333333334" y="572" width="53.04" height="16" rx="1" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="440.9333333333334" y="583" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#4d4d4d" text-anchor="start">Recap</text>
+<rect x="491.9733333333334" y="572" width="34.693333333333335" height="16" rx="1" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="495.9733333333334" y="583" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#4d4d4d" text-anchor="start">CTA</text>
+<text x="530.6666666666667" y="596" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#1f1f1f" text-anchor="start"></text>
+<text x="74" y="612" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="400" fill="#7a7a7a" text-anchor="start">━ Subscribers  ━ Newcomers (grey)   ┄ predicted median   ▒ 10–90% band   ▨ drop-off windows</text>
+<rect x="554.6666666666667" y="390" width="247.33333333333334" height="130" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.5"/>
+<path d="M668.3333333333334 443l22 12l-22 12Z" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="678.3333333333334" y="510" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="400" fill="#4d4d4d" text-anchor="middle">YouTube player (youtube-nocookie.com)</text>
+<text x="554.6666666666667" y="539" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="400" fill="#7a7a7a" text-anchor="start" font-style="italic">Seeks when a drop-off or beat is clicked; its time moves the playhead</text>
+<circle cx="811" cy="398" r="8" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="811" y="401.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="700" fill="#1f1f1f" text-anchor="middle">1</text>
+<rect x="44" y="624" width="758" height="104.70000000000005" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="54" y="647" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#1f1f1f" text-anchor="start">Drop-off at 2:40 · Newcomers</text>
+<text x="54" y="664.5" font-family="Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#1f1f1f" text-anchor="start">Newcomers left fastest during the sponsor read, about 9 of every 100 in 40 seconds.</text>
+<rect x="54" y="678.7" width="137.6" height="18" rx="9" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="122.8" y="691.2" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="400" fill="#1f1f1f" text-anchor="middle">Sponsor segment 55% ?</text>
+<rect x="199.6" y="678.7" width="109.6" height="18" rx="9" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="254.39999999999998" y="691.2" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="400" fill="#1f1f1f" text-anchor="middle">Low energy 20% ?</text>
+<rect x="317.2" y="678.7" width="104" height="18" rx="9" fill="#dedede" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="369.2" y="691.2" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="700" fill="#1f1f1f" text-anchor="middle">Unexplained 25%</text>
+<text x="54" y="715.7" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="400" fill="#4d4d4d" text-anchor="start">See this effect on the audiences screen</text>
+<line x1="54" y1="717.7" x2="245.10000000000002" y2="717.7" stroke="#4d4d4d" stroke-width="0.8"/>
+<circle cx="811" cy="632" r="8" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="811" y="635.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="700" fill="#1f1f1f" text-anchor="middle">2</text>
+<rect x="868" y="84" width="147.75" height="14.4" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="876" y="94.4" font-family="Helvetica, Arial, sans-serif" font-size="8.924999999999999" font-weight="700" fill="#ffffff" text-anchor="start">Not found (not-found.tsx)</text>
+<rect x="868" y="100" width="388" height="145.87999999999997" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M868 115.4H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="876.4" cy="107.7" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="884.1" cy="107.7" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="891.8" cy="107.7" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="903" y="102.8" width="251.99999999999997" height="9.799999999999999" rx="4.8999999999999995" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="908.6" y="109.80000000000001" font-family="Menlo, Consolas, monospace" font-size="6.3" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/videos/FhcM0zUTVv0</text>
+<path d="M868 135H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="879.2" y="128" font-family="Helvetica, Arial, sans-serif" font-size="8.399999999999999" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1244.8" y="128" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="869" y="135" width="386" height="18.2" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M868 153.2H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="880.6" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<rect x="929.6" y="138.5" width="36.4" height="11.2" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="935.2" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="700" fill="#1f1f1f" text-anchor="start">Videos</text>
+<text x="977.2" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1036.0000000000002" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="1059.8000000000002" y="140.6" width="16.799999999999997" height="7.699999999999999" rx="4.199999999999999" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="1068.2" y="146.55" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<text x="1222.3999999999999" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<text x="882" y="178.39999999999998" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#1f1f1f" text-anchor="start">Video not found</text>
+<text x="882" y="196.24999999999997" font-family="Helvetica, Arial, sans-serif" font-size="7.35" font-weight="400" fill="#4d4d4d" text-anchor="start">This video isn't among your channel's analysed videos. It may be too new, too short, or not</text>
+<text x="882" y="206.53999999999996" font-family="Helvetica, Arial, sans-serif" font-size="7.35" font-weight="400" fill="#4d4d4d" text-anchor="start">yet published by a build.</text>
+<rect x="882" y="216.47999999999996" width="75.6" height="15.399999999999999" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="919.8" y="226.62999999999997" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="600" fill="#1f1f1f" text-anchor="middle">See all videos</text>
+<rect x="868" y="263.88" width="153.02" height="14.4" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="876" y="274.28" font-family="Helvetica, Arial, sans-serif" font-size="8.924999999999999" font-weight="700" fill="#ffffff" text-anchor="start">No stats; trained-on badge</text>
+<rect x="868" y="279.88" width="388" height="165.89999999999998" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M868 295.28H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="876.4" cy="287.58" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="884.1" cy="287.58" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="891.8" cy="287.58" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="903" y="282.68" width="251.99999999999997" height="9.799999999999999" rx="4.8999999999999995" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="908.6" y="289.67999999999995" font-family="Menlo, Consolas, monospace" font-size="6.3" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/videos/FhcM0zUTVv0</text>
+<path d="M868 314.88H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="879.2" y="307.88" font-family="Helvetica, Arial, sans-serif" font-size="8.399999999999999" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1244.8" y="307.88" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="869" y="314.88" width="386" height="18.2" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M868 333.08H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="880.6" y="326.43" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<rect x="929.6" y="318.38" width="36.4" height="11.2" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="935.2" y="326.43" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="700" fill="#1f1f1f" text-anchor="start">Videos</text>
+<text x="977.2" y="326.43" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1036.0000000000002" y="326.43" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="1059.8000000000002" y="320.48" width="16.799999999999997" height="7.699999999999999" rx="4.199999999999999" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="1068.2" y="326.43" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<text x="1222.3999999999999" y="326.43" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<rect x="882" y="344.28" width="157.22000000000003" height="9.799999999999999" rx="4.8999999999999995" fill="#ffffff" stroke="#1f1f1f" stroke-width="1"/>
+<text x="960.61" y="351.28" font-family="Helvetica, Arial, sans-serif" font-size="5.6" font-weight="600" fill="#1f1f1f" text-anchor="middle">This video was used to train your model</text>
+<rect x="882" y="361.08" width="360" height="56" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<line x1="900.2" y1="374.03" x2="1235" y2="374.03" stroke="#c8c8c8" stroke-width="1" stroke-dasharray="3 3"/>
+<line x1="900.2" y1="379.97999999999996" x2="1235" y2="379.97999999999996" stroke="#c8c8c8" stroke-width="1" stroke-dasharray="3 3"/>
+<line x1="900.2" y1="385.93" x2="1235" y2="385.93" stroke="#c8c8c8" stroke-width="1" stroke-dasharray="3 3"/>
+<line x1="900.2" y1="368.08" x2="900.2" y2="391.88" stroke="#1f1f1f" stroke-width="1.5"/>
+<line x1="900.2" y1="391.88" x2="1235" y2="391.88" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="897.4000000000001" y="372.28" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="end">100%</text>
+<text x="897.4000000000001" y="391.88" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="end">0</text>
+<path d="M900.2 368.794L908.57 369.33583276716723L916.94 369.86494861726015L925.3100000000001 370.3816460187173L933.6800000000001 370.8862164348664L942.0500000000001 371.3789444883363L950.4200000000001 371.86010812160896L958.7900000000001 372.32997875380414L967.1600000000001 372.78882143378354L975.5300000000001 373.23689498966223L983.9000000000001 373.6744521748108L992.2700000000001 374.1017398104306L1000.6400000000001 374.5189989247827L1009.01 375.0281860998149L1017.38 375.9203703187842L1025.75 376.7799578918012L1034.1200000000001 377.6079874582589L1042.49 378.3129643434396L1050.8600000000001 378.63138522501504L1059.23 378.9423327085402L1067.6000000000001 379.2459821960747L1075.97 379.54250497295857L1084.3400000000001 379.83206830443277L1092.71 380.1148355299916L1101.08 380.3909661555206L1109.45 380.6606159432721L1117.8200000000002 380.9239369997292L1126.19 381.18107786140706L1134.56 381.4321835786409L1142.93 381.98347392348506L1151.3000000000002 382.51464166887143L1159.67 383.0263276990544L1168.04 383.32913466991096L1176.41 383.5298250893633L1184.78 383.72580526688046L1193.15 383.91718575272756L1201.52 384.1040745025343L1209.89 384.28657693819133L1218.26 384.46479600731766L1226.63 384.6388322413324L1235 384.80878381216326L1235 387.48208230463626L1226.63 387.3311194130306L1218.26 387.17497457027883L1209.89 387.0134699007627L1201.52 386.8464214231067L1193.15 386.67363884059193L1184.78 386.49492532437574L1176.41 386.31007728927L1168.04 386.11888416182285L1159.67 385.85491845311105L1151.3000000000002 385.44265434492576L1142.93 385.0091866826983L1134.56 384.5535455603303L1126.19 384.302057737219L1117.8200000000002 384.041937344876L1109.45 383.7728880617911L1101.08 383.494603394924L1092.71 383.20676633055666L1084.3400000000001 382.9090489731602L1075.97 382.6011121718662L1067.6000000000001 382.28260513411595L1059.23 381.9531650260478L1050.8600000000001 381.6124165591677L1042.49 381.2599715628312L1034.1200000000001 380.5958493204708L1025.75 379.82118142454345L1017.38 379.00662685819367L1009.01 378.15036009316646L1000.6400000000001 377.59335671141145L992.2700000000001 377.1029534952581L983.9000000000001 376.5957167017867L975.5300000000001 376.0710685017417L967.1600000000001 375.5284112313046L958.7900000000001 374.9671267112529L950.4200000000001 374.38657554274846L942.0500000000001 373.78609637895323L933.6800000000001 373.1650051716423L925.3100000000001 372.52259439195615L916.94 371.8581322244047L908.57 371.17086173320456L900.2 370.46Z" fill="#dedede" stroke="#9a9a9a" stroke-width="1" opacity="0.9"/>
+<path d="M900.2 369.508L908.57 370.1420370454692L916.94 370.758105068275L925.3100000000001 371.35671332221835L933.6800000000001 371.9383566285164L942.0500000000001 372.5035157848303L950.4200000000001 373.052657962703L958.7900000000001 373.58623709373137L967.1600000000001 374.1046942447954L975.5300000000001 374.6084579826526L983.9000000000001 375.0979447281996L992.2700000000001 375.5735591006935L1000.6400000000001 376.0356942522184L1009.01 376.57710379951624L1017.38 377.45956651774435L1025.75 378.3043012715276L1034.1200000000001 379.112737743578L1042.49 379.80391796014896L1050.8600000000001 380.146161987388L1059.23 380.47870659607435L1067.6000000000001 380.80182667404466L1075.97 381.11578931863545L1084.3400000000001 381.42085405747065L1092.71 381.7172730629924L1101.08 382.0052913609117L1109.45 382.28514703275135L1117.8200000000002 382.5570714126488L1126.19 382.82128927858145L1134.56 383.0780190381724L1142.93 383.58404872195365L1151.3000000000002 384.06846566946354L1159.67 384.5320884794883L1168.04 384.81879095418293L1176.41 385.0189102157979L1184.78 385.21335796724946L1193.15 385.4022949428282L1201.52 385.58587732151L1209.89 385.7642568560572L1218.26 385.93758099845996L1226.63 386.10599302182294L1235 386.2696321387978" fill="none" stroke="#1f1f1f" stroke-width="1.5" stroke-dasharray="4 3"/>
+<path d="M900.2 369.27L908.57 369.82824288903936L916.94 370.37270271203886L925.3100000000001 370.9037197741114L933.6800000000001 371.4216259782069L942.0500000000001 371.9267450325623L950.4200000000001 372.41939265302943L958.7900000000001 372.89987676040823L967.1600000000001 373.3684976729068L975.5300000000001 373.8255482938505L983.9000000000001 374.27131429475554L992.2700000000001 374.70607429388343L1000.6400000000001 375.13010003038636L1009.01 375.6416745949478L1017.38 376.5205902089673L1025.75 377.3660037057047L1034.1200000000001 378.1790336382573L1042.49 378.87207333922845L1050.8600000000001 379.1932401928119L1059.23 379.5064774085268L1067.6000000000001 379.8119807698297L1075.97 380.10994122626636L1084.3400000000001 380.4005450128215L1092.71 380.68397376632174L1101.08 380.96040463896435L1109.45 381.23001040904336L1117.8200000000002 381.4929595889414L1126.19 381.7494165304557L1134.56 381.9995415275231L1142.93 382.53258618891664L1151.3000000000002 383.0453321430172L1159.67 383.5384567993L1168.04 383.8338123200772L1176.41 384.03247340173107L1184.78 384.2262295238023L1193.15 384.4152017901746L1201.52 384.5995083146659L1209.89 384.7792642948538L1218.26 384.9545820840774L1226.63 385.1255712616621L1235 385.29233870141" fill="none" stroke="#1f1f1f" stroke-width="2.5"/>
+<path d="M900.2 369.984L908.57 370.8425544403207L916.94 371.6674444795182L925.3100000000001 372.4599901176411L933.6800000000001 373.2214595967958L942.0500000000001 373.9530714306045L950.4200000000001 374.6559963540867L958.7900000000001 375.3313591970854L967.1600000000001 375.98024068423445L975.5300000000001 376.6036791643487L983.9000000000001 377.2026722720036L992.2700000000001 377.7781785239635L1000.6400000000001 378.33111885301275L1009.01 378.94048381315474L1017.38 379.8230653097995L1025.75 380.6563278686236L1034.1200000000001 381.44278219517065L1042.49 382.1182606149435L1050.8600000000001 382.50102389108037L1059.23 382.8687788044881L1067.6000000000001 383.2221138414866L1075.97 383.56159441351724L1084.3400000000001 383.8877637619217L1092.71 384.20114382724387L1101.08 384.5022360844463L1109.45 384.79152234537685L1117.8200000000002 385.06946552977087L1126.19 385.336510406021L1134.56 385.59308430290184L1142.93 386.0208098595855L1151.3000000000002 386.42465863055475L1159.67 386.80584544573645L1168.04 387.05837945326726L1176.41 387.24743789909934L1184.78 387.4290832572373L1193.15 387.6036061990074L1201.52 387.7712859983498L1209.89 387.93239097871725L1218.26 388.0871789424491L1226.63 388.23589758331053L1235 388.3787848828553" fill="none" stroke="#7a7a7a" stroke-width="2.5"/>
+<rect x="900.2" y="397.48" width="18.088" height="11.2" rx="1" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="903" y="405.18" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#4d4d4d" text-anchor="start">Hook</text>
+<rect x="920.288" y="397.48" width="28.132" height="11.2" rx="1" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="923.088" y="405.18" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#4d4d4d" text-anchor="start">Intro</text>
+<rect x="950.42" y="397.48" width="48.22" height="11.2" rx="1" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="953.2199999999999" y="405.18" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#4d4d4d" text-anchor="start">Explain</text>
+<rect x="1000.64" y="397.48" width="38.176" height="11.2" rx="1" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="1003.4399999999999" y="405.18" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#4d4d4d" text-anchor="start">Tangent</text>
+<rect x="1040.816" y="397.48" width="24.784000000000002" height="11.2" rx="1" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="1043.616" y="405.18" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#4d4d4d" text-anchor="start">Sponsor</text>
+<rect x="1067.6000000000001" y="397.48" width="64.96000000000001" height="11.2" rx="1" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="1070.4" y="405.18" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#4d4d4d" text-anchor="start">Demo</text>
+<rect x="1134.5600000000002" y="397.48" width="31.480000000000004" height="11.2" rx="1" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="1137.3600000000001" y="405.18" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#4d4d4d" text-anchor="start">Payoff</text>
+<rect x="1168.0400000000002" y="397.48" width="38.176" height="11.2" rx="1" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="1170.8400000000001" y="405.18" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#4d4d4d" text-anchor="start">Recap</text>
+<rect x="1208.2160000000001" y="397.48" width="24.784000000000002" height="11.2" rx="1" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="1211.016" y="405.18" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#4d4d4d" text-anchor="start">CTA</text>
+<text x="1236.4" y="414.28" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start"></text>
+<text x="882" y="430.38" font-family="Helvetica, Arial, sans-serif" font-size="5.6" font-weight="400" fill="#7a7a7a" text-anchor="start" font-style="italic">The stat row is omitted when YouTube reported no totals</text>
+<rect x="868" y="463.78" width="126.67000000000002" height="14.4" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="876" y="474.17999999999995" font-family="Helvetica, Arial, sans-serif" font-size="8.924999999999999" font-weight="700" fill="#ffffff" text-anchor="start">Loading (loading.tsx)</text>
+<rect x="868" y="479.78" width="388" height="194.60000000000002" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M868 495.17999999999995H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="876.4" cy="487.47999999999996" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="884.1" cy="487.47999999999996" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="891.8" cy="487.47999999999996" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="903" y="482.58" width="251.99999999999997" height="9.799999999999999" rx="4.8999999999999995" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="908.6" y="489.5799999999999" font-family="Menlo, Consolas, monospace" font-size="6.3" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/videos/FhcM0zUTVv0</text>
+<path d="M868 514.78H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="879.2" y="507.78" font-family="Helvetica, Arial, sans-serif" font-size="8.399999999999999" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1244.8" y="507.78" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="869" y="514.78" width="386" height="18.2" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M868 532.98H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="880.6" y="526.33" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<rect x="929.6" y="518.28" width="36.4" height="11.2" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="935.2" y="526.33" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="700" fill="#1f1f1f" text-anchor="start">Videos</text>
+<text x="977.2" y="526.33" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1036.0000000000002" y="526.33" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="1059.8000000000002" y="520.38" width="16.799999999999997" height="7.699999999999999" rx="4.199999999999999" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="1068.2" y="526.3299999999999" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<text x="1222.3999999999999" y="526.33" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<rect x="882" y="544.1800000000001" width="251.99999999999997" height="15.399999999999999" rx="3" fill="#ececec" stroke="#9a9a9a" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="882" y="566.58" width="115.33333333333333" height="23.799999999999997" rx="3" fill="#ececec" stroke="#9a9a9a" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="1004.3333333333334" y="566.58" width="115.33333333333333" height="23.799999999999997" rx="3" fill="#ececec" stroke="#9a9a9a" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="1126.6666666666667" y="566.58" width="115.33333333333333" height="23.799999999999997" rx="3" fill="#ececec" stroke="#9a9a9a" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="882" y="597.38" width="232.53333333333333" height="62.99999999999999" rx="3" fill="#ececec" stroke="#9a9a9a" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="1125.7333333333333" y="597.38" width="116.26666666666667" height="42" rx="3" fill="#ececec" stroke="#9a9a9a" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="868" y="692.38" width="105.59" height="14.4" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="876" y="702.78" font-family="Helvetica, Arial, sans-serif" font-size="8.924999999999999" font-weight="700" fill="#ffffff" text-anchor="start">Error (error.tsx)</text>
+<rect x="868" y="708.38" width="388" height="145.8800000000001" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M868 723.78H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="876.4" cy="716.08" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="884.1" cy="716.08" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="891.8" cy="716.08" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="903" y="711.18" width="251.99999999999997" height="9.799999999999999" rx="4.8999999999999995" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="908.6" y="718.18" font-family="Menlo, Consolas, monospace" font-size="6.3" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/videos/FhcM0zUTVv0</text>
+<path d="M868 743.38H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="879.2" y="736.3799999999999" font-family="Helvetica, Arial, sans-serif" font-size="8.399999999999999" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1244.8" y="736.3799999999999" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="869" y="743.38" width="386" height="18.2" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M868 761.58H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="880.6" y="754.9300000000001" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<rect x="929.6" y="746.88" width="36.4" height="11.2" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="935.2" y="754.9300000000001" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="700" fill="#1f1f1f" text-anchor="start">Videos</text>
+<text x="977.2" y="754.9300000000001" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1036.0000000000002" y="754.9300000000001" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="1059.8000000000002" y="748.98" width="16.799999999999997" height="7.699999999999999" rx="4.199999999999999" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="1068.2" y="754.93" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<text x="1222.3999999999999" y="754.9300000000001" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<text x="882" y="786.7800000000001" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#1f1f1f" text-anchor="start">This screen didn't load</text>
+<text x="882" y="804.6300000000001" font-family="Helvetica, Arial, sans-serif" font-size="7.35" font-weight="400" fill="#4d4d4d" text-anchor="start">Something went wrong on our side. Your data is safe; trying again usually works. Reference:</text>
+<text x="882" y="814.9200000000001" font-family="Helvetica, Arial, sans-serif" font-size="7.35" font-weight="400" fill="#4d4d4d" text-anchor="start">3a91f…</text>
+<rect x="882" y="824.8600000000001" width="54.599999999999994" height="15.399999999999999" rx="3" fill="#3b3b3b" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="909.3" y="835.0100000000001" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="600" fill="#ffffff" text-anchor="middle">Try again</text>
+<line x1="24" y1="870.2600000000001" x2="1256" y2="870.2600000000001" stroke="#c8c8c8" stroke-width="1"/>
+<text x="24" y="884.2600000000001" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#1f1f1f" text-anchor="start">Callouts</text>
+<circle cx="32" cy="896.2600000000001" r="7" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="32" y="899.7600000000001" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#1f1f1f" text-anchor="middle">1</text>
+<text x="46" y="900.2600000000001" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">AutopsyChart: each audience's measured curve with the model's band over the beat strip, on one D3 time scale.</text>
+<text x="46" y="913.2600000000001" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">Drop windows are hatched; clicking one selects it.</text>
+<circle cx="32" cy="927.2600000000001" r="7" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="32" y="930.7600000000001" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#1f1f1f" text-anchor="middle">2</text>
+<text x="46" y="931.2600000000001" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">DropPanel: a sentence and the &quot;?&quot; notes come from the chips' numbers, not from Gemini. Unexplained always</text>
+<text x="46" y="944.2600000000001" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">shows.</text>
+<text x="652" y="884.2600000000001" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#1f1f1f" text-anchor="start">Navigation</text>
+<text x="652" y="900.2600000000001" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">→ All videos → W-05</text>
+<text x="652" y="918.2600000000001" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">→ A cause chip's link → W-04 with ?audience=&amp;effect= (sheet open)</text>
+<text x="652" y="936.2600000000001" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">→ A drop-off or beat → seeks the embedded player (stays here)</text>
+</svg>

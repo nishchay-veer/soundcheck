@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="787.87" viewBox="0 0 1280 787.87" role="img" aria-label="W-10 Channel settings wireframe">
+<title>W-10 Channel settings wireframe</title>
+<defs>
+  <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#9a9a9a" stroke-width="1.5"/></pattern>
+</defs>
+<rect width="1280" height="787.87" fill="#ffffff"/>
+<text x="24" y="34" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#1f1f1f" text-anchor="start">W-10 · Channel settings</text>
+<text x="24" y="54" font-family="Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#4d4d4d" text-anchor="start">/app/settings  (ChannelCard; DELETE /api/v1/channels/[id])   ·   UC-08, UC-07, UC-06</text>
+<line x1="24" y1="66" x2="1256" y2="66" stroke="#1f1f1f" stroke-width="1.5"/>
+<rect x="24" y="80" width="152.4" height="18" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="32" y="93" font-family="Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#ffffff" text-anchor="start">Populated: one channel</text>
+<rect x="24" y="100" width="820" height="313" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M24 122H844" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="36" cy="111" r="3.2" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="47" cy="111" r="3.2" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="58" cy="111" r="3.2" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="74" y="104" width="360" height="14" rx="7" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="82" y="114" font-family="Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/settings</text>
+<path d="M24 150H844" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="40" y="140" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="828" y="140" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="25" y="150" width="818" height="26" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M24 176H844" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="42" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<text x="120" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#1f1f1f" text-anchor="start">Videos</text>
+<text x="180" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="264" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="298" y="158" width="24" height="11" rx="6" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="310" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="7" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<rect x="764" y="155" width="64" height="16" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="796" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="700" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<text x="44" y="212" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#1f1f1f" text-anchor="start">Channel</text>
+<rect x="44" y="227" width="87.11999999999999" height="70" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.5"/>
+<path d="M77.56 250l22 12l-22 12Z" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="87.56" y="287" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="400" fill="#4d4d4d" text-anchor="middle">thumbnail</text>
+<text x="147.12" y="241" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#1f1f1f" text-anchor="start">Guitar Garage</text>
+<rect x="147.12" y="255.8" width="101.4" height="40" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="155.12" y="269.8" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="400" fill="#4d4d4d" text-anchor="start">Subscribers</text>
+<text x="155.12" y="289.8" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#1f1f1f" text-anchor="start">12,400</text>
+<rect x="258.52" y="255.8" width="101.4" height="40" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="266.52" y="269.8" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="400" fill="#4d4d4d" text-anchor="start">Videos</text>
+<text x="266.52" y="289.8" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#1f1f1f" text-anchor="start">118</text>
+<rect x="369.92" y="255.8" width="101.4" height="40" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="377.92" y="269.8" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="400" fill="#4d4d4d" text-anchor="start">Connected</text>
+<text x="377.92" y="289.8" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#1f1f1f" text-anchor="start">2026-10-06</text>
+<rect x="481.32000000000005" y="255.8" width="101.4" height="40" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="489.32000000000005" y="269.8" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="400" fill="#4d4d4d" text-anchor="start">Analysis</text>
+<text x="489.32000000000005" y="289.8" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#1f1f1f" text-anchor="start">Ready</text>
+<rect x="598.72" y="259" width="180" height="22" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="688.72" y="273.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#1f1f1f" text-anchor="middle">Disconnect and delete data</text>
+<circle cx="811" cy="267" r="8" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="811" y="270.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="700" fill="#1f1f1f" text-anchor="middle">2</text>
+<circle cx="811" cy="235" r="8" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="811" y="238.5" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="700" fill="#1f1f1f" text-anchor="middle">1</text>
+<text x="44" y="332" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="400" fill="#7a7a7a" text-anchor="start" font-style="italic">With more than one channel, the app bar shows a channel select and Switch (chooseChannel sets the soundcheck-channel cookie).</text>
+<text x="44" y="353" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="400" fill="#4d4d4d" text-anchor="start">Channel (app bar)</text>
+<rect x="44" y="357" width="181.5" height="22" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="52" y="371.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="400" fill="#1f1f1f" text-anchor="start">Guitar Garage</text>
+<path d="M209.5 366l4 5l4 -5" fill="none" stroke="#1f1f1f" stroke-width="1.2"/>
+<rect x="241.5" y="367" width="60" height="22" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="271.5" y="381.5" font-family="Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#1f1f1f" text-anchor="middle">Switch</text>
+<rect x="868" y="84" width="142.48000000000002" height="14.4" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="876" y="94.4" font-family="Helvetica, Arial, sans-serif" font-size="8.924999999999999" font-weight="700" fill="#ffffff" text-anchor="start">Confirm (window.confirm)</text>
+<rect x="868" y="100" width="388" height="135.37999999999997" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M868 115.4H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="876.4" cy="107.7" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="884.1" cy="107.7" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="891.8" cy="107.7" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="903" y="102.8" width="251.99999999999997" height="9.799999999999999" rx="4.8999999999999995" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="908.6" y="109.80000000000001" font-family="Menlo, Consolas, monospace" font-size="6.3" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/settings</text>
+<path d="M868 135H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="879.2" y="128" font-family="Helvetica, Arial, sans-serif" font-size="8.399999999999999" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1244.8" y="128" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="869" y="135" width="386" height="18.2" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M868 153.2H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="880.6" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<text x="935.2" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Videos</text>
+<text x="977.2" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1036.0000000000002" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="1059.8000000000002" y="140.6" width="16.799999999999997" height="7.699999999999999" rx="4.199999999999999" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="1068.2" y="146.55" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<rect x="1200" y="138.5" width="44.8" height="11.2" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="1222.3999999999999" y="146.54999999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="700" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<rect x="882" y="164.39999999999998" width="360" height="56.97999999999999" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="889" y="178.74999999999997" font-family="Helvetica, Arial, sans-serif" font-size="7.35" font-weight="400" fill="#1f1f1f" text-anchor="start">Disconnect Guitar Garage and delete all of its data from Soundcheck? Access to your</text>
+<text x="889" y="189.03999999999996" font-family="Helvetica, Arial, sans-serif" font-size="7.35" font-weight="400" fill="#1f1f1f" text-anchor="start">channel is revoked. This cannot be undone.</text>
+<rect x="889" y="198.97999999999996" width="25.199999999999996" height="15.399999999999999" rx="3" fill="#3b3b3b" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="901.6" y="209.12999999999997" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="600" fill="#ffffff" text-anchor="middle">OK</text>
+<rect x="921.2" y="198.97999999999996" width="42" height="15.399999999999999" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="942.2" y="209.12999999999997" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="600" fill="#1f1f1f" text-anchor="middle">Cancel</text>
+<rect x="868" y="253.38" width="58.16" height="14.4" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="876" y="263.78" font-family="Helvetica, Arial, sans-serif" font-size="8.924999999999999" font-weight="700" fill="#ffffff" text-anchor="start">Deleting</text>
+<rect x="868" y="269.38" width="388" height="108.49999999999994" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M868 284.78H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="876.4" cy="277.08" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="884.1" cy="277.08" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="891.8" cy="277.08" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="903" y="272.18" width="251.99999999999997" height="9.799999999999999" rx="4.8999999999999995" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="908.6" y="279.17999999999995" font-family="Menlo, Consolas, monospace" font-size="6.3" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/settings</text>
+<path d="M868 304.38H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="879.2" y="297.38" font-family="Helvetica, Arial, sans-serif" font-size="8.399999999999999" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1244.8" y="297.38" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="869" y="304.38" width="386" height="18.2" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M868 322.58H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="880.6" y="315.93" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<text x="935.2" y="315.93" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Videos</text>
+<text x="977.2" y="315.93" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1036.0000000000002" y="315.93" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="1059.8000000000002" y="309.98" width="16.799999999999997" height="7.699999999999999" rx="4.199999999999999" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="1068.2" y="315.93" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<rect x="1200" y="307.88" width="44.8" height="11.2" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="1222.3999999999999" y="315.93" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="700" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<rect x="882" y="333.78" width="54.599999999999994" height="15.399999999999999" rx="3" fill="#ececec" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="909.3" y="343.92999999999995" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="600" fill="#7a7a7a" text-anchor="middle">Deleting…</text>
+<text x="882" y="362.47999999999996" font-family="Helvetica, Arial, sans-serif" font-size="5.6" font-weight="400" fill="#7a7a7a" text-anchor="start" font-style="italic">Revoke, BigQuery, Cloud Storage, then Firestore</text>
+<rect x="868" y="395.87999999999994" width="42.349999999999994" height="14.4" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="876" y="406.2799999999999" font-family="Helvetica, Arial, sans-serif" font-size="8.924999999999999" font-weight="700" fill="#ffffff" text-anchor="start">Error</text>
+<rect x="868" y="411.87999999999994" width="388" height="111.08999999999997" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M868 427.2799999999999H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="876.4" cy="419.5799999999999" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="884.1" cy="419.5799999999999" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="891.8" cy="419.5799999999999" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="903" y="414.67999999999995" width="251.99999999999997" height="9.799999999999999" rx="4.8999999999999995" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="908.6" y="421.6799999999999" font-family="Menlo, Consolas, monospace" font-size="6.3" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/settings</text>
+<path d="M868 446.87999999999994H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="879.2" y="439.87999999999994" font-family="Helvetica, Arial, sans-serif" font-size="8.399999999999999" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1244.8" y="439.87999999999994" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="869" y="446.87999999999994" width="386" height="18.2" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M868 465.0799999999999H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="880.6" y="458.42999999999995" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<text x="935.2" y="458.42999999999995" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Videos</text>
+<text x="977.2" y="458.42999999999995" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1036.0000000000002" y="458.42999999999995" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="1059.8000000000002" y="452.47999999999996" width="16.799999999999997" height="7.699999999999999" rx="4.199999999999999" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="1068.2" y="458.42999999999995" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<rect x="1200" y="450.37999999999994" width="44.8" height="11.2" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="1222.3999999999999" y="458.42999999999995" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="700" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<rect x="882" y="476.2799999999999" width="125.99999999999999" height="15.399999999999999" rx="3" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="945" y="486.4299999999999" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="600" fill="#1f1f1f" text-anchor="middle">Disconnect and delete data</text>
+<text x="882" y="506.0299999999999" font-family="Helvetica, Arial, sans-serif" font-size="7.35" font-weight="400" fill="#1f1f1f" text-anchor="start">Deletion did not finish. Nothing was lost; try again.</text>
+<rect x="868" y="540.9699999999999" width="89.78" height="14.4" rx="2" fill="#3b3b3b" stroke="#3b3b3b" stroke-width="1.5"/>
+<text x="876" y="551.3699999999999" font-family="Helvetica, Arial, sans-serif" font-size="8.924999999999999" font-weight="700" fill="#ffffff" text-anchor="start">Access expired</text>
+<rect x="868" y="556.9699999999999" width="388" height="102.90000000000009" rx="6" fill="#f7f7f7" stroke="#1f1f1f" stroke-width="2"/>
+<path d="M868 572.3699999999999H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<circle cx="876.4" cy="564.67" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="884.1" cy="564.67" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<circle cx="891.8" cy="564.67" r="2.2399999999999998" fill="#dedede" stroke="#9a9a9a" stroke-width="1"/>
+<rect x="903" y="559.7699999999999" width="251.99999999999997" height="9.799999999999999" rx="4.8999999999999995" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="908.6" y="566.7699999999999" font-family="Menlo, Consolas, monospace" font-size="6.3" font-weight="400" fill="#4d4d4d" text-anchor="start">…/app/settings</text>
+<path d="M868 591.9699999999999H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="879.2" y="584.9699999999998" font-family="Helvetica, Arial, sans-serif" font-size="8.399999999999999" font-weight="700" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1244.8" y="584.9699999999998" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#4d4d4d" text-anchor="end">Sign out</text>
+<rect x="869" y="591.9699999999999" width="386" height="18.2" rx="0" fill="#ffffff" stroke="none" stroke-width="1.5"/>
+<path d="M868 610.17H1256" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+<text x="880.6" y="603.52" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Audiences</text>
+<text x="935.2" y="603.52" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Videos</text>
+<text x="977.2" y="603.52" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#1f1f1f" text-anchor="start">Soundcheck</text>
+<text x="1036.0000000000002" y="603.52" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="400" fill="#7a7a7a" text-anchor="start">Model</text>
+<rect x="1059.8000000000002" y="597.5699999999999" width="16.799999999999997" height="7.699999999999999" rx="4.199999999999999" fill="#ffffff" stroke="#9a9a9a" stroke-width="1"/>
+<text x="1068.2" y="603.5199999999999" font-family="Helvetica, Arial, sans-serif" font-size="4.8999999999999995" font-weight="400" fill="#7a7a7a" text-anchor="middle">Soon</text>
+<rect x="1200" y="595.4699999999999" width="44.8" height="11.2" rx="3" fill="#dedede" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="1222.3999999999999" y="603.52" font-family="Helvetica, Arial, sans-serif" font-size="6.6499999999999995" font-weight="700" fill="#1f1f1f" text-anchor="middle">⚙ Channel</text>
+<rect x="882" y="621.37" width="104.3" height="9.799999999999999" rx="4.8999999999999995" fill="#dedede" stroke="#1f1f1f" stroke-width="1"/>
+<text x="934.15" y="628.37" font-family="Helvetica, Arial, sans-serif" font-size="5.6" font-weight="600" fill="#1f1f1f" text-anchor="middle">Access expired. Reconnect</text>
+<text x="882" y="644.4699999999999" font-family="Helvetica, Arial, sans-serif" font-size="5.6" font-weight="400" fill="#7a7a7a" text-anchor="start" font-style="italic">Settings stays reachable while status is reauth_required</text>
+<line x1="24" y1="675.87" x2="1256" y2="675.87" stroke="#c8c8c8" stroke-width="1"/>
+<text x="24" y="689.87" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#1f1f1f" text-anchor="start">Callouts</text>
+<circle cx="32" cy="701.87" r="7" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="32" y="705.37" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#1f1f1f" text-anchor="middle">1</text>
+<text x="46" y="705.87" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">ChannelCard: the profile from connect and the build state in words (Not started, Queued, Learning how your</text>
+<text x="46" y="718.87" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">audiences watch, Ready, No videos to learn from yet or Ready to build, Failed).</text>
+<circle cx="32" cy="732.87" r="7" fill="#ffffff" stroke="#1f1f1f" stroke-width="1.2"/>
+<text x="32" y="736.37" font-family="Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#1f1f1f" text-anchor="middle">2</text>
+<text x="46" y="736.87" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">DeleteChannelButton: confirm, DELETE, then router.refresh(). The settings page then has no channel and</text>
+<text x="46" y="749.87" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">redirects to /app (W-02, No channel yet).</text>
+<text x="652" y="689.87" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#1f1f1f" text-anchor="start">Navigation</text>
+<text x="652" y="705.87" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">→ After a successful delete → /app: &quot;No channel yet&quot; (W-02)</text>
+<text x="652" y="723.87" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">→ Reconnect (when access expired) → /reauth (W-02)</text>
+<text x="652" y="741.87" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#4d4d4d" text-anchor="start">→ Switch → /app with the chosen channel (W-03 or W-04)</text>
+</svg>

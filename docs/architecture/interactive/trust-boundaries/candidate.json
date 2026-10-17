@@ -1,0 +1,434 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Soundcheck trust boundaries",
+    "output": "docs/architecture/interactive/trust-boundaries/trust-boundaries.html",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/nishchay-veer/soundcheck.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "48d7346cd094090390afe68eb2b45b03252ea755"
+    }
+  },
+  "components": [
+    {
+      "id": "oauth",
+      "type": "external",
+      "label": "Google OAuth",
+      "sublabel": "read-only YouTube scopes",
+      "pos": [
+        30,
+        40
+      ],
+      "size": [
+        190,
+        60
+      ],
+      "sources": [
+        {
+          "path": "apps/web/src/auth.config.ts",
+          "line": 19,
+          "end_line": 31,
+          "label": "Offline consent"
+        }
+      ]
+    },
+    {
+      "id": "yt",
+      "type": "external",
+      "label": "YouTube APIs",
+      "sublabel": "Data, Analytics, Reporting",
+      "pos": [
+        680,
+        40
+      ],
+      "size": [
+        190,
+        60
+      ],
+      "sources": [
+        {
+          "path": "packages/core/src/youtube/auth.ts",
+          "line": 34,
+          "end_line": 66,
+          "label": "Creator's refresh token"
+        }
+      ]
+    },
+    {
+      "id": "browser",
+      "type": "frontend",
+      "label": "Creator's browser",
+      "sublabel": "JWT cookie, SameSite=Lax",
+      "pos": [
+        30,
+        300
+      ],
+      "size": [
+        190,
+        84
+      ],
+      "sources": [
+        {
+          "path": "apps/web/src/lib/access.ts",
+          "line": 1,
+          "end_line": 16,
+          "label": "Proxy policy"
+        },
+        {
+          "path": "apps/web/src/lib/upload.ts",
+          "line": 50,
+          "end_line": 60,
+          "label": "Chunked upload"
+        }
+      ]
+    },
+    {
+      "id": "evt",
+      "type": "messagebus",
+      "label": "Eventarc",
+      "sublabel": "as sa-eventarc",
+      "pos": [
+        680,
+        170
+      ],
+      "size": [
+        190,
+        60
+      ],
+      "sources": [
+        {
+          "path": "infra/01-service-accounts.sh",
+          "line": 49,
+          "end_line": 51,
+          "label": "eventReceiver, invoker"
+        }
+      ]
+    },
+    {
+      "id": "vertex",
+      "type": "cloud",
+      "label": "Vertex AI",
+      "sublabel": "Gemini, Experiments",
+      "pos": [
+        1010,
+        170
+      ],
+      "size": [
+        190,
+        60
+      ],
+      "sources": [
+        {
+          "path": "infra/01-service-accounts.sh",
+          "line": 38,
+          "end_line": 42,
+          "label": "aiplatform.user"
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "type": "frontend",
+      "label": "soundcheck-web",
+      "sublabel": "as sa-web, public",
+      "pos": [
+        350,
+        300
+      ],
+      "size": [
+        190,
+        84
+      ],
+      "sources": [
+        {
+          "path": "infra/deploy-web.sh",
+          "line": 48,
+          "end_line": 52,
+          "label": "--allow-unauthenticated"
+        },
+        {
+          "path": "infra/01-service-accounts.sh",
+          "line": 27,
+          "end_line": 36,
+          "label": "sa-web project roles"
+        },
+        {
+          "path": "packages/core/src/data/authz.ts",
+          "line": 5,
+          "end_line": 18,
+          "label": "requireChannel"
+        }
+      ]
+    },
+    {
+      "id": "wf",
+      "type": "cloud",
+      "label": "Cloud Workflows",
+      "sublabel": "as sa-workflows",
+      "pos": [
+        680,
+        300
+      ],
+      "size": [
+        190,
+        84
+      ],
+      "sources": [
+        {
+          "path": "infra/01-service-accounts.sh",
+          "line": 44,
+          "end_line": 47,
+          "label": "sa-workflows roles"
+        },
+        {
+          "path": "infra/09-orchestration.sh",
+          "line": 16,
+          "end_line": 20,
+          "label": "Acts as sa-pipeline"
+        }
+      ]
+    },
+    {
+      "id": "jobs",
+      "type": "backend",
+      "label": "Cloud Run jobs",
+      "sublabel": "as sa-pipeline",
+      "pos": [
+        1010,
+        300
+      ],
+      "size": [
+        190,
+        84
+      ],
+      "sources": [
+        {
+          "path": "infra/deploy-pipeline.sh",
+          "line": 49,
+          "end_line": 59,
+          "label": "--service-account"
+        },
+        {
+          "path": "infra/01-service-accounts.sh",
+          "line": 38,
+          "end_line": 42,
+          "label": "sa-pipeline roles"
+        }
+      ]
+    },
+    {
+      "id": "data",
+      "type": "database",
+      "label": "Firestore, BigQuery, GCS",
+      "sublabel": "deny-all client rules",
+      "pos": [
+        350,
+        480
+      ],
+      "size": [
+        190,
+        66
+      ],
+      "sources": [
+        {
+          "path": "infra/firestore.rules",
+          "line": 1,
+          "end_line": 10,
+          "label": "No client access"
+        },
+        {
+          "path": "infra/02-storage.sh",
+          "line": 43,
+          "end_line": 51,
+          "label": "Bucket roles"
+        },
+        {
+          "path": "infra/03-bigquery.sh",
+          "line": 25,
+          "end_line": 30,
+          "label": "dataEditor grants"
+        }
+      ]
+    },
+    {
+      "id": "kms",
+      "type": "security",
+      "label": "KMS key oauth-tokens",
+      "sublabel": "user ID bound as AAD",
+      "pos": [
+        680,
+        480
+      ],
+      "size": [
+        190,
+        66
+      ],
+      "sources": [
+        {
+          "path": "infra/05-kms.sh",
+          "line": 34,
+          "end_line": 41,
+          "label": "Key roles"
+        },
+        {
+          "path": "packages/core/src/crypto/tokens.ts",
+          "line": 4,
+          "end_line": 20,
+          "label": "Encrypt with AAD"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Internet, untrusted",
+      "wraps": [
+        "browser"
+      ],
+      "pad": 18
+    },
+    {
+      "kind": "region",
+      "label": "Google-operated APIs",
+      "wraps": [
+        "oauth",
+        "yt"
+      ],
+      "pad": 16
+    },
+    {
+      "kind": "region",
+      "label": "Google Cloud project, IAM-enforced",
+      "wraps": [
+        "evt",
+        "vertex",
+        "web",
+        "wf",
+        "jobs",
+        "data",
+        "kms"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "security-group",
+      "label": "sa-web",
+      "wraps": [
+        "web"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "security-group",
+      "label": "sa-pipeline",
+      "wraps": [
+        "jobs"
+      ],
+      "pad": 10
+    }
+  ],
+  "connections": [
+    {
+      "from": "browser",
+      "to": "web",
+      "label": "HTTPS (public)",
+      "variant": "emphasis"
+    },
+    {
+      "from": "browser",
+      "to": "oauth",
+      "label": "consent redirect",
+      "variant": "security"
+    },
+    {
+      "from": "browser",
+      "to": "data",
+      "label": "PUT session URL",
+      "variant": "dashed"
+    },
+    {
+      "from": "web",
+      "to": "wf",
+      "label": "workflows.invoker"
+    },
+    {
+      "from": "web",
+      "to": "kms",
+      "label": "EncrypterDecrypter",
+      "variant": "security"
+    },
+    {
+      "from": "web",
+      "to": "data",
+      "label": "objectAdmin, dataEditor",
+      "variant": "security"
+    },
+    {
+      "from": "evt",
+      "to": "wf",
+      "label": "workflows.invoker"
+    },
+    {
+      "from": "wf",
+      "to": "jobs",
+      "label": "run.developer",
+      "variant": "emphasis"
+    },
+    {
+      "from": "jobs",
+      "to": "kms",
+      "label": "cryptoKeyDecrypter",
+      "variant": "security"
+    },
+    {
+      "from": "jobs",
+      "to": "data",
+      "label": "objectAdmin, dataEditor"
+    },
+    {
+      "from": "jobs",
+      "to": "vertex",
+      "label": "aiplatform.user"
+    },
+    {
+      "from": "jobs",
+      "to": "yt",
+      "label": "creator's token",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Identity, not network",
+      "items": [
+        "No VPC or ingress restriction: every crossing is an IAM grant on a service account",
+        "soundcheck-web is public; Google sign-in and requireChannel are the gates",
+        "Firestore rules deny every client; only server SDKs read or write"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Broad rights on sa-web",
+      "items": [
+        "objectAdmin on all three buckets and dataEditor on the dataset, for channel deletion",
+        "A compromised web container could read or change any channel's data",
+        "iam.serviceAccountTokenCreator on itself is granted for signed URLs the code no longer uses"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Token protection",
+      "items": [
+        "Refresh tokens are KMS-encrypted with the owner's user ID as additional authenticated data",
+        "sa-pipeline can only decrypt; tokens never reach the browser or the JWT",
+        "invalid_grant marks the channel reauth_required and stops the job"
+      ]
+    }
+  ]
+}

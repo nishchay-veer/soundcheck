@@ -1,0 +1,7 @@
+# archify run receipts and browser evidence; `archify finalize` regenerates them.
+# Each diagram keeps only its candidate.json (the source) and the rendered .html.
+review-*/
+*.finalize.json
+*.finalize-summary.json
+*.browser-check.json
+*.delivery.json

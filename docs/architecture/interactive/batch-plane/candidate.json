@@ -1,0 +1,611 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Soundcheck batch plane",
+    "output": "docs/architecture/interactive/batch-plane/batch-plane.html",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/nishchay-veer/soundcheck.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "48d7346cd094090390afe68eb2b45b03252ea755"
+    },
+    "views": [
+      {
+        "id": "channelBuild",
+        "label": "Channel build",
+        "focus": [
+          "web",
+          "wf",
+          "ts",
+          "py",
+          "yt",
+          "gem",
+          "raw",
+          "bq",
+          "fs"
+        ],
+        "note": "Connect or Build now starts channel_build; eight stages run as Cloud Run jobs."
+      },
+      {
+        "id": "soundcheckRun",
+        "label": "Soundcheck run",
+        "focus": [
+          "up",
+          "evt",
+          "wf",
+          "ts",
+          "gem",
+          "raw",
+          "fs"
+        ],
+        "note": "A finished upload fires Eventarc; one job checks, watches, predicts and suggests edits."
+      },
+      {
+        "id": "weeklyRefresh",
+        "label": "Weekly refresh",
+        "focus": [
+          "sched",
+          "wf",
+          "py",
+          "ts",
+          "fs"
+        ],
+        "note": "Mondays 03:00 IST: refit pooled models, then refresh every ready channel."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "yt",
+      "type": "external",
+      "label": "YouTube APIs",
+      "sublabel": "Data, Analytics, Reporting",
+      "pos": [
+        650,
+        30
+      ],
+      "size": [
+        210,
+        56
+      ],
+      "sources": [
+        {
+          "path": "packages/core/src/youtube/analytics.ts",
+          "line": 31,
+          "end_line": 41,
+          "label": "Analytics query with retry"
+        },
+        {
+          "path": "packages/core/src/youtube/auth.ts",
+          "line": 34,
+          "end_line": 66,
+          "label": "Per-channel refresh token"
+        }
+      ]
+    },
+    {
+      "id": "sched",
+      "type": "cloud",
+      "label": "Cloud Scheduler",
+      "sublabel": "weekly, Mon 03:00 IST",
+      "pos": [
+        30,
+        150
+      ],
+      "size": [
+        170,
+        60
+      ],
+      "sources": [
+        {
+          "path": "infra/09-orchestration.sh",
+          "line": 39,
+          "end_line": 53,
+          "label": "weekly-refresh job"
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "type": "frontend",
+      "label": "soundcheck-web",
+      "sublabel": "Next.js on Cloud Run",
+      "pos": [
+        30,
+        270
+      ],
+      "size": [
+        170,
+        60
+      ],
+      "sources": [
+        {
+          "path": "packages/core/src/data/build.ts",
+          "line": 101,
+          "end_line": 113,
+          "label": "Starts channel_build"
+        },
+        {
+          "path": "packages/core/src/data/soundchecks.ts",
+          "line": 208,
+          "end_line": 216,
+          "label": "Starts soundcheck for a link"
+        }
+      ]
+    },
+    {
+      "id": "evt",
+      "type": "messagebus",
+      "label": "Eventarc trigger",
+      "sublabel": "soundcheck-upload",
+      "pos": [
+        30,
+        400
+      ],
+      "size": [
+        170,
+        60
+      ],
+      "sources": [
+        {
+          "path": "infra/10-soundcheck-trigger.sh",
+          "line": 14,
+          "end_line": 25,
+          "label": "finalized -> soundcheck"
+        }
+      ]
+    },
+    {
+      "id": "wf",
+      "type": "cloud",
+      "label": "Cloud Workflows",
+      "sublabel": "build, refresh, soundcheck",
+      "pos": [
+        340,
+        262
+      ],
+      "size": [
+        190,
+        76
+      ],
+      "sources": [
+        {
+          "path": "infra/workflows/channel_build.yaml",
+          "line": 198,
+          "end_line": 261,
+          "label": "run_stage: 3 attempts"
+        },
+        {
+          "path": "infra/workflows/soundcheck.yaml",
+          "line": 28,
+          "end_line": 58,
+          "label": "Object name to job run"
+        },
+        {
+          "path": "infra/workflows/weekly_refresh.yaml",
+          "line": 37,
+          "end_line": 72,
+          "label": "Refit pooled, refresh each"
+        }
+      ]
+    },
+    {
+      "id": "up",
+      "type": "database",
+      "label": "GCS uploads bucket",
+      "sublabel": "cuts, 30-day delete",
+      "pos": [
+        30,
+        520
+      ],
+      "size": [
+        190,
+        64
+      ],
+      "sources": [
+        {
+          "path": "infra/02-storage.sh",
+          "line": 26,
+          "end_line": 41,
+          "label": "Lifecycle and CORS"
+        },
+        {
+          "path": "apps/pipeline/src/commands/soundcheck/run.ts",
+          "line": 125,
+          "end_line": 141,
+          "label": "Soundcheck archives here"
+        }
+      ]
+    },
+    {
+      "id": "ts",
+      "type": "backend",
+      "label": "Pipeline jobs (TypeScript)",
+      "sublabel": "7 Cloud Run jobs, one image",
+      "pos": [
+        650,
+        190
+      ],
+      "size": [
+        210,
+        220
+      ],
+      "sources": [
+        {
+          "path": "infra/deploy-pipeline.sh",
+          "line": 61,
+          "end_line": 67,
+          "label": "Seven TypeScript jobs"
+        },
+        {
+          "path": "apps/pipeline/src/commands/stage/run.ts",
+          "line": 116,
+          "end_line": 174,
+          "label": "Stage dispatcher"
+        },
+        {
+          "path": "apps/pipeline/src/commands/soundcheck/run.ts",
+          "line": 188,
+          "end_line": 254,
+          "label": "Soundcheck job"
+        }
+      ]
+    },
+    {
+      "id": "py",
+      "type": "backend",
+      "label": "Modeling jobs (Python)",
+      "sublabel": "train, evaluate",
+      "pos": [
+        650,
+        560
+      ],
+      "size": [
+        210,
+        110
+      ],
+      "sources": [
+        {
+          "path": "infra/deploy-pipeline.sh",
+          "line": 68,
+          "end_line": 69,
+          "label": "Two Python jobs"
+        },
+        {
+          "path": "services/modeling/src/soundcheck_modeling/cli.py",
+          "line": 208,
+          "end_line": 241,
+          "label": "stage train | evaluate"
+        },
+        {
+          "path": "services/modeling/src/soundcheck_modeling/store.py",
+          "line": 39,
+          "end_line": 64,
+          "label": "Artifacts and run rows"
+        }
+      ]
+    },
+    {
+      "id": "gem",
+      "type": "cloud",
+      "label": "Gemini on Vertex AI",
+      "sublabel": "beats, captions, chapters",
+      "pos": [
+        1040,
+        150
+      ],
+      "size": [
+        170,
+        56
+      ],
+      "sources": [
+        {
+          "path": "packages/core/src/gcp.ts",
+          "line": 44,
+          "end_line": 53,
+          "label": "Vertex client, 15 min wait"
+        },
+        {
+          "path": "packages/core/src/gemini/extract.ts",
+          "line": 203,
+          "end_line": 214,
+          "label": "Beat extraction"
+        }
+      ]
+    },
+    {
+      "id": "sec",
+      "type": "security",
+      "label": "KMS + Secret Manager",
+      "sublabel": "token decrypt, OAuth client",
+      "pos": [
+        1040,
+        240
+      ],
+      "size": [
+        170,
+        56
+      ],
+      "sources": [
+        {
+          "path": "packages/core/src/crypto/tokens.ts",
+          "line": 22,
+          "end_line": 30,
+          "label": "Decrypt with user as AAD"
+        },
+        {
+          "path": "packages/core/src/secrets.ts",
+          "line": 13,
+          "end_line": 29,
+          "label": "OAuth client, cached"
+        }
+      ]
+    },
+    {
+      "id": "raw",
+      "type": "database",
+      "label": "GCS raw bucket",
+      "sublabel": "raw JSON, cache, artifacts",
+      "pos": [
+        1040,
+        420
+      ],
+      "size": [
+        170,
+        56
+      ],
+      "sources": [
+        {
+          "path": "packages/core/src/jobs/archive.ts",
+          "line": 38,
+          "end_line": 58,
+          "label": "Archive before parse"
+        },
+        {
+          "path": "services/modeling/src/soundcheck_modeling/train.py",
+          "line": 355,
+          "end_line": 356,
+          "label": "Artifact path"
+        }
+      ]
+    },
+    {
+      "id": "bq",
+      "type": "database",
+      "label": "BigQuery",
+      "sublabel": "dataset soundcheck",
+      "pos": [
+        1040,
+        330
+      ],
+      "size": [
+        170,
+        56
+      ],
+      "sources": [
+        {
+          "path": "packages/core/src/jobs/bigquery-load.ts",
+          "line": 30,
+          "end_line": 42,
+          "label": "Replace rows via load job"
+        },
+        {
+          "path": "services/modeling/src/soundcheck_modeling/store.py",
+          "line": 49,
+          "end_line": 64,
+          "label": "Append run rows"
+        }
+      ]
+    },
+    {
+      "id": "fs",
+      "type": "database",
+      "label": "Firestore",
+      "sublabel": "state, progress, documents",
+      "pos": [
+        340,
+        600
+      ],
+      "size": [
+        190,
+        56
+      ],
+      "sources": [
+        {
+          "path": "packages/core/src/jobs/progress.ts",
+          "line": 25,
+          "end_line": 35,
+          "label": "Throttled build progress"
+        },
+        {
+          "path": "apps/pipeline/src/commands/publish/run.ts",
+          "line": 87,
+          "end_line": 115,
+          "label": "Serving documents"
+        },
+        {
+          "path": "infra/firestore.rules",
+          "line": 1,
+          "end_line": 10,
+          "label": "Deny all client access"
+        }
+      ]
+    },
+    {
+      "id": "vex",
+      "type": "cloud",
+      "label": "Vertex AI Experiments",
+      "sublabel": "fit and eval runs",
+      "pos": [
+        1040,
+        588
+      ],
+      "size": [
+        170,
+        56
+      ],
+      "sources": [
+        {
+          "path": "services/modeling/src/soundcheck_modeling/experiments.py",
+          "line": 23,
+          "end_line": 52,
+          "label": "Params and metrics only"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Google Cloud project (us-central1; BigQuery US)",
+      "wraps": [
+        "sched",
+        "web",
+        "evt",
+        "wf",
+        "up",
+        "ts",
+        "py",
+        "gem",
+        "sec",
+        "raw",
+        "bq",
+        "fs",
+        "vex"
+      ],
+      "pad": 20
+    }
+  ],
+  "connections": [
+    {
+      "from": "sched",
+      "to": "wf",
+      "label": "POST executions"
+    },
+    {
+      "from": "web",
+      "to": "wf",
+      "label": "createExecution",
+      "variant": "emphasis"
+    },
+    {
+      "from": "up",
+      "to": "evt",
+      "label": "object.finalized",
+      "variant": "dashed"
+    },
+    {
+      "from": "evt",
+      "to": "wf",
+      "label": "start soundcheck",
+      "variant": "dashed"
+    },
+    {
+      "from": "wf",
+      "to": "ts",
+      "label": "jobs.run, wait",
+      "variant": "emphasis"
+    },
+    {
+      "from": "wf",
+      "to": "py",
+      "label": "jobs.run, wait",
+      "variant": "emphasis"
+    },
+    {
+      "from": "wf",
+      "to": "fs",
+      "label": "patch build.*"
+    },
+    {
+      "from": "ts",
+      "to": "yt",
+      "label": "REST, creator's token",
+      "variant": "security"
+    },
+    {
+      "from": "ts",
+      "to": "gem",
+      "label": "generateContent (HTTPS)"
+    },
+    {
+      "from": "ts",
+      "to": "sec",
+      "label": "decrypt; read secret",
+      "variant": "security"
+    },
+    {
+      "from": "ts",
+      "to": "raw",
+      "label": "archive raw JSON, cache"
+    },
+    {
+      "from": "ts",
+      "to": "bq",
+      "label": "load jobs, queries"
+    },
+    {
+      "from": "ts",
+      "to": "fs",
+      "label": "progress, serving docs"
+    },
+    {
+      "from": "ts",
+      "to": "up",
+      "label": "ffprobe; archive JSON"
+    },
+    {
+      "from": "py",
+      "to": "raw",
+      "label": "write artifacts"
+    },
+    {
+      "from": "py",
+      "to": "bq",
+      "label": "read bins, append runs"
+    },
+    {
+      "from": "py",
+      "to": "fs",
+      "label": "progress"
+    },
+    {
+      "from": "py",
+      "to": "vex",
+      "label": "log runs (SDK)",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Who starts what",
+      "items": [
+        "soundcheck-web starts channel_build on connect or Build now, and soundcheck for a YouTube link",
+        "Eventarc starts soundcheck when an upload finishes; other objects are ignored by name",
+        "Cloud Scheduler starts weekly_refresh, which starts channel_build per ready channel"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Retries are layered",
+      "items": [
+        "Each external call: withRetry, at most 6 attempts, on 429, 5xx, UNAVAILABLE, RESOURCE_EXHAUSTED",
+        "Each Cloud Run task: --max-retries 1 or 2 per job",
+        "Each build stage: 3 attempts in run_stage, 30 s then 60 s apart; then build.state failed"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Language split",
+      "items": [
+        "TypeScript computes every feature and writes training_bins",
+        "Python reads them, fits, and writes JSON artifacts validated against the zod-exported schema",
+        "Publish and soundcheck read the artifacts back in TypeScript"
+      ]
+    }
+  ]
+}

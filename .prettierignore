@@ -14,3 +14,5 @@ services/modeling/schemas
 docs/model-card.md
 # Written by scripts/export-fixtures.ts
 apps/web/fixtures
+# Written by archify finalize; reformatting breaks its provenance check
+docs/architecture/interactive

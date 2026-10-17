@@ -1,0 +1,314 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Soundcheck job run",
+    "output": "docs/architecture/interactive/soundcheck-job/soundcheck-job.html",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/nishchay-veer/soundcheck.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "48d7346cd094090390afe68eb2b45b03252ea755"
+    }
+  },
+  "participants": [
+    {
+      "id": "wf",
+      "type": "cloud",
+      "label": "Workflow",
+      "sublabel": "soundcheck",
+      "sources": [
+        {
+          "path": "infra/workflows/soundcheck.yaml",
+          "line": 17,
+          "end_line": 97,
+          "label": "Name check, run, guard"
+        }
+      ]
+    },
+    {
+      "id": "job",
+      "type": "backend",
+      "label": "Job",
+      "sublabel": "job-soundcheck",
+      "sources": [
+        {
+          "path": "apps/pipeline/src/commands/soundcheck/run.ts",
+          "line": 156,
+          "end_line": 181,
+          "label": "Claim in a transaction"
+        },
+        {
+          "path": "apps/pipeline/src/commands/soundcheck/run.ts",
+          "line": 228,
+          "end_line": 330,
+          "label": "Check, watch, predict"
+        },
+        {
+          "path": "apps/pipeline/src/commands/soundcheck/run.ts",
+          "line": 354,
+          "end_line": 395,
+          "label": "One batch write"
+        }
+      ]
+    },
+    {
+      "id": "fs",
+      "type": "database",
+      "label": "Firestore",
+      "sublabel": "soundchecks/{sid}",
+      "sources": [
+        {
+          "path": "packages/core/src/schemas/firestore.ts",
+          "line": 34,
+          "end_line": 45,
+          "label": "Doc and inputs paths"
+        }
+      ]
+    },
+    {
+      "id": "up",
+      "type": "database",
+      "label": "GCS uploads",
+      "sublabel": "the cut object",
+      "sources": [
+        {
+          "path": "packages/core/src/data/soundchecks.ts",
+          "line": 58,
+          "end_line": 88,
+          "label": "One-object session"
+        }
+      ]
+    },
+    {
+      "id": "gemini",
+      "type": "external",
+      "label": "Gemini",
+      "sublabel": "Vertex AI",
+      "sources": [
+        {
+          "path": "packages/core/src/gemini/extract.ts",
+          "line": 203,
+          "end_line": 214,
+          "label": "Beat extraction"
+        },
+        {
+          "path": "packages/core/src/gemini/chapters.ts",
+          "line": 81,
+          "end_line": 100,
+          "label": "Chapter titles (flash)"
+        }
+      ]
+    },
+    {
+      "id": "models",
+      "type": "database",
+      "label": "Models",
+      "sublabel": "BigQuery, GCS",
+      "sources": [
+        {
+          "path": "apps/pipeline/src/commands/soundcheck/channel.ts",
+          "line": 27,
+          "end_line": 58,
+          "label": "readChannelForCut"
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "type": "backend",
+      "label": "Web app",
+      "sublabel": "create route",
+      "sources": [
+        {
+          "path": "apps/web/src/app/api/v1/channels/[id]/soundchecks/route.ts",
+          "line": 25,
+          "end_line": 68,
+          "label": "POST and its statuses"
+        },
+        {
+          "path": "packages/core/src/data/soundchecks.ts",
+          "line": 99,
+          "end_line": 194,
+          "label": "createSoundcheck (file)"
+        }
+      ]
+    },
+    {
+      "id": "browser",
+      "type": "frontend",
+      "label": "Browser",
+      "sublabel": "form, upload, poll",
+      "sources": [
+        {
+          "path": "apps/web/src/components/soundcheck-form.tsx",
+          "line": 78,
+          "end_line": 129,
+          "label": "Create, upload, go to page"
+        },
+        {
+          "path": "apps/web/src/lib/upload.ts",
+          "line": 1,
+          "end_line": 12,
+          "label": "Resumable chunk protocol"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 290,
+      "label": "Check"
+    },
+    {
+      "from": 296,
+      "to": 380,
+      "label": "Watch"
+    },
+    {
+      "from": 384,
+      "to": 520,
+      "label": "Predict"
+    },
+    {
+      "from": 526,
+      "to": 600,
+      "label": "Result"
+    }
+  ],
+  "messages": [
+    {
+      "id": "run",
+      "from": "wf",
+      "to": "job",
+      "y": 160,
+      "label": "jobs.run, wait up to 3600 s",
+      "variant": "emphasis"
+    },
+    {
+      "id": "claim",
+      "from": "job",
+      "to": "fs",
+      "y": 188,
+      "label": "claim: status running",
+      "note": "Skips a ready or fresh run"
+    },
+    {
+      "id": "probe",
+      "from": "job",
+      "to": "up",
+      "y": 246,
+      "label": "ffprobe range reads"
+    },
+    {
+      "id": "watching",
+      "from": "job",
+      "to": "fs",
+      "y": 274,
+      "label": "duration, step watching"
+    },
+    {
+      "id": "extract",
+      "from": "job",
+      "to": "gemini",
+      "y": 302,
+      "label": "extract beats from gs://",
+      "variant": "emphasis",
+      "note": "Validated, one retry"
+    },
+    {
+      "id": "beats",
+      "from": "gemini",
+      "to": "job",
+      "y": 360,
+      "label": "typed beats JSON",
+      "variant": "return"
+    },
+    {
+      "id": "read-models",
+      "from": "job",
+      "to": "models",
+      "y": 388,
+      "label": "latest models, recent 20 videos"
+    },
+    {
+      "id": "artifacts",
+      "from": "models",
+      "to": "job",
+      "y": 416,
+      "label": "artifacts, inflation, mix",
+      "variant": "return",
+      "note": "Then predict and search edits"
+    },
+    {
+      "id": "chapters",
+      "from": "job",
+      "to": "gemini",
+      "y": 474,
+      "label": "title chapters (flash)"
+    },
+    {
+      "id": "ready",
+      "from": "job",
+      "to": "fs",
+      "y": 502,
+      "label": "batch: ready + inputs/current",
+      "variant": "emphasis"
+    },
+    {
+      "id": "poll",
+      "from": "browser",
+      "to": "web",
+      "y": 534,
+      "label": "poll GET every 2 s",
+      "variant": "dashed"
+    },
+    {
+      "id": "read",
+      "from": "web",
+      "to": "fs",
+      "y": 562,
+      "label": "read soundchecks/{sid}"
+    },
+    {
+      "id": "result",
+      "from": "web",
+      "to": "browser",
+      "y": 590,
+      "label": "ready: prediction, edits",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "Single run per soundcheck",
+      "items": [
+        "The claim transaction refuses a second concurrent run",
+        "A run silent for 20 minutes counts as dead and can be reclaimed",
+        "If the job crashes while running, the workflow marks it failed"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Plain failures",
+      "items": [
+        "private_video, video_unavailable, too_short, too_long, unsupported_type",
+        "no_model when neither measured audience has a model; unreadable after Gemini's retry",
+        "internal is rethrown so Cloud Run retries the task once"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "What the result holds",
+      "items": [
+        "Per audience: 10 to 90% curve bands, average view and share of the cut",
+        "Better than N% of the newest 20 videos, by average view",
+        "Edits with their own effect; inputs/current lets the simulate route replay them"
+      ]
+    }
+  ]
+}
