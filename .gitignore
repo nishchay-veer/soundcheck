@@ -54,3 +54,5 @@ apps/web/CLAUDE.md
 # Playwright's output
 test-results/
 playwright-report/
+
+.claude/*

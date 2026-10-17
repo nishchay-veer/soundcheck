@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(/private/tmp/claude-501/-Users-avi-projects-soundcheck/89deb993-3ed7-4db4-afb8-ac54809d43da/scratchpad/mermaid-check/node_modules/.bin/prettier --no-config --print-width 100 --write \"docs/architecture/*.md\")",
-      "Bash(node check.mjs /Users/avi/projects/soundcheck/docs/architecture/*.md)"
-    ]
-  }
-}
