@@ -1,4 +1,4 @@
-# 02 · Containers (C4 level 2)
+# 02 · Containers
 
 Part of the [architecture set](README.md). Previous: [01 · System context](01-system-context.md). Next: [03 · Components](03-components.md).
 

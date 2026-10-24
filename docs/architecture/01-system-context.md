@@ -1,4 +1,4 @@
-# 01 · System context (C4 level 1)
+# 01 · System context
 
 Part of the [architecture set](README.md). Next: [02 · Containers](02-containers.md).
 

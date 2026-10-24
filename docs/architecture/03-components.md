@@ -1,4 +1,4 @@
-# 03 · Components (C4 level 3)
+# 03 · Components
 
 Part of the [architecture set](README.md). Previous: [02 · Containers](02-containers.md). Next: [04 · Deployment](04-deployment.md).
 
