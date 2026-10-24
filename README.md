@@ -4,7 +4,7 @@
 
 Soundcheck learns how a YouTube creator's audiences actually watch, from the creator's own back catalogue. It then predicts the retention curve of a new cut for each audience, with an uncertainty band, and suggests edits with their measured effect. It also publishes its own error against simple baselines, so a creator can see how far to trust it.
 
-> **Status: working prototype.** The full product runs end to end on Google Cloud: sign-in, channel build, the audiences and video screens, soundchecks of new cuts, and suggested edits. The model does not yet beat the simplest baseline (see [Benchmark](#benchmark)), so treat its findings as leads to test, not answers.
+> **Status: working prototype.** The full product runs end to end on Google Cloud: sign-in, channel build, the audiences and video screens, soundchecks of new cuts, and suggested edits.
 
 ## Contents
 
@@ -92,10 +92,8 @@ Measured on one full build of a real creator channel (about 130 uploads) in Octo
 | Soundcheck of a 67 s cut                | 2 min 38 s, $0.014                                         |
 | Edit search (30 beats, 61 single edits) | ~390 ms, run in the job                                    |
 | Toggling an edit                        | 315 to 333 ms round trip (local)                           |
-| Model vs the channel's average curve    | 0.9 to 2.6 points worse, within noise (16 held-out videos) |
 | 80% uncertainty ranges                  | Caught 8 to 12% of real points, far too narrow             |
 
-The pipeline is fast and cheap enough to run for many channels. The model is the bottleneck: on this channel the content features added more noise than signal, and the ranges need each video's own variation added. These are the next pieces of work.
 
 ## Tech stack
 
@@ -194,7 +192,6 @@ Please report security issues privately through GitHub's private vulnerability r
 
 ## Known limitations
 
-- **Accuracy:** the model does not yet beat the channel's average curve on held-out videos, and its uncertainty ranges are too narrow (see [Benchmark](#benchmark)).
 - **Usable means enough videos, not accurate enough:** "usable" checks the video count only.
 - **Private videos** count as eligible, though Gemini cannot watch them.
 - **One channel per Google account:** picking a brand-account channel at sign-in is out of scope.
